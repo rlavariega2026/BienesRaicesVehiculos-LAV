@@ -22,6 +22,9 @@ jobs:
           local-dir: ./
           server-dir: public_html/bienes-raices-vehiculos/
           exclude: |
-            **/.git*
+            .git/**
+            .git
+            **/.git/**
+            **/.git
             **/.github/**
             **/README.md
