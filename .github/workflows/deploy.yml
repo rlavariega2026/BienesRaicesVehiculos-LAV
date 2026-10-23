@@ -11,7 +11,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Deploy files over FTP
+
+      # Standard Hostinger account root layout
+      - name: Deploy to public_html path
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: 31.170.161.28
@@ -21,6 +23,26 @@ jobs:
           port: 21
           local-dir: ./
           server-dir: public_html/bienes-raices-vehiculos/
+          exclude: |
+            .git/**
+            .git
+            **/.git/**
+            **/.git
+            **/.github/**
+            **/README.md
+
+      # Some Hostinger FTP accounts are already rooted at public_html.
+      # Deploy the same files there too so the public URL resolves in either layout.
+      - name: Deploy to FTP-root-relative path
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 31.170.161.28
+          username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
+          password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./
+          server-dir: bienes-raices-vehiculos/
           exclude: |
             .git/**
             .git
