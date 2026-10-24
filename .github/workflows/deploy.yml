@@ -16,7 +16,7 @@ jobs:
         run: node --check app.js
 
       - name: Validate PHP API syntax
-        run: php -l api/save-card.php
+        run: php -l api/save-card.php && php -l api/auth.php
 
       # Standard Hostinger account root layout
       - name: Deploy to public_html path
