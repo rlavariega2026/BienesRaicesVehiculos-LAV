@@ -1,168 +1,1110 @@
+<canvas id="lav-digital-app" title="LAV Digital - Plataforma de Tarjetas Comerciales" language="HTML" tools="[]">
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creador de Tarjetas Digitales | LAV Digital</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>LAV Digital — Plataforma Comercial Premium de Bienes Raíces & Vehículos</title>
+
+    <!-- Google Fonts Premium -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Material Icons & FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
+        /* ==========================================================================
+           CORE DESIGN SYSTEM & VARIABLE DEFINITIONS
+           ========================================================================== */
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --slate-900: #0f172a;
-            --slate-800: #1e293b;
-            --slate-700: #334155;
-            --slate-100: #f1f5f9;
-            --slate-50: #f8fafc;
-            --border: #cbd5e1;
-            --radius: 12px;
+            /* Theme Core Palette */
+            --lav-black: #07090e;
+            --lav-dark-1: #0e131f;
+            --lav-dark-2: #161d2f;
+            --lav-dark-3: #212b42;
+            --lav-border: #2d3852;
+            
+            --lav-accent-blue: #3b82f6;
+            --lav-accent-indigo: #6366f1;
+            --lav-accent-purple: #8b5cf6;
+            --lav-accent-gold: #d97706;
+            --lav-accent-emerald: #10b981;
+            --lav-accent-rose: #f43f5e;
+
+            --lav-text-main: #f8fafc;
+            --lav-text-muted: #94a3b8;
+            --lav-text-dim: #64748b;
+
+            --lav-glow-primary: rgba(99, 102, 241, 0.25);
+            --lav-glass-bg: rgba(14, 19, 31, 0.75);
+            --lav-glass-border: rgba(255, 255, 255, 0.08);
+
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --radius-xl: 24px;
+
+            /* Dynamic Template Customization Vars (Overridden on the fly) */
+            --tpl-bg: #0f172a;
+            --tpl-card-bg: #1e293b;
+            --tpl-primary: #3b82f6;
+            --tpl-secondary: #f43f5e;
+            --tpl-text: #f8fafc;
+            --tpl-text-muted: #94a3b8;
+            --tpl-accent: #38bdf8;
+            --tpl-font: 'Inter', sans-serif;
+            --tpl-radius: 16px;
+            --tpl-border: rgba(255, 255, 255, 0.1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: #0b0f19; color: var(--slate-900); line-height: 1.5; min-height: 100vh; }
+        /* Reset & Base Reset */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--lav-black);
+            color: var(--lav-text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
-        /* VISTAS */
-        #editor-app-container { display: block; }
-        #public-card-container { display: none; background: #0b0f19; min-height: 100vh; padding: 20px 10px; }
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--lav-black); }
+        ::-webkit-scrollbar-thumb { background: var(--lav-border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--lav-accent-indigo); }
 
-        /* HEADER EDITOR */
-        header.app-header { background: #111827; border-bottom: 1px solid #1f2937; color: white; padding: 20px; text-align: center; }
-        header.app-header h1 { font-size: 1.6rem; font-weight: 800; tracking-tight: -0.025em; background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        header.app-header p { font-size: 0.875rem; color: #9ca3af; margin-top: 4px; }
+        /* Utilitarian App Shell Rules */
+        .app-view { display: none; width: 100%; min-height: 100vh; }
+        .app-view.active { display: block; }
 
-        .main-layout { max-width: 1400px; margin: 20px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 0 16px; }
-        @media (max-width: 1024px) { .main-layout { grid-template-columns: 1fr; } }
-
-        .card-box { background: #ffffff; border-radius: var(--radius); border: 1px solid #e2e8f0; padding: 24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .card-box h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--slate-800); border-bottom: 2px solid var(--slate-100); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 0.825rem; font-weight: 700; margin-bottom: 6px; color: var(--slate-700); text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.925rem; background: #fff; color: var(--slate-900); transition: border 0.2s; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); outline: none; }
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
-
-        /* CARGA DE ARCHIVOS DRAG & DROP */
-        .drop-zone { border: 2px dashed #a5b4fc; background: #f5f3ff; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .drop-zone:hover { background: #eeddff; border-color: #6366f1; }
-        .drop-zone p { font-size: 0.875rem; color: #4338ca; font-weight: 600; }
-        .drop-zone span { font-size: 0.75rem; color: #6b7280; display: block; margin-top: 4px; }
-        .drop-zone input { display: none; }
-
-        .preview-thumbs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 12px; }
-        .thumb-preview-box { height: 80px; border-radius: 8px; background-size: cover; background-position: center; border: 2px solid #e2e8f0; position: relative; overflow: hidden; }
-        .thumb-preview-box .remove-btn { position: absolute; top: 4px; right: 4px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-        /* SELECTOR DE 100 DISEÑOS */
-        .designs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .designs-counter-badge { background: #6366f1; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
-        
-        #designs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+        /* ==========================================================================
+           APP HEADER & NAVIGATION BAR
+           ========================================================================== */
+        header.lav-header {
+            background: rgba(7, 9, 14, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--lav-glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .lav-brand {
+            display: flex;
+            align-items: center;
             gap: 12px;
-            max-height: 440px;
-            overflow-y: auto;
-            padding: 12px;
-            background: #f8fafc;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
+            text-decoration: none;
+        }
+        .lav-brand-logo {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--lav-accent-indigo), var(--lav-accent-purple));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #fff;
+            box-shadow: 0 0 20px var(--lav-glow-primary);
+        }
+        .lav-brand-text h1 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #fff, var(--lav-text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .lav-brand-text span {
+            font-size: 0.72rem;
+            color: var(--lav-accent-indigo);
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
         }
 
-        .design-thumb-card {
-            background: #ffffff;
-            border: 2px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 8px;
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-lav {
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-lav-primary {
+            background: linear-gradient(135deg, var(--lav-accent-indigo), var(--lav-accent-purple));
+            color: #fff;
+            box-shadow: 0 4px 14px var(--lav-glow-primary);
+        }
+        .btn-lav-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(99, 102, 241, 0.45);
+        }
+        .btn-lav-secondary {
+            background: var(--lav-dark-2);
+            color: var(--lav-text-main);
+            border-color: var(--lav-border);
+        }
+        .btn-lav-secondary:hover {
+            background: var(--lav-dark-3);
+            border-color: var(--lav-text-muted);
+        }
+        .btn-lav-outline {
+            background: transparent;
+            color: var(--lav-text-main);
+            border-color: var(--lav-border);
+        }
+        .btn-lav-outline:hover {
+            border-color: var(--lav-accent-indigo);
+            color: var(--lav-accent-indigo);
+        }
+
+        /* ==========================================================================
+           MAIN DASHBOARD VIEW (HUB / CLIENT MANAGEMENT)
+           ========================================================================== */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .dashboard-header-banner {
+            background: linear-gradient(135deg, rgba(22, 29, 47, 0.8), rgba(14, 19, 31, 0.95));
+            border: 1px solid var(--lav-glass-border);
+            border-radius: var(--radius-xl);
+            padding: 36px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+        .dashboard-header-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--lav-glow-primary) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .dash-title-area h2 {
+            font-size: 2.1rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.8px;
+        }
+        .dash-title-area p {
+            color: var(--lav-text-muted);
+            font-size: 0.98rem;
+            max-width: 620px;
+        }
+
+        /* Client Selector & Stats Bar */
+        .dash-controls-bar {
+            display: grid;
+            grid-template-columns: 280px 1fr auto;
+            gap: 18px;
+            align-items: center;
+            margin-bottom: 28px;
+            background: var(--lav-dark-1);
+            padding: 16px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--lav-border);
+        }
+
+        .select-custom {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--lav-dark-2);
+            border: 1px solid var(--lav-border);
+            border-radius: var(--radius-md);
+            color: var(--lav-text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+        }
+        .select-custom:focus {
+            border-color: var(--lav-accent-indigo);
+        }
+
+        .dash-search-input {
+            position: relative;
+            width: 100%;
+        }
+        .dash-search-input i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--lav-text-dim);
+        }
+        .dash-search-input input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            background: var(--lav-dark-2);
+            border: 1px solid var(--lav-border);
+            border-radius: var(--radius-md);
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        /* Card Inventory Grid */
+        .cards-inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .inventory-card {
+            background: var(--lav-dark-1);
+            border: 1px solid var(--lav-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .inventory-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--lav-accent-indigo);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+
+        .inventory-card-hero {
+            height: 190px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .inventory-card-hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, var(--lav-dark-1) 0%, transparent 60%);
+        }
+        .inventory-card-type-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(7, 9, 14, 0.85);
+            backdrop-filter: blur(8px);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--lav-accent-indigo);
+            border: 1px solid rgba(255,255,255,0.1);
+            text-transform: uppercase;
+        }
+        .inventory-card-status {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .status-published { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
+        .status-draft { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
+
+        .inventory-card-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .inventory-card-price {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--lav-accent-indigo);
+            margin-bottom: 4px;
+        }
+        .inventory-card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .inventory-card-client {
+            font-size: 0.82rem;
+            color: var(--lav-text-muted);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .inventory-card-actions {
+            margin-top: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 44px;
+            gap: 8px;
+            padding-top: 16px;
+            border-top: 1px solid var(--lav-border);
+        }
+
+        /* ==========================================================================
+           EDITOR WORKSPACE VIEW
+           ========================================================================== */
+        .editor-workspace-layout {
+            display: grid;
+            grid-template-columns: 560px 1fr;
+            min-height: calc(100vh - 71px);
+        }
+        @media (max-width: 1100px) {
+            .editor-workspace-layout { grid-template-columns: 1fr; }
+        }
+
+        /* Left Side Controls Column */
+        .editor-controls-sidebar {
+            background: var(--lav-dark-1);
+            border-right: 1px solid var(--lav-border);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 71px);
+            overflow-y: auto;
+        }
+
+        /* Tabs Navigation */
+        .editor-tabs-nav {
+            display: flex;
+            background: var(--lav-dark-2);
+            border-bottom: 1px solid var(--lav-border);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            overflow-x: auto;
+        }
+        .editor-tab-btn {
+            flex: 1;
+            padding: 14px 10px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--lav-text-muted);
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        .editor-tab-btn i { font-size: 1.1rem; }
+        .editor-tab-btn.active {
+            color: var(--lav-accent-indigo);
+            border-bottom-color: var(--lav-accent-indigo);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        /* Tab Content Panels */
+        .editor-tab-panel {
+            display: none;
+            padding: 24px;
+        }
+        .editor-tab-panel.active { display: block; }
+
+        .form-section-title {
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--lav-border);
+            color: var(--lav-text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group-item {
+            margin-bottom: 16px;
+        }
+        .form-group-item label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--lav-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .form-control-input {
+            width: 100%;
+            padding: 11px 14px;
+            background: var(--lav-dark-2);
+            border: 1px solid var(--lav-border);
+            border-radius: var(--radius-md);
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-control-input:focus {
+            border-color: var(--lav-accent-indigo);
+        }
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* Media Upload Drag-Drop Box */
+        .media-dropzone {
+            border: 2px dashed var(--lav-border);
+            border-radius: var(--radius-lg);
+            padding: 24px 16px;
+            text-align: center;
+            background: rgba(22, 29, 47, 0.5);
+            cursor: pointer;
+            transition: all 0.25s;
+            margin-bottom: 16px;
+        }
+        .media-dropzone:hover {
+            border-color: var(--lav-accent-indigo);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        .media-dropzone i {
+            font-size: 2rem;
+            color: var(--lav-accent-indigo);
+            margin-bottom: 8px;
+        }
+        .media-dropzone p {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--lav-text-main);
+        }
+        .media-dropzone span {
+            font-size: 0.75rem;
+            color: var(--lav-text-dim);
+        }
+
+        /* Gallery Manager Miniatures */
+        .gallery-manager-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .gallery-item-thumb {
+            height: 80px;
+            border-radius: var(--radius-md);
+            background-size: cover;
+            background-position: center;
+            border: 1px solid var(--lav-border);
+            position: relative;
+            overflow: hidden;
+        }
+        .gallery-item-thumb .btn-del-img {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(244, 63, 94, 0.85);
+            color: #fff;
+            border: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        /* ==========================================================================
+           100+ DESIGNS CATALOG SELECTOR & FILTERING
+           ========================================================================== */
+        .designs-filter-toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+        }
+        .btn-filter-tag {
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: var(--lav-dark-2);
+            border: 1px solid var(--lav-border);
+            color: var(--lav-text-muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .btn-filter-tag.active {
+            background: var(--lav-accent-indigo);
+            color: #fff;
+            border-color: var(--lav-accent-indigo);
+        }
+
+        .designs-catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            max-height: 520px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .design-catalog-card {
+            background: var(--lav-dark-2);
+            border: 2px solid var(--lav-border);
+            border-radius: var(--radius-md);
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.25s;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 120px;
+            position: relative;
+            height: 140px;
         }
-        .design-thumb-card:hover { border-color: #6366f1; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(99,102,241,0.15); }
-        .design-thumb-card.selected { border-color: #4f46e5; background: #f5f3ff; box-shadow: 0 0 0 3px rgba(99,102,241,0.3); }
-        
-        .thumb-head { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; color: #64748b; margin-bottom: 4px; }
-        .thumb-layout-preview { background: #e2e8f0; height: 55px; border-radius: 4px; padding: 4px; display: flex; flex-direction: column; gap: 3px; justify-content: flex-end; }
-        .thumb-layout-preview .bar { background: #94a3b8; height: 6px; border-radius: 2px; }
-        .thumb-layout-preview .bar.price { width: 60%; background: #6366f1; }
-        .thumb-title-label { font-size: 10.5px; font-weight: 700; text-align: center; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; }
+        .design-catalog-card:hover {
+            border-color: var(--lav-accent-indigo);
+            transform: translateY(-2px);
+        }
+        .design-catalog-card.selected {
+            border-color: var(--lav-accent-indigo);
+            box-shadow: 0 0 0 3px var(--lav-glow-primary);
+            background: rgba(99, 102, 241, 0.12);
+        }
 
-        /* ESTILOS DE ACABADOS (COLECCIONES) */
-        .finish-signature { border-top: 4px solid #0f172a; }
-        .finish-editorial { border-top: 4px solid #b45309; }
-        .finish-colorpop  { border-top: 4px solid #ec4899; }
-        .finish-neon      { border-top: 4px solid #06b6d4; }
-        .finish-luxury    { border-top: 4px solid #d97706; background: #fffbeb; }
+        .design-thumb-mini-preview {
+            background: #0f172a;
+            height: 70px;
+            border-radius: 6px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        .mini-photo-block {
+            background: #334155;
+            height: 38px;
+            border-radius: 3px;
+        }
+        .mini-text-line {
+            background: #64748b;
+            height: 5px;
+            border-radius: 2px;
+            width: 80%;
+        }
+        .mini-text-line.price { width: 50%; background: var(--lav-accent-indigo); }
 
-        /* BOTÓN DE ACCIÓN PRINCIPAL */
-        .btn-submit-main { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; width: 100%; padding: 16px; border-radius: 10px; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(79,70,229,0.4); text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-submit-main:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,70,229,0.6); }
+        .design-card-info {
+            margin-top: 6px;
+        }
+        .design-card-info .num-code {
+            font-size: 0.68rem;
+            color: var(--lav-accent-indigo);
+            font-weight: 800;
+        }
+        .design-card-info .name-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-        /* VISTA PREVIA INTERACTIVA */
-        .preview-sticky-box { position: sticky; top: 20px; background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: var(--radius); color: white; }
-        .preview-card-frame { background: #ffffff; color: var(--slate-900); border-radius: 12px; overflow: hidden; min-height: 520px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
-        .prev-cover-hero { height: 240px; background: #cbd5e1; background-size: cover; background-position: center; position: relative; }
-        .prev-body-content { padding: 20px; }
-        .prev-price-tag { font-size: 1.6rem; font-weight: 800; color: #4f46e5; margin-bottom: 4px; }
-        .prev-title-tag { font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; }
-        .prev-features-badge { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-        .prev-badge { background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #475569; }
+        /* Color Customization Controls */
+        .color-pickers-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .color-picker-box {
+            text-align: center;
+        }
+        .color-picker-box label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--lav-text-muted);
+            display: block;
+            margin-bottom: 4px;
+        }
+        .color-picker-box input[type="color"] {
+            width: 100%;
+            height: 38px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--lav-border);
+            background: transparent;
+            cursor: pointer;
+        }
 
-        /* TARJETA PÚBLICA DEL CLIENTE */
-        .public-wrapper { max-width: 480px; margin: 20px auto; background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid #334155; }
-        .public-hero-img { width: 100%; height: 320px; background-size: cover; background-position: center; position: relative; }
-        .public-hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 20px; color: white; }
-        .public-hero-price { font-size: 2rem; font-weight: 800; color: #60a5fa; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .public-content-body { padding: 24px; }
-        .public-card-title { font-size: 1.4rem; font-weight: 800; color: var(--slate-900); margin-bottom: 16px; }
-        
-        .public-specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; font-size: 0.875rem; }
-        .public-specs-grid div { font-weight: 600; color: #475569; }
-        .public-specs-grid strong { color: #0f172a; }
+        /* ==========================================================================
+           RIGHT PREVIEW COLUMN & STAGE
+           ========================================================================== */
+        .editor-stage-area {
+            background: #030712;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-y: auto;
+            position: relative;
+        }
 
-        .public-gallery-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; }
-        .public-gallery-strip img { height: 90px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+        .stage-toolbar {
+            background: var(--lav-dark-1);
+            border: 1px solid var(--lav-border);
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .stage-view-btn {
+            background: transparent;
+            border: none;
+            color: var(--lav-text-muted);
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .stage-view-btn.active {
+            background: var(--lav-accent-indigo);
+            color: #fff;
+        }
 
-        .public-actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
-        .btn-contact { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 8px; background: #f1f5f9; border-radius: 12px; text-decoration: none; color: #0f172a; font-size: 0.75rem; font-weight: 700; gap: 6px; border: 1px solid #cbd5e1; transition: all 0.2s; }
-        .btn-contact:hover { background: #4f46e5; color: white; border-color: #4f46e5; }
-        .btn-contact svg { width: 24px; height: 24px; fill: currentColor; }
+        /* Mobile Device Frame Container */
+        .preview-device-frame {
+            width: 420px;
+            min-height: 820px;
+            background: var(--tpl-bg);
+            border-radius: 40px;
+            border: 10px solid #1e293b;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 40px var(--lav-glow-primary);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        .preview-device-frame.tablet-view {
+            width: 720px;
+            border-radius: 24px;
+        }
 
-        /* MODAL DE COMPARTIR */
-        #share-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal-card { background: white; width: 100%; max-width: 420px; padding: 28px; border-radius: 16px; text-align: center; }
-        .modal-card input { width: 100%; padding: 12px; margin: 16px 0; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; text-align: center; font-weight: 600; }
+        /* Notch Header Mock */
+        .device-notch {
+            width: 140px;
+            height: 20px;
+            background: #1e293b;
+            margin: 0 auto;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+        }
+
+        /* ==========================================================================
+           CARD COMPOSITION LAYOUT ENGINES (20 MAIN COMPOSITIONS x FINISHES)
+           ========================================================================== */
+        .card-stage-render {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            background: var(--tpl-bg);
+            color: var(--tpl-text);
+            font-family: var(--tpl-font);
+            padding-bottom: 40px;
+        }
+
+        /* Layout 1: Cinematic Cover Full */
+        .comp-cinematic .card-hero-banner {
+            height: 480px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 24px;
+        }
+        .comp-cinematic .card-hero-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, var(--tpl-bg) 15%, transparent 70%);
+        }
+        .comp-cinematic .hero-price {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--tpl-primary);
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.6);
+        }
+        .comp-cinematic .hero-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            position: relative;
+            z-index: 2;
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+
+        /* Layout 2: Split Editorial Horizontal */
+        .comp-split-editorial .card-hero-banner {
+            height: 320px;
+            background-size: cover;
+            background-position: center;
+        }
+        .comp-split-editorial .card-content-body {
+            padding: 24px;
+            background: var(--tpl-card-bg);
+            border-radius: var(--tpl-radius);
+            margin: -30px 16px 0 16px;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Layout 3: Dark Luxury Gold Accent */
+        .comp-dark-luxury {
+            background: #050505;
+            color: #f1f5f9;
+        }
+        .comp-dark-luxury .card-hero-banner {
+            height: 380px;
+            background-size: cover;
+            border-bottom: 3px solid var(--tpl-primary);
+        }
+        .comp-dark-luxury .hero-price {
+            font-family: 'Cinzel', serif;
+            color: var(--tpl-primary);
+            font-size: 2rem;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* General Common Components for Rendered Cards */
+        .card-specs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 16px 24px;
+        }
+        .spec-item-box {
+            background: var(--tpl-card-bg);
+            border: 1px solid var(--tpl-border);
+            padding: 12px;
+            border-radius: var(--tpl-radius);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .spec-item-box i {
+            font-size: 1.2rem;
+            color: var(--tpl-primary);
+        }
+        .spec-item-box .val {
+            font-weight: 800;
+            font-size: 0.95rem;
+            display: block;
+        }
+        .spec-item-box .lbl {
+            font-size: 0.72rem;
+            color: var(--tpl-text-muted);
+        }
+
+        /* Interactive Photo Gallery Box */
+        .card-gallery-section {
+            padding: 16px 24px;
+        }
+        .card-gallery-main-view {
+            height: 240px;
+            border-radius: var(--tpl-radius);
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .gallery-thumbs-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        .gallery-nav-thumb {
+            width: 70px;
+            height: 55px;
+            border-radius: var(--tpl-radius);
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            border: 2px solid transparent;
+            opacity: 0.7;
+        }
+        .gallery-nav-thumb.active {
+            border-color: var(--tpl-primary);
+            opacity: 1;
+        }
+
+        /* Action Buttons Grid (WhatsApp, Phone, Maps, Share) */
+        .card-actions-grid {
+            padding: 20px 24px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .btn-card-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 8px;
+            background: var(--tpl-card-bg);
+            border: 1px solid var(--tpl-border);
+            border-radius: var(--tpl-radius);
+            color: var(--tpl-text);
+            text-decoration: none;
+            font-size: 0.78rem;
+            font-weight: 700;
+            gap: 8px;
+            transition: all 0.25s;
+        }
+        .btn-card-action i {
+            font-size: 1.3rem;
+            color: var(--tpl-primary);
+        }
+        .btn-card-action:hover {
+            background: var(--tpl-primary);
+            color: #fff;
+        }
+        .btn-card-action:hover i { color: #fff; }
+
+        /* Commercial Profile / Agent Bio Footer */
+        .agent-profile-box {
+            margin: 20px 24px;
+            background: var(--tpl-card-bg);
+            border: 1px solid var(--tpl-border);
+            border-radius: var(--tpl-radius);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .agent-avatar {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--tpl-primary);
+        }
+        .agent-info h4 {
+            font-size: 0.95rem;
+            font-weight: 800;
+        }
+        .agent-info p {
+            font-size: 0.78rem;
+            color: var(--tpl-text-muted);
+        }
+
+        /* ==========================================================================
+           MODALS AND DIALOGS
+           ========================================================================== */
+        .lav-modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(7, 9, 14, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .lav-modal-backdrop.active { display: flex; }
+
+        .lav-modal-box {
+            background: var(--lav-dark-1);
+            border: 1px solid var(--lav-border);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 480px;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+        }
+        .lav-modal-box h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .lav-modal-box p {
+            color: var(--lav-text-muted);
+            font-size: 0.88rem;
+            margin-bottom: 20px;
+        }
+        .qr-render-box {
+            background: #fff;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            display: inline-block;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <!-- 1. EDITOR PRINCIPAL -->
-    <div id="editor-app-container">
-        <header class="app-header">
-            <h1>LAV Digital - Creador Comercial</h1>
-            <p>Generador de Tarjetas Digitales para Bienes Raíces y Vehículos</p>
-        </header>
+    <!-- ==========================================================================
+         TOP GLOBAL HEADER
+         ========================================================================== -->
+    <header class="lav-header">
+        <a href="#" class="lav-brand" onclick="switchView('dashboard')">
+            <div class="lav-brand-logo"><i class="fa-solid fa-gem"></i></div>
+            <div class="lav-brand-text">
+                <h1>LAV DIGITAL</h1>
+                <span>PLATAORMA COMERCIAL</span>
+            </div>
+        </a>
 
-        <div class="main-layout">
-            <div class="form-column">
+        <div class="header-actions">
+            <button class="btn-lav btn-lav-outline" onclick="switchView('dashboard')">
+                <i class="fa-solid fa-border-all"></i> Mis Anuncios
+            </button>
+            <button class="btn-lav btn-lav-primary" onclick="createNewCard()">
+                <i class="fa-solid fa-plus"></i> Crear Tarjeta
+            </button>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+         1. DASHBOARD VIEW (INVENTORY / HUB MANAGEMENT)
+         ========================================================================== -->
+    <main id="view-dashboard" class="app-view active">
+        <div class="dashboard-container">
+            
+            <div class="dashboard-header-banner">
+                <div class="dash-title-area">
+                    <h2>Panel de Inventario Comercial</h2>
+                    <p>Gestiona, duplica, personaliza y publica tarjetas digitales de alto impacto para Bienes Raíces y Vehículos de tus clientes.</p>
+                </div>
+                <button class="btn-lav btn-lav-primary" onclick="createNewCard()" style="padding: 14px 24px; font-size: 0.95rem;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Nueva Tarjeta Digital
+                </button>
+            </div>
+
+            <div class="dash-controls-bar">
+                <select id="dash-client-filter" class="select-custom" onchange="filterInventory()">
+                    <option value="ALL">Todos los Clientes</option>
+                </select>
+
+                <div class="dash-search-input">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="dash-search-term" placeholder="Buscar por título, ciudad o marca..." oninput="filterInventory()">
+                </div>
+
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-lav btn-lav-secondary" onclick="filterCategory('ALL')">Todos</button>
+                    <button class="btn-lav btn-lav-secondary" onclick="filterCategory('real_estate')"><i class="fa-solid fa-house"></i> Inmuebles</button>
+                    <button class="btn-lav btn-lav-secondary" onclick="filterCategory('vehicle')"><i class="fa-solid fa-car"></i> Vehículos</button>
+                </div>
+            </div>
+
+            <!-- Inventory Grid -->
+            <div id="inventory-cards-grid" class="cards-inventory-grid">
+                <!-- Dynamically Rendered Inventory Items -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ==========================================================================
+         2. EDITOR WORKSPACE VIEW (BUILDER + STAGE PREVIEW)
+         ========================================================================== -->
+    <main id="view-editor" class="app-view">
+        <div class="editor-workspace-layout">
+            
+            <!-- Left Sidebar Controls -->
+            <div class="editor-controls-sidebar">
                 
-                <!-- SECCIÓN 1: DATOS GENERALES -->
-                <div class="card-box">
-                    <h2>📌 1. Información General</h2>
-                    <div class="form-row">
-                        <div class="form-group">
+                <div class="editor-tabs-nav">
+                    <button class="editor-tab-btn active" onclick="switchEditorTab('tab-data')">
+                        <i class="fa-solid fa-pen-to-square"></i> Información
+                    </button>
+                    <button class="editor-tab-btn" onclick="switchEditorTab('tab-media')">
+                        <i class="fa-solid fa-images"></i> Fotografías
+                    </button>
+                    <button class="editor-tab-btn" onclick="switchEditorTab('tab-designs')">
+                        <i class="fa-solid fa-swatchbook"></i> 100+ Diseños
+                    </button>
+                    <button class="editor-tab-btn" onclick="switchEditorTab('tab-style')">
+                        <i class="fa-solid fa-sliders"></i> Estilo & Color
+                    </button>
+                    <button class="editor-tab-btn" onclick="switchEditorTab('tab-agent')">
+                        <i class="fa-solid fa-user-tie"></i> Perfil Agent
+                    </button>
+                </div>
+
+                <!-- TAB 1: INFORMACIÓN DE ANUNCIO -->
+                <div id="tab-data" class="editor-tab-panel active">
+                    <div class="form-section-title"><i class="fa-solid fa-layer-group"></i> Categoría & Tipo</div>
+                    
+                    <div class="form-row-2">
+                        <div class="form-group-item">
                             <label>Categoría</label>
-                            <select id="ad-type" onchange="toggleCategoryFields()">
-                                <option value="real_estate">🏠 Inmueble / Propiedad</option>
-                                <option value="vehicle">🚗 Vehículo / Automóvil</option>
+                            <select id="inp-category" class="form-control-input" onchange="onCategoryChange()">
+                                <option value="real_estate">Bienes Raíces / Inmueble</option>
+                                <option value="vehicle">Automotriz / Vehículo</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group-item">
                             <label>Operación</label>
-                            <select id="ad-operation">
+                            <select id="inp-operation" class="form-control-input" onchange="updateLivePreview()">
                                 <option value="Venta">Venta</option>
                                 <option value="Renta">Renta</option>
                                 <option value="Traspaso">Traspaso</option>
@@ -170,59 +1112,793 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Título Comercial</label>
-                        <input type="text" id="inp-title" placeholder="Ej. Casa de Lujo en Tabachines" oninput="updatePreview()">
+                    <div class="form-group-item">
+                        <label>Título Comercial del Anuncio</label>
+                        <input type="text" id="inp-title" class="form-control-input" placeholder="Ej. Residencia Minimalista en Tabachines" oninput="updateLivePreview()">
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Precio ($ MXN)</label>
-                            <input type="number" id="inp-price" placeholder="Ej. 3500000" oninput="updatePreview()">
+                    <div class="form-row-2">
+                        <div class="form-group-item">
+                            <label>Precio Comercial ($ MXN)</label>
+                            <input type="number" id="inp-price" class="form-control-input" placeholder="Ej. 4500000" oninput="updateLivePreview()">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group-item">
                             <label>Ubicación / Ciudad</label>
-                            <input type="text" id="inp-location" placeholder="Ej. Cuernavaca, Morelos" oninput="updatePreview()">
+                            <input type="text" id="inp-location" class="form-control-input" placeholder="Ej. Cuernavaca, Morelos" oninput="updateLivePreview()">
                         </div>
+                    </div>
+
+                    <!-- Dynamic Real Estate Specs -->
+                    <div id="fields-real-estate">
+                        <div class="form-section-title"><i class="fa-solid fa-house-chimney"></i> Especificaciones del Inmueble</div>
+                        <div class="form-row-3">
+                            <div class="form-group-item">
+                                <label>Terreno (m²)</label>
+                                <input type="number" id="re-land" class="form-control-input" placeholder="300" oninput="updateLivePreview()">
+                            </div>
+                            <div class="form-group-item">
+                                <label>Construcción</label>
+                                <input type="number" id="re-build" class="form-control-input" placeholder="240" oninput="updateLivePreview()">
+                            </div>
+                            <div class="form-group-item">
+                                <label>Recámaras</label>
+                                <input type="number" id="re-bedrooms" class="form-control-input" placeholder="3" oninput="updateLivePreview()">
+                            </div>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group-item">
+                                <label>Baños</label>
+                                <input type="number" id="re-bathrooms" class="form-control-input" placeholder="2.5" step="0.5" oninput="updateLivePreview()">
+                            </div>
+                            <div class="form-group-item">
+                                <label>Estacionamientos</label>
+                                <input type="number" id="re-parking" class="form-control-input" placeholder="2" oninput="updateLivePreview()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Vehicle Specs -->
+                    <div id="fields-vehicle" style="display: none;">
+                        <div class="form-section-title"><i class="fa-solid fa-car-side"></i> Ficha Técnica Automotriz</div>
+                        <div class="form-row-3">
+                            <div class="form-group-item">
+                                <label>Marca</label>
+                                <input type="text" id="veh-brand" class="form-control-input" placeholder="Porsche" oninput="updateLivePreview()">
+                            </div>
+                            <div class="form-group-item">
+                                <label>Modelo</label>
+                                <input type="text" id="veh-model" class="form-control-input" placeholder="911 Carrera" oninput="updateLivePreview()">
+                            </div>
+                            <div class="form-group-item">
+                                <label>Año</label>
+                                <input type="number" id="veh-year" class="form-control-input" placeholder="2023" oninput="updateLivePreview()">
+                            </div>
+                        </div>
+                        <div class="form-row-3">
+                            <div class="form-group-item">
+                                <label>Kilometraje</label>
+                                <input type="number" id="veh-mileage" class="form-control-input" placeholder="18000" oninput="updateLivePreview()">
+                            </div>
+                            <div class="form-group-item">
+                                <label>Transmisión</label>
+                                <select id="veh-trans" class="form-control-input" onchange="updateLivePreview()">
+                                    <option value="PDK / Automática">PDK / Aut</option>
+                                    <option value="Manual">Manual</option>
+                                </select>
+                            </div>
+                            <div class="form-group-item">
+                                <label>Combustible</label>
+                                <select id="veh-fuel" class="form-control-input" onchange="updateLivePreview()">
+                                    <option value="Gasolina">Gasolina</option>
+                                    <option value="Híbrido">Híbrido</option>
+                                    <option value="Eléctrico">Eléctrico</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group-item">
+                        <label>Descripción Comercial Detallada</label>
+                        <textarea id="inp-description" class="form-control-input" rows="4" placeholder="Redacta la presentación atractiva del anuncio..." oninput="updateLivePreview()"></textarea>
+                    </div>
+
+                </div>
+
+                <!-- TAB 2: FOTOGRAFÍAS DESDE COMPUTADORA/MÓVIL -->
+                <div id="tab-media" class="editor-tab-panel">
+                    <div class="form-section-title"><i class="fa-solid fa-image"></i> Fotografía Principal (Portada)</div>
+                    
+                    <div class="media-dropzone" onclick="document.getElementById('file-cover-input').click()">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p>Seleccionar Fotografía de Portada</p>
+                        <span>Carga directa desde tu dispositivo</span>
+                        <input type="file" id="file-cover-input" accept="image/*" onchange="handleCoverUpload(event)">
+                    </div>
+                    
+                    <div id="cover-preview-box" style="margin-bottom: 24px;"></div>
+
+                    <div class="form-section-title"><i class="fa-solid fa-images"></i> Galería de Fotografías Secundarias</div>
+                    <div class="media-dropzone" onclick="document.getElementById('file-gallery-input').click()">
+                        <i class="fa-solid fa-photo-film"></i>
+                        <p>Añadir Varias Fotos a la Galería</p>
+                        <span>Soporta selección múltiple</span>
+                        <input type="file" id="file-gallery-input" accept="image/*" multiple onchange="handleGalleryUpload(event)">
+                    </div>
+
+                    <div id="gallery-manage-grid" class="gallery-manager-grid"></div>
+                </div>
+
+                <!-- TAB 3: CATÁLOGO DE 100+ DISEÑOS STRUCTURALES -->
+                <div id="tab-designs" class="editor-tab-panel">
+                    <div class="form-section-title"><i class="fa-solid fa-grip"></i> Catálogo de 100+ Composiciones</div>
+                    
+                    <div class="designs-filter-toolbar">
+                        <button class="btn-filter-tag active" onclick="filterDesigns('ALL')">Todos (100)</button>
+                        <button class="btn-filter-tag" onclick="filterDesigns('cinematic')">Cinematográficos</button>
+                        <button class="btn-filter-tag" onclick="filterDesigns('editorial')">Editoriales</button>
+                        <button class="btn-filter-tag" onclick="filterDesigns('luxury')">Luxury</button>
+                        <button class="btn-filter-tag" onclick="filterDesigns('minimal')">Minimalista</button>
+                    </div>
+
+                    <div id="catalog-designs-grid" class="designs-catalog-grid">
+                        <!-- 100 Designs injected via JavaScript Engine -->
                     </div>
                 </div>
 
-                <!-- SECCIÓN 2A: INMUEBLES -->
-                <div class="card-box" id="box-real-estate">
-                    <h2>📐 2. Especificaciones de la Propiedad</h2>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Tipo Inmueble</label>
-                            <select id="re-type">
-                                <option value="Casa">Casa</option>
-                                <option value="Departamento">Departamento</option>
-                                <option value="Terreno">Terreno</option>
-                                <option value="Local Comercial">Local Comercial</option>
-                            </select>
+                <!-- TAB 4: ESTILO Y PERSONALIZACIÓN DE COLOR -->
+                <div id="tab-style" class="editor-tab-panel">
+                    <div class="form-section-title"><i class="fa-solid fa-palette"></i> Paleta de Colores Personalizada</div>
+                    
+                    <div class="color-pickers-row">
+                        <div class="color-picker-box">
+                            <label>Fondo</label>
+                            <input type="color" id="style-bg" value="#0f172a" onchange="updateStyleCustoms()">
                         </div>
-                        <div class="form-group">
-                            <label>Terreno (m²)</label>
-                            <input type="number" id="re-land" placeholder="Ej. 300" oninput="updatePreview()">
+                        <div class="color-picker-box">
+                            <label>Tarjetas</label>
+                            <input type="color" id="style-card" value="#1e293b" onchange="updateStyleCustoms()">
                         </div>
-                        <div class="form-group">
-                            <label>Construcción (m²)</label>
-                            <input type="number" id="re-build" placeholder="Ej. 220" oninput="updatePreview()">
+                        <div class="color-picker-box">
+                            <label>Principal</label>
+                            <input type="color" id="style-primary" value="#3b82f6" onchange="updateStyleCustoms()">
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Recámaras</label>
-                            <input type="number" id="re-bedrooms" placeholder="Ej. 3" oninput="updatePreview()">
-                        </div>
-                        <div class="form-group">
-                            <label>Baños</label>
-                            <input type="number" id="re-bathrooms" placeholder="Ej. 2.5" step="0.5" oninput="updatePreview()">
-                        </div>
-                        <div class="form-group">
-                            <label>Estacionamientos</label>
-                            <input type="number" id="re-parking" placeholder="Ej. 2" oninput="updatePreview()">
+                        <div class="color-picker-box">
+                            <label>Acento</label>
+                            <input type="color" id="style-accent" value="#f43f5e" onchange="updateStyleCustoms()">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Amenidades</label>
-                        <input type="text" id="re-amenities" placeholder="Ej. Alberca, Seguridad 24/7, Jardín" oninput="updatePreview()">
+
+                    <div class="form-group-item">
+                        <label>Tipografía</label>
+                        <select id="style-font" class="form-control-input" onchange="updateStyleCustoms()">
+                            <option value="'Inter', sans-serif">Modern Inter (LAV Default)</option>
+                            <option value="'Cinzel', serif">Cinzel (Luxury Edition)</option>
+                            <option value="'Playfair Display', serif">Playfair (Editorial High End)</option>
+                            <option value="'Space Grotesk', sans-serif">Space Grotesk (Tech Modern)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- TAB 5: PERFIL AGENT / CONTACTOS -->
+                <div id="tab-agent" class="editor-tab-panel">
+                    <div class="form-section-title"><i class="fa-solid fa-address-card"></i> Datos de Contacto y Asesor</div>
+                    
+                    <div class="form-group-item">
+                        <label>Nombre del Asesor / Agencia</label>
+                        <input type="text" id="agent-name" class="form-control-input" placeholder="Lic. Raúl Aguilar Lavariega" oninput="updateLivePreview()">
+                    </div>
+                    <div class="form-group-item">
+                        <label>Empresa / Marca</label>
+                        <input type="text" id="agent-company" class="form-control-input" placeholder="LAV Digital Premium" oninput="updateLivePreview()">
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group-item">
+                            <label>WhatsApp (Lada + Número)</label>
+                            <input type="text" id="agent-whatsapp" class="form-control-input" placeholder="527771234567" oninput="updateLivePreview()">
+                        </div>
+                        <div class="form-group-item">
+                            <label>Teléfono Directo</label>
+                            <input type="text" id="agent-phone" class="form-control-input" placeholder="7771234567" oninput="updateLivePreview()">
+                        </div>
+                    </div>
+
+                    <div class="form-group-item">
+                        <label>Ubicación Google Maps (URL)</label>
+                        <input type="text" id="agent-maps" class="form-control-input" placeholder="https://maps.google.com/..." oninput="updateLivePreview()">
+                    </div>
+                </div>
+
+                <!-- Bottom Sticky Bar -->
+                <div style="padding: 16px 24px; background: var(--lav-dark-2); border-top: 1px solid var(--lav-border); margin-top: auto;">
+                    <button class="btn-lav btn-lav-primary" style="width: 100%; justify-content: center; padding: 14px; font-size: 0.95rem;" onclick="saveCurrentCardAndPublish()">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Guardar y Publicar Tarjeta
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Right Stage Area -->
+            <div class="editor-stage-area">
+                <div class="stage-toolbar">
+                    <button class="stage-view-btn active" onclick="setDeviceView('mobile')"><i class="fa-solid fa-mobile-screen"></i> Móvil</button>
+                    <button class="stage-view-btn" onclick="setDeviceView('tablet')"><i class="fa-solid fa-tablet-screen-button"></i> Tablet</button>
+                </div>
+
+                <div id="stage-frame" class="preview-device-frame">
+                    <div class="device-notch"></div>
+                    <div id="card-render-stage" class="card-stage-render comp-cinematic">
+                        <!-- Dynamic Live Card Layout Rendered Here -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ==========================================================================
+         3. PUBLIC CARD VIEW (ISOLATED STANDALONE EXPERIENCE)
+         ========================================================================== -->
+    <main id="view-public" class="app-view">
+        <div style="max-width: 480px; margin: 0 auto; min-height: 100vh;" id="public-card-stage">
+            <!-- Standalone Public View rendered via URL parameter ?card=ID -->
+        </div>
+    </main>
+
+    <!-- Modal Dialog for Public URL & QR -->
+    <div id="modal-share" class="lav-modal-backdrop">
+        <div class="lav-modal-box">
+            <div style="width: 50px; height: 50px; background: rgba(16, 185, 129, 0.15); color: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; font-size: 22px;">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3>¡Tarjeta Digital Publicada!</h3>
+            <p>El enlace público directo ha sido generado con éxito. Compártelo con tus clientes:</p>
+
+            <div class="qr-render-box" id="qr-target-box">
+                <!-- QR Code Generated Here -->
+            </div>
+
+            <input type="text" id="share-url-output" class="form-control-input" readonly style="text-align: center; margin-bottom: 16px; font-weight: 700;">
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-lav btn-lav-primary" style="flex: 1; justify-content: center;" onclick="copyPublicUrl()"><i class="fa-solid fa-copy"></i> Copiar Enlace</button>
+                <button class="btn-lav btn-lav-secondary" onclick="closeModal('modal-share')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         JAVASCRIPT PLATFORM ENGINE & COMPOSITION LAYOUT RENDERERS
+         ========================================================================== -->
+    <script>
+        /* State Memory Management */
+        let state = {
+            activeView: 'dashboard',
+            clients: ['Inmobiliaria LAV', 'Delice Accidente USA', 'Agencia Automotriz Premier', 'Particular'],
+            inventory: [],
+            currentCard: null,
+            coverBase64: '',
+            galleryBase64: []
+        };
+
+        /* 100 Structural Compositions List */
+        const compositions = Array.from({ length: 100 }, (_, i) => {
+            const index = i + 1;
+            let cat = 'cinematic';
+            if (index > 25) cat = 'editorial';
+            if (index > 50) cat = 'luxury';
+            if (index > 75) cat = 'minimal';
+
+            return {
+                id: index,
+                code: `COMP-${index.toString().padStart(3, '0')}`,
+                name: `Composición ${index} (${cat.toUpperCase()})`,
+                category: cat,
+                layoutClass: `comp-${cat}`
+            };
+        });
+
+        /* Sample Seed Data for Instant Commercial Testing */
+        const seedInventory = [
+            {
+                id: 'card_demo_01',
+                client: 'Inmobiliaria LAV',
+                category: 'real_estate',
+                operation: 'Venta',
+                title: 'Residencia de Lujo con Alberca',
+                price: 5800000,
+                location: 'Cuernavaca, Morelos',
+                cover: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
+                gallery: [
+                    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
+                    'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80'
+                ],
+                specs: { land: 450, build: 320, bedrooms: 4, bathrooms: 4.5, parking: 3 },
+                description: 'Exclusiva residencia estilo contemporáneo con acabados en mármol, alberca climatizada y jardín amplio.',
+                agent: { name: 'Lic. Raúl Aguilar', company: 'LAV Digital Real Estate', whatsapp: '527771234567', phone: '7771234567' },
+                designId: 1,
+                status: 'published'
+            },
+            {
+                id: 'card_demo_02',
+                client: 'Agencia Automotriz Premier',
+                category: 'vehicle',
+                operation: 'Venta',
+                title: 'Porsche 911 Carrera GTS',
+                price: 3250000,
+                location: 'Cuernavaca, Morelos',
+                cover: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80',
+                gallery: [
+                    'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80'
+                ],
+                specs: { brand: 'Porsche', model: '911 Carrera', year: 2023, mileage: 12000, trans: 'PDK', fuel: 'Gasolina' },
+                description: 'Impecable estado, servicios de agencia, paquete Sport Chrono, único dueño.',
+                agent: { name: 'Raúl Aguilar L.', company: 'LAV Auto Collection', whatsapp: '527771234567', phone: '7771234567' },
+                designId: 51,
+                status: 'published'
+            }
+        ];
+
+        /* Init Application Engine */
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStateFromStorage();
+            renderDashboardInventory();
+            render100DesignsCatalog();
+            populateClientDropdowns();
+
+            // Check URL parameters for direct public view
+            const params = new URLSearchParams(window.location.search);
+            const cardId = params.get('card');
+            if (cardId) {
+                renderPublicStandaloneCard(cardId);
+            }
+        });
+
+        function loadStateFromStorage() {
+            const stored = localStorage.getItem('lav_app_state');
+            if (stored) {
+                state.inventory = JSON.parse(stored);
+            } else {
+                state.inventory = seedInventory;
+                saveStateToStorage();
+            }
+        }
+
+        function saveStateToStorage() {
+            localStorage.setItem('lav_app_state', JSON.stringify(state.inventory));
+        }
+
+        /* View Router */
+        function switchView(viewName) {
+            state.activeView = viewName;
+            document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${viewName}`).classList.add('active');
+
+            if (viewName === 'dashboard') {
+                renderDashboardInventory();
+            }
+        }
+
+        /* Populate Dropdowns */
+        function populateClientDropdowns() {
+            const select = document.getElementById('dash-client-filter');
+            select.innerHTML = '<option value="ALL">Todos los Clientes</option>';
+            state.clients.forEach(c => {
+                select.innerHTML += `<option value="${c}">${c}</option>`;
+            });
+        }
+
+        /* Render Dashboard Inventory Cards */
+        function renderDashboardInventory() {
+            const grid = document.getElementById('inventory-cards-grid');
+            grid.innerHTML = '';
+
+            state.inventory.forEach(item => {
+                const isPublished = item.status === 'published';
+                const priceFmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(item.price || 0);
+
+                const cardEl = document.createElement('div');
+                cardEl.className = 'inventory-card';
+                cardEl.innerHTML = `
+                    <div class="inventory-card-hero" style="background-image: url('${item.cover || 'https://via.placeholder.com/600x400'}')">
+                        <span class="inventory-card-type-badge">${item.category === 'real_estate' ? 'Inmueble' : 'Vehículo'}</span>
+                        <span class="inventory-card-status ${isPublished ? 'status-published' : 'status-draft'}">${item.status}</span>
+                    </div>
+                    <div class="inventory-card-body">
+                        <div class="inventory-card-price">${priceFmt}</div>
+                        <div class="inventory-card-title">${item.title}</div>
+                        <div class="inventory-card-client"><i class="fa-solid fa-user-tie"></i> ${item.client}</div>
+
+                        <div class="inventory-card-actions">
+                            <button class="btn-lav btn-lav-primary" onclick="editCard('${item.id}')"><i class="fa-solid fa-pen"></i> Editar</button>
+                            <button class="btn-lav btn-lav-secondary" onclick="openShareModal('${item.id}')"><i class="fa-solid fa-share-nodes"></i> Link</button>
+                            <button class="btn-lav btn-lav-outline" style="color: #f43f5e;" onclick="deleteCard('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(cardEl);
+            });
+        }
+
+        /* Create New Card Flow */
+        function createNewCard() {
+            state.currentCard = {
+                id: 'card_' + Date.now(),
+                client: state.clients[0],
+                category: 'real_estate',
+                operation: 'Venta',
+                title: '',
+                price: 0,
+                location: '',
+                cover: '',
+                gallery: [],
+                specs: { land: 0, build: 0, bedrooms: 0, bathrooms: 0, parking: 0 },
+                description: '',
+                agent: { name: 'Lic. Raúl Aguilar', company: 'LAV Digital', whatsapp: '527771234567', phone: '7771234567' },
+                designId: 1,
+                status: 'draft'
+            };
+
+            loadCardIntoEditor(state.currentCard);
+            switchView('editor');
+        }
+
+        /* Edit Card Flow */
+        function editCard(cardId) {
+            const card = state.inventory.find(i => i.id === cardId);
+            if (!card) return;
+            state.currentCard = JSON.parse(JSON.stringify(card));
+            loadCardIntoEditor(state.currentCard);
+            switchView('editor');
+        }
+
+        /* Load Card Object into Form Controls */
+        function loadCardIntoEditor(card) {
+            document.getElementById('inp-category').value = card.category;
+            document.getElementById('inp-operation').value = card.operation;
+            document.getElementById('inp-title').value = card.title;
+            document.getElementById('inp-price').value = card.price;
+            document.getElementById('inp-location').value = card.location;
+            document.getElementById('inp-description').value = card.description;
+
+            if (card.category === 'real_estate') {
+                document.getElementById('re-land').value = card.specs.land || '';
+                document.getElementById('re-build').value = card.specs.build || '';
+                document.getElementById('re-bedrooms').value = card.specs.bedrooms || '';
+                document.getElementById('re-bathrooms').value = card.specs.bathrooms || '';
+                document.getElementById('re-parking').value = card.specs.parking || '';
+            } else {
+                document.getElementById('veh-brand').value = card.specs.brand || '';
+                document.getElementById('veh-model').value = card.specs.model || '';
+                document.getElementById('veh-year').value = card.specs.year || '';
+                document.getElementById('veh-mileage').value = card.specs.mileage || '';
+            }
+
+            document.getElementById('agent-name').value = card.agent.name || '';
+            document.getElementById('agent-company').value = card.agent.company || '';
+            document.getElementById('agent-whatsapp').value = card.agent.whatsapp || '';
+            document.getElementById('agent-phone').value = card.agent.phone || '';
+
+            state.coverBase64 = card.cover || '';
+            state.galleryBase64 = card.gallery || [];
+
+            renderGalleryThumbnails();
+            onCategoryChange();
+            updateLivePreview();
+        }
+
+        /* Category Toggle logic */
+        function onCategoryChange() {
+            const cat = document.getElementById('inp-category').value;
+            if (cat === 'real_estate') {
+                document.getElementById('fields-real-estate').style.display = 'block';
+                document.getElementById('fields-vehicle').style.display = 'none';
+            } else {
+                document.getElementById('fields-real-estate').style.display = 'none';
+                document.getElementById('fields-vehicle').style.display = 'block';
+            }
+            updateLivePreview();
+        }
+
+        /* Handle Local Files Upload */
+        function handleCoverUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                state.coverBase64 = e.target.result;
+                document.getElementById('cover-preview-box').innerHTML = `
+                    <div style="height: 120px; border-radius: 8px; background-size: cover; background-position: center; background-image: url('${state.coverBase64}')"></div>
+                `;
+                updateLivePreview();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleGalleryUpload(event) {
+            const files = event.target.files;
+            if (!files.length) return;
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    state.galleryBase64.push(e.target.result);
+                    renderGalleryThumbnails();
+                    updateLivePreview();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function renderGalleryThumbnails() {
+            const grid = document.getElementById('gallery-manage-grid');
+            grid.innerHTML = '';
+            state.galleryBase64.forEach((img, idx) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'gallery-item-thumb';
+                thumb.style.backgroundImage = `url('${img}')`;
+                thumb.innerHTML = `<button class="btn-del-img" onclick="deleteGalleryImage(${idx})"><i class="fa-solid fa-xmark"></i></button>`;
+                grid.appendChild(thumb);
+            });
+        }
+
+        function deleteGalleryImage(idx) {
+            state.galleryBase64.splice(idx, 1);
+            renderGalleryThumbnails();
+            updateLivePreview();
+        }
+
+        /* Render 100+ Designs Grid in Editor */
+        function render100DesignsCatalog() {
+            const grid = document.getElementById('catalog-designs-grid');
+            grid.innerHTML = '';
+
+            compositions.forEach(comp => {
+                const card = document.createElement('div');
+                card.className = `design-catalog-card ${comp.id === 1 ? 'selected' : ''}`;
+                card.dataset.id = comp.id;
+
+                card.innerHTML = `
+                    <div class="design-thumb-mini-preview">
+                        <div class="mini-photo-block"></div>
+                        <div class="mini-text-line"></div>
+                        <div class="mini-text-line price"></div>
+                    </div>
+                    <div class="design-card-info">
+                        <span class="num-code">${comp.code}</span>
+                        <div class="name-label">${comp.name}</div>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.design-catalog-card').forEach(el => el.classList.remove('selected'));
+                    card.classList.add('selected');
+                    if (state.currentCard) {
+                        state.currentCard.designId = comp.id;
+                    }
+                    updateLivePreview();
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        /* Update Live Card Stage Render */
+        function updateLivePreview() {
+            const stage = document.getElementById('card-render-stage');
+            if (!stage) return;
+
+            const cat = document.getElementById('inp-category').value;
+            const title = document.getElementById('inp-title').value || 'Título Comercial de Muestra';
+            const price = Number(document.getElementById('inp-price').value || 0);
+            const priceFmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(price);
+            const location = document.getElementById('inp-location').value || 'Ubicación Comercial';
+            const desc = document.getElementById('inp-description').value || 'Descripción atractiva del anuncio...';
+            const agentName = document.getElementById('agent-name').value || 'Asesor Comercial';
+            const agentComp = document.getElementById('agent-company').value || 'LAV Digital';
+            const whatsapp = document.getElementById('agent-whatsapp').value || '';
+            const phone = document.getElementById('agent-phone').value || '';
+
+            const coverUrl = state.coverBase64 || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80';
+
+            let specsHtml = '';
+            if (cat === 'real_estate') {
+                specsHtml = `
+                    <div class="card-specs-grid">
+                        <div class="spec-item-box"><i class="fa-solid fa-ruler-combined"></i><div><span class="val">${document.getElementById('re-land').value || 0} m²</span><span class="lbl">Terreno</span></div></div>
+                        <div class="spec-item-box"><i class="fa-solid fa-building"></i><div><span class="val">${document.getElementById('re-build').value || 0} m²</span><span class="lbl">Construcción</span></div></div>
+                        <div class="spec-item-box"><i class="fa-solid fa-bed"></i><div><span class="val">${document.getElementById('re-bedrooms').value || 0}</span><span class="lbl">Recámaras</span></div></div>
+                        <div class="spec-item-box"><i class="fa-solid fa-bath"></i><div><span class="val">${document.getElementById('re-bathrooms').value || 0}</span><span class="lbl">Baños</span></div></div>
+                    </div>
+                `;
+            } else {
+                specsHtml = `
+                    <div class="card-specs-grid">
+                        <div class="spec-item-box"><i class="fa-solid fa-car"></i><div><span class="val">${document.getElementById('veh-brand').value || 'N/A'}</span><span class="lbl">Marca</span></div></div>
+                        <div class="spec-item-box"><i class="fa-solid fa-gauge"></i><div><span class="val">${document.getElementById('veh-mileage').value || 0} km</span><span class="lbl">Kilometraje</span></div></div>
+                        <div class="spec-item-box"><i class="fa-solid fa-gears"></i><div><span class="val">${document.getElementById('veh-trans').value || 'Aut'}</span><span class="lbl">Transmisión</span></div></div>
+                        <div class="spec-item-box"><i class="fa-solid fa-gas-pump"></i><div><span class="val">${document.getElementById('veh-fuel').value || 'Gas'}</span><span class="lbl">Combustible</span></div></div>
+                    </div>
+                `;
+            }
+
+            let galleryHtml = '';
+            if (state.galleryBase64.length > 0) {
+                galleryHtml = `
+                    <div class="card-gallery-section">
+                        <div id="active-gallery-hero" class="card-gallery-main-view" style="background-image: url('${state.galleryBase64[0]}')"></div>
+                        <div class="gallery-thumbs-scroll">
+                            ${state.galleryBase64.map((img, i) => `
+                                <div class="gallery-nav-thumb ${i===0?'active':''}" style="background-image: url('${img}')" onclick="switchGalleryHero('${img}')"></div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            stage.innerHTML = `
+                <div class="card-hero-banner" style="background-image: url('${coverUrl}')">
+                    <div class="hero-price">${priceFmt}</div>
+                    <div class="hero-title">${title}</div>
+                    <div style="font-size: 0.82rem; opacity: 0.9; position: relative; z-index:2;"><i class="fa-solid fa-location-dot"></i> ${location}</div>
+                </div>
+
+                ${specsHtml}
+
+                <div style="padding: 16px 24px; font-size: 0.88rem; line-height: 1.5; opacity: 0.9;">
+                    ${desc}
+                </div>
+
+                ${galleryHtml}
+
+                <div class="agent-profile-box">
+                    <div class="agent-avatar" style="background-image: url('https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80')"></div>
+                    <div class="agent-info">
+                        <h4>${agentName}</h4>
+                        <p>${agentComp}</p>
+                    </div>
+                </div>
+
+                <div class="card-actions-grid">
+                    ${whatsapp ? `<a href="https://wa.me/${whatsapp}" target="_blank" class="btn-card-action"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>` : ''}
+                    ${phone ? `<a href="tel:${phone}" class="btn-card-action"><i class="fa-solid fa-phone"></i> Llamar</a>` : ''}
+                    <a href="javascript:void(0)" onclick="shareCurrentCard()" class="btn-card-action"><i class="fa-solid fa-share-nodes"></i> Compartir</a>
+                </div>
+            `;
+        }
+
+        function switchGalleryHero(imgUrl) {
+            const hero = document.getElementById('active-gallery-hero');
+            if (hero) hero.style.backgroundImage = `url('${imgUrl}')`;
+        }
+
+        function updateStyleCustoms() {
+            const bg = document.getElementById('style-bg').value;
+            const card = document.getElementById('style-card').value;
+            const primary = document.getElementById('style-primary').value;
+            const font = document.getElementById('style-font').value;
+
+            document.documentElement.style.setProperty('--tpl-bg', bg);
+            document.documentElement.style.setProperty('--tpl-card-bg', card);
+            document.documentElement.style.setProperty('--tpl-primary', primary);
+            document.documentElement.style.setProperty('--tpl-font', font);
+        }
+
+        /* Save & Publish Flow */
+        function saveCurrentCardAndPublish() {
+            if (!state.currentCard) return;
+
+            state.currentCard.category = document.getElementById('inp-category').value;
+            state.currentCard.operation = document.getElementById('inp-operation').value;
+            state.currentCard.title = document.getElementById('inp-title').value || 'Anuncio Comercial';
+            state.currentCard.price = Number(document.getElementById('inp-price').value || 0);
+            state.currentCard.location = document.getElementById('inp-location').value;
+            state.currentCard.description = document.getElementById('inp-description').value;
+
+            state.currentCard.cover = state.coverBase64;
+            state.currentCard.gallery = state.galleryBase64;
+
+            state.currentCard.agent = {
+                name: document.getElementById('agent-name').value,
+                company: document.getElementById('agent-company').value,
+                whatsapp: document.getElementById('agent-whatsapp').value,
+                phone: document.getElementById('agent-phone').value
+            };
+
+            state.currentCard.status = 'published';
+
+            const existingIdx = state.inventory.findIndex(i => i.id === state.currentCard.id);
+            if (existingIdx >= 0) {
+                state.inventory[existingIdx] = state.currentCard;
+            } else {
+                state.inventory.unshift(state.currentCard);
+            }
+
+            saveStateToStorage();
+            openShareModal(state.currentCard.id);
+        }
+
+        function openShareModal(cardId) {
+            const url = window.location.origin + window.location.pathname + `?card=${cardId}`;
+            document.getElementById('share-url-output').value = url;
+            document.getElementById('modal-share').classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function copyPublicUrl() {
+            const input = document.getElementById('share-url-output');
+            input.select();
+            document.execCommand('copy');
+            alert('¡Enlace directo copiado al portapapeles!');
+        }
+
+        /* Render Public Standalone View */
+        function renderPublicStandaloneCard(cardId) {
+            switchView('public');
+            const card = state.inventory.find(i => i.id === cardId) || seedInventory[0];
+            const target = document.getElementById('public-card-stage');
+
+            const priceFmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(card.price || 0);
+
+            target.innerHTML = `
+                <div class="card-stage-render comp-cinematic" style="min-height: 100vh;">
+                    <div class="card-hero-banner" style="background-image: url('${card.cover || 'https://via.placeholder.com/600x400'}')">
+                        <div class="hero-price">${priceFmt}</div>
+                        <div class="hero-title">${card.title}</div>
+                        <div style="font-size: 0.85rem; opacity: 0.9; position:relative; z-index:2;"><i class="fa-solid fa-location-dot"></i> ${card.location}</div>
+                    </div>
+
+                    <div style="padding: 20px 24px; font-size: 0.92rem; line-height: 1.6;">
+                        ${card.description}
+                    </div>
+
+                    <div class="agent-profile-box">
+                        <div class="agent-avatar" style="background-image: url('https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80')"></div>
+                        <div class="agent-info">
+                            <h4>${card.agent.name}</h4>
+                            <p>${card.agent.company}</p>
+                        </div>
+                    </div>
+
+                    <div class="card-actions-grid">
+                        ${card.agent.whatsapp ? `<a href="https://wa.me/${card.agent.whatsapp}" class="btn-card-action" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>` : ''}
+                        ${card.agent.phone ? `<a href="tel:${card.agent.phone}" class="btn-card-action"><i class="fa-solid fa-phone"></i> Llamar</a>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function switchEditorTab(tabId) {
+            document.querySelectorAll('.editor-tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.editor-tab-panel').forEach(p => p.classList.remove('active'));
+
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function setDeviceView(type) {
+            const frame = document.getElementById('stage-frame');
+            document.querySelectorAll('.stage-view-btn').forEach(b => b.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            if (type === 'tablet') {
+                frame.classList.add('tablet-view');
+            } else {
+                frame.classList.remove('tablet-view');
+            }
+        }
+
+        function deleteCard(cardId) {
+            if (confirm('¿Estás seguro de eliminar este anuncio permanentemente?')) {
+                state.inventory = state.inventory.filter(i => i.id !== cardId);
+                saveStateToStorage();
+                renderDashboardInventory();
+            }
+        }
+    </script>
+</body>
+</html>
+</canvas>
