@@ -12,7 +12,7 @@ if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
 $deny = $dir . '.htaccess';
 if (!file_exists($deny)) @file_put_contents($deny, "Options -Indexes\n<FilesMatch \"\\.(json|txt|log)$\">\nRequire all denied\n</FilesMatch>\n");
 $file = $dir . 'admin-auth.json';
-function auth_reply(array $data, int $status=200): never { http_response_code($status); echo json_encode($data, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES); exit; }
+function auth_reply(array $data, int $status=200) { http_response_code($status); echo json_encode($data, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES); exit; }
 $configured = is_file($file);
 $authenticated = !empty($_SESSION['lav_admin']) && $_SESSION['lav_admin'] === true;
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET') auth_reply(['success'=>true,'configured'=>$configured,'authenticated'=>$authenticated]);
