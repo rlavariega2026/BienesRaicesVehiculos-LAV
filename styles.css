@@ -113,3 +113,34 @@ body:has(#publicView:not(.hidden)) { overflow-x: hidden !important; }
     max-height: 330px !important;
   }
 }
+
+
+/* FIX VISTA PREVIA: la foto principal siempre se muestra en un marco apaisado,
+   sin depender del diseño seleccionado. No altera las tarjetas publicadas. */
+#previewCard > .dc-cover {
+  display: block !important;
+  width: 100% !important;
+  height: clamp(260px, 34vw, 360px) !important;
+  min-height: 260px !important;
+  max-height: 360px !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  grid-column: 1 / -1 !important;
+  grid-row: auto !important;
+}
+#previewCard.layout-split,
+#previewCard.layout-sidebar {
+  display: block !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+#previewCard > .dc-content {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+@media (max-width: 560px) {
+  #previewCard > .dc-cover {
+    height: 300px !important;
+    min-height: 260px !important;
+    max-height: 330px !important;
+  }
+}
