@@ -1,10 +1,13 @@
 <?php
 declare(strict_types=1);
+session_set_cookie_params(['httponly'=>true,'secure'=>!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off','samesite'=>'Lax','path'=>'/']);
+session_start();
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, max-age=0');
 header('X-Content-Type-Options: nosniff');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
+$authenticated = !empty($_SESSION['lav_admin']) && $_SESSION['lav_admin'] === true;
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
 
 $storageDir = __DIR__ . '/../data/cards/';
@@ -15,7 +18,7 @@ $denyFile = $storageDir . '.htaccess';
 if (!file_exists($denyFile)) {
     @file_put_contents($denyFile, "Options -Indexes\n<FilesMatch \"\\.(json|txt|log)$\">\nRequire all denied\n</FilesMatch>\n");
 }
-function respond(array $payload, int $status = 200): never {
+function respond(array $payload, int $status = 200) {
     http_response_code($status);
     echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
@@ -36,7 +39,7 @@ if ($method === 'GET') {
         $items = [];
         foreach (glob($storageDir . '*.json') ?: [] as $path) {
             $item = load_card($path);
-            if (is_array($item)) $items[] = $item;
+            if (is_array($item) && ($authenticated || (($item['status'] ?? 'draft') === 'published'))) $items[] = $item;
         }
         usort($items, static fn($a,$b) => strcmp((string)($b['updatedAt'] ?? $b['createdAt'] ?? ''), (string)($a['updatedAt'] ?? $a['createdAt'] ?? '')));
         respond(['success'=>true,'cards'=>$items]);
@@ -44,10 +47,11 @@ if ($method === 'GET') {
     $id = clean_id((string)($_GET['id'] ?? ''));
     if ($id === '') respond(['success'=>false,'message'=>'Falta el identificador de la tarjeta.'], 400);
     $card = load_card(card_path($storageDir, $id));
-    if (!$card) respond(['success'=>false,'message'=>'Tarjeta no encontrada.'], 404);
+    if (!$card || (!$authenticated && ($card['status'] ?? 'draft') !== 'published')) respond(['success'=>false,'message'=>'Tarjeta no encontrada o no publicada.'], 404);
     respond(['success'=>true,'card'=>$card,'data'=>$card]);
 }
 if ($method !== 'POST') respond(['success'=>false,'message'=>'Método no permitido.'], 405);
+if (!$authenticated) respond(['success'=>false,'message'=>'Inicia sesión para administrar y guardar proyectos.'], 401);
 $raw = file_get_contents('php://input');
 if ($raw === false || strlen($raw) > 12000000) respond(['success'=>false,'message'=>'La solicitud está vacía o supera el límite de 12 MB. Reduce el tamaño o la cantidad de fotografías.'], 413);
 $input = json_decode($raw, true);
