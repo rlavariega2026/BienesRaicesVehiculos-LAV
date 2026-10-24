@@ -27,7 +27,7 @@
         header h1 { font-size: 1.5rem; font-weight: 700; }
         header p { font-size: 0.9rem; color: #94a3b8; margin-top: 4px; }
 
-        .main-layout { max-width: 1280px; margin: 20px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 0 15px; }
+        .main-layout { max-width: 1300px; margin: 20px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 0 15px; }
         @media (max-width: 960px) { .main-layout { grid-template-columns: 1fr; } }
 
         .card-box { background: white; border-radius: var(--radius); border: 1px solid var(--border); padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 20px; }
@@ -35,13 +35,16 @@
 
         .form-group { margin-bottom: 14px; }
         .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--slate-800); }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; background: #fff; }
         .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
 
-        /* Controles de Carga de Fotografías */
-        .photo-uploader-box { border: 2px dashed var(--border); padding: 15px; border-radius: 8px; text-align: center; background: var(--slate-50); margin-bottom: 10px; }
-        .gallery-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 8px; margin-top: 10px; }
-        .gallery-thumb-item { height: 70px; border-radius: 6px; background-size: cover; background-position: center; border: 1px solid var(--border); position: relative; }
+        /* Controles de Carga de Archivos de Computadora */
+        .file-upload-wrapper { border: 2px dashed var(--border); padding: 16px; border-radius: 8px; text-align: center; background: var(--slate-50); cursor: pointer; transition: border-color 0.2s; }
+        .file-upload-wrapper:hover { border-color: var(--primary); }
+        .file-upload-wrapper input { display: none; }
+
+        .gallery-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-top: 10px; }
+        .gallery-thumb-item { height: 75px; border-radius: 6px; background-size: cover; background-position: center; border: 1px solid var(--border); position: relative; }
 
         /* Selector de 100 Diseños */
         .designs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -49,9 +52,9 @@
         
         #designs-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 12px;
-            max-height: 450px;
+            max-height: 420px;
             overflow-y: auto;
             padding: 10px;
             background: var(--slate-100);
@@ -74,12 +77,19 @@
         .design-thumb-item.selected { border-color: var(--primary); background: #eff6ff; box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
         
         .thumb-top { display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-bottom: 4px; }
-        .thumb-mock { background: #cbd5e1; height: 45px; border-radius: 4px; margin-bottom: 6px; position: relative; overflow: hidden; }
+        .thumb-mock { background: #cbd5e1; height: 45px; border-radius: 4px; margin-bottom: 6px; }
         .thumb-title { font-size: 11px; font-weight: 700; text-align: center; color: var(--slate-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Vista Previa */
+        /* Estilos de Acabados (Colecciones) en Miniatura y Vista Previa */
+        .finish-signature { border-left: 4px solid #0f172a; }
+        .finish-editorial { border-left: 4px solid #b45309; }
+        .finish-colorpop  { border-left: 4px solid #ec4899; }
+        .finish-neon      { border-left: 4px solid #06b6d4; }
+        .finish-luxury    { border-left: 4px solid #d97706; background: #fffbeb; }
+
+        /* Vista Previa Interactiva */
         .live-preview-wrapper { background: var(--slate-900); padding: 20px; border-radius: var(--radius); color: white; position: sticky; top: 20px; }
-        .card-preview-render { background: white; color: var(--slate-900); border-radius: 10px; overflow: hidden; min-height: 480px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .card-preview-render { background: white; color: var(--slate-900); border-radius: 10px; overflow: hidden; min-height: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
         .preview-cover-area { height: 220px; background: #cbd5e1; background-size: cover; background-position: center; position: relative; }
         .preview-content { padding: 18px; }
         .preview-price { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 6px; }
@@ -115,9 +125,9 @@
         <div class="main-layout">
             <div class="editor-column">
                 
-                <!-- SECCIÓN 1: TIPO DE ANUNCIO Y DATOS GENERALES -->
+                <!-- 1. TIPO DE ANUNCIO Y DATOS -->
                 <div class="card-box">
-                    <h2>1. Tipo de Anuncio</h2>
+                    <h2>1. Información General</h2>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Categoría</label>
@@ -137,8 +147,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Título Comercial</label>
-                        <input type="text" id="inp-title" placeholder="Ej. Casa Residencial en Cuernavaca" oninput="updatePreview()">
+                        <label>Título Comercial del Anuncio</label>
+                        <input type="text" id="inp-title" placeholder="Ej. Casa Residencial Cuernavaca" oninput="updatePreview()">
                     </div>
 
                     <div class="form-row">
@@ -153,12 +163,12 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN 2: CAMPOS ESPECÍFICOS PARA INMUEBLES -->
+                <!-- 2A. CAMPOS DE INMUEBLES -->
                 <div class="card-box" id="box-real-estate-fields">
-                    <h2>2. Ficha Técnica del Inmueble</h2>
+                    <h2>2. Ficha Técnica Inmobiliaria</h2>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Tipo de Inmueble</label>
+                            <label>Tipo</label>
                             <select id="re-type">
                                 <option value="Casa">Casa</option>
                                 <option value="Departamento">Departamento</option>
@@ -191,12 +201,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Amenidades y Características</label>
-                        <input type="text" id="re-amenities" placeholder="Ej. Alberca, Seguridad 24/7, Jardín, Cisterna">
+                        <label>Amenidades</label>
+                        <input type="text" id="re-amenities" placeholder="Ej. Alberca, Seguridad 24/7, Jardín">
                     </div>
                 </div>
 
-                <!-- SECCIÓN 3: CAMPOS ESPECÍFICOS PARA VEHÍCULOS -->
+                <!-- 2B. CAMPOS DE VEHÍCULOS -->
                 <div class="card-box" id="box-vehicle-fields" style="display: none;">
                     <h2>2. Ficha Técnica del Vehículo</h2>
                     <div class="form-row">
@@ -220,77 +230,4 @@
                         </div>
                         <div class="form-group">
                             <label>Transmisión</label>
-                            <select id="veh-transmission">
-                                <option value="Automática">Automática</option>
-                                <option value="Manual">Manual</option>
-                                <option value="DKG / DSG">Dual Clutch / DKG</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Combustible</label>
-                            <select id="veh-fuel">
-                                <option value="Gasolina">Gasolina</option>
-                                <option value="Híbrido">Híbrido</option>
-                                <option value="Eléctrico">Eléctrico</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECCIÓN 4: FOTOGRAFÍA DE PORTADA Y GALERÍA INDEPENDIENTE -->
-                <div class="card-box">
-                    <h2>3. Fotografías del Anuncio</h2>
-                    <div class="form-group">
-                        <label>URL de la Fotografía Principal (Portada)</label>
-                        <input type="text" id="inp-cover" placeholder="https://..." oninput="updatePreview()">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Agregar Galería Múltiple (URLs separadas por coma)</label>
-                        <textarea id="inp-gallery-urls" rows="2" placeholder="https://foto1.jpg, https://foto2.jpg" oninput="updateGalleryPreview()"></textarea>
-                    </div>
-                    <div class="gallery-preview-grid" id="gallery-thumb-container"></div>
-                </div>
-
-                <!-- SECCIÓN 5: DESCRIPCIÓN Y CONTACTOS -->
-                <div class="card-box">
-                    <h2>4. Descripción y Contactos</h2>
-                    <div class="form-group">
-                        <label>Descripción Detallada</label>
-                        <textarea id="inp-desc" rows="3" placeholder="Atributos principales..." oninput="updatePreview()"></textarea>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>WhatsApp</label>
-                            <input type="text" id="inp-whatsapp" placeholder="527771234567">
-                        </div>
-                        <div class="form-group">
-                            <label>Teléfono</label>
-                            <input type="text" id="inp-phone" placeholder="7771234567">
-                        </div>
-                        <div class="form-group">
-                            <label>Ubicación Maps (URL)</label>
-                            <input type="text" id="inp-maps" placeholder="https://maps.google.com/...">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECCIÓN 6: SELECTOR REAL DE 100 DISEÑOS -->
-                <div class="card-box">
-                    <div class="designs-header">
-                        <h2>5. Selección de Modelo</h2>
-                        <span id="total-designs-counter" class="designs-counter-badge">100</span>
-                    </div>
-                    <div id="designs-grid"></div>
-                </div>
-
-                <button class="btn-action" onclick="saveAndPublishCard()">Guardar y Obtener Enlace Público</button>
-            </div>
-
-            <!-- VISTA PREVIA INTERACTIVA -->
-            <div class="live-preview-wrapper">
-                <h3 style="font-size: 0.85rem; margin-bottom: 12px; color: #94a3b8; text-transform: uppercase;">Vista Previa en Tiempo Real</h3>
-                <div class="card-preview-render" id="card-live-preview">
-                    <div class="preview-cover-area" id="prev-cover"></div>
-                    <div class="preview-content">
-                        <div class="preview-price
+                            <select id
