@@ -12,6 +12,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate JavaScript syntax
+        run: node --check app.js
+
+      - name: Validate PHP API syntax
+        run: php -l api/save-card.php
+
       # Standard Hostinger account root layout
       - name: Deploy to public_html path
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
