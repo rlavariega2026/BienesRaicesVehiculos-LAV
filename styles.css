@@ -62,3 +62,23 @@ body:has(#publicView:not(.hidden)){background:#101116;overflow-x:hidden}
  #publicMount>.public-shell{max-width:430px;box-shadow:0 0 55px #0005}
  #publicMount .digital-card.public-card{max-width:430px}
 }
+
+
+/* PUBLICACIÓN: formato de tarjeta digital vertical para móvil. Esta regla va al final para neutralizar layouts horizontales. */
+html, body { min-width: 0 !important; }
+body:has(#publicView:not(.hidden)) { overflow-x: hidden !important; }
+#publicView { width: 100% !important; min-width: 0 !important; min-height: 100vh !important; min-height: 100svh !important; }
+#publicMount { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: flex-start !important; width: 100% !important; max-width: 100% !important; min-width: 0 !important; min-height: 100vh !important; min-height: 100svh !important; }
+#publicMount > .public-shell { display: block !important; width: 100% !important; max-width: 430px !important; min-width: 0 !important; min-height: 100vh !important; min-height: 100svh !important; height: auto !important; margin: 0 auto !important; padding: 0 0 env(safe-area-inset-bottom) !important; overflow: visible !important; }
+#publicMount .digital-card.public-card,
+#publicMount .digital-card.public-card.layout-split,
+#publicMount .digital-card.public-card.layout-sidebar { display: flex !important; flex-direction: column !important; align-items: stretch !important; justify-content: flex-start !important; width: 100% !important; max-width: 430px !important; min-width: 0 !important; min-height: 0 !important; height: auto !important; margin: 0 auto !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; overflow: visible !important; grid-template-columns: minmax(0,1fr) !important; grid-template-rows: auto auto !important; }
+#publicMount .digital-card.public-card > .dc-cover { display: block !important; position: relative !important; flex: 0 0 auto !important; width: 100% !important; height: clamp(270px, 42svh, 390px) !important; min-height: 270px !important; max-height: 390px !important; grid-column: 1 !important; grid-row: 1 !important; }
+#publicMount .digital-card.public-card > .dc-content { display: block !important; flex: 0 0 auto !important; width: 100% !important; max-width: 100% !important; min-width: 0 !important; height: auto !important; padding: 20px 16px calc(26px + env(safe-area-inset-bottom)) !important; overflow: visible !important; grid-column: 1 !important; grid-row: 2 !important; }
+#publicMount .digital-card.public-card .dc-specs { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
+#publicMount .digital-card.public-card .dc-contact { display: flex !important; flex-wrap: wrap !important; }
+#publicMount .digital-card.public-card .dc-contact > * { min-width: 0 !important; flex: 1 1 calc(50% - 8px) !important; }
+#publicMount .digital-card.public-card .dc-gallery-viewer img { width: 100% !important; height: clamp(220px, 55vw, 340px) !important; max-height: none !important; object-fit: contain !important; }
+@media (min-width: 700px) {
+  #publicMount > .public-shell { box-shadow: 0 0 55px #0005 !important; }
+}
