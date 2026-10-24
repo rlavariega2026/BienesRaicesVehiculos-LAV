@@ -3,44 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAV Digital — Plataforma de Tarjetas Comerciales Pro</title>
+    <title>LAV Digital — Plataforma Comercial Premium</title>
     
-    <!-- Google Fonts Premium -->
+    <!-- Fuentes Tipográficas Pro -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome Pro / Free Icons -->
+    <!-- FontAwesome para Iconografía Comercial -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --lav-bg: #090d16;
-            --lav-panel: #111827;
-            --lav-card: #1f2937;
-            --lav-border: #374151;
+            --lav-bg: #070a12;
+            --lav-panel: #0f172a;
+            --lav-card: #1e293b;
+            --lav-border: #334155;
             --lav-primary: #4f46e5;
-            --lav-primary-hover: #4338ca;
             --lav-accent: #06b6d4;
-            --lav-text: #f9fafb;
-            --lav-text-muted: #9ca3af;
-            --radius-box: 16px;
-            --radius-element: 10px;
+            --lav-rose: #f43f5e;
+            --lav-emerald: #10b981;
+            --lav-text: #f8fafc;
+            --lav-muted: #94a3b8;
+            
+            --radius-main: 16px;
+            --radius-elem: 10px;
+
+            /* Variables Dinámicas para Plantillas */
+            --tpl-bg: #0f172a;
+            --tpl-card: #1e293b;
+            --tpl-primary: #3b82f6;
+            --tpl-font: 'Inter', sans-serif;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--lav-bg); color: var(--lav-text); min-height: 100vh; overflow-x: hidden; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--lav-bg); color: var(--lav-text); font-family: 'Inter', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
-        /* Vistas de la App */
+        /* VISTAS PRINCIPALES */
         .app-view { display: none; width: 100%; min-height: 100vh; }
         .app-view.active { display: block; }
 
-        /* HEADER GLOBAL */
+        /* HEADER SUPERIOR GLOBAL */
         header.lav-topbar {
-            background: rgba(17, 24, 39, 0.9);
+            background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--lav-border);
-            padding: 16px 32px;
+            padding: 16px 28px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -50,9 +58,9 @@
         }
         .lav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
         .brand-icon {
-            width: 44px; height: 44px;
+            width: 42px; height: 42px;
             background: linear-gradient(135deg, var(--lav-primary), var(--lav-accent));
-            border-radius: var(--radius-element);
+            border-radius: var(--radius-elem);
             display: flex; align-items: center; justify-content: center;
             font-size: 20px; color: #fff; box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
         }
@@ -60,90 +68,123 @@
         .brand-text span { font-size: 0.7rem; color: var(--lav-accent); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
 
         .btn-lav {
-            padding: 10px 20px; border-radius: var(--radius-element); font-size: 0.875rem; font-weight: 700;
+            padding: 10px 18px; border-radius: var(--radius-elem); font-size: 0.85rem; font-weight: 700;
             cursor: pointer; border: 1px solid transparent; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
         }
         .btn-primary { background: var(--lav-primary); color: #fff; box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
-        .btn-primary:hover { background: var(--lav-primary-hover); transform: translateY(-1px); }
+        .btn-primary:hover { background: #4338ca; transform: translateY(-1px); }
         .btn-secondary { background: var(--lav-card); color: var(--lav-text); border-color: var(--lav-border); }
         .btn-secondary:hover { border-color: var(--lav-accent); color: var(--lav-accent); }
 
-        /* DASHBOARD INVENTARIO */
+        /* DASHBOARD - GESTIÓN DE INVENTARIO Y CLIENTES */
         .dash-container { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
-        .dash-hero {
+        .dash-banner {
             background: linear-gradient(135deg, var(--lav-panel), var(--lav-card));
-            border: 1px solid var(--lav-border); border-radius: var(--radius-box);
-            padding: 36px; margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between;
+            border: 1px solid var(--lav-border); border-radius: var(--radius-main);
+            padding: 32px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
         }
-        .dash-hero h2 { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
-        .dash-hero p { color: var(--lav-text-muted); font-size: 0.95rem; max-width: 600px; }
+        .dash-banner h2 { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 6px; }
+        .dash-banner p { color: var(--lav-muted); font-size: 0.95rem; }
+
+        .dash-controls {
+            display: grid; grid-template-columns: 280px 1fr auto; gap: 16px; margin-bottom: 24px;
+            background: var(--lav-panel); padding: 16px; border-radius: var(--radius-main); border: 1px solid var(--lav-border);
+        }
+        .select-custom, .input-search {
+            width: 100%; padding: 10px 14px; background: var(--lav-card); border: 1px solid var(--lav-border);
+            border-radius: var(--radius-elem); color: #fff; font-size: 0.9rem; outline: none;
+        }
 
         .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
         .inv-card {
-            background: var(--lav-panel); border: 1px solid var(--lav-border); border-radius: var(--radius-box);
+            background: var(--lav-panel); border: 1px solid var(--lav-border); border-radius: var(--radius-main);
             overflow: hidden; transition: transform 0.2s, border-color 0.2s; display: flex; flex-direction: column;
         }
         .inv-card:hover { transform: translateY(-4px); border-color: var(--lav-primary); }
-        .inv-hero-img { height: 200px; background-size: cover; background-position: center; position: relative; }
+        .inv-hero { height: 190px; background-size: cover; background-position: center; position: relative; }
         .inv-badge {
-            position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+            position: absolute; top: 12px; left: 12px; background: rgba(7,10,18,0.85); backdrop-filter: blur(4px);
             padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; color: var(--lav-accent); text-transform: uppercase;
         }
         .inv-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-        .inv-price { font-family: 'Outfit', sans-serif; font-size: 1.6rem; font-weight: 900; color: var(--lav-accent); margin-bottom: 4px; }
-        .inv-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 12px; }
-        .inv-actions { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr 42px; gap: 8px; padding-top: 16px; border-top: 1px solid var(--lav-border); }
+        .inv-price { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--lav-accent); margin-bottom: 4px; }
+        .inv-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+        .inv-client { font-size: 0.8rem; color: var(--lav-muted); margin-bottom: 16px; }
+        .inv-actions { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr 42px; gap: 8px; padding-top: 14px; border-top: 1px solid var(--lav-border); }
 
-        /* WORKSPACE EDITOR */
-        .workspace-layout { display: grid; grid-template-columns: 540px 1fr; min-height: calc(100vh - 77px); }
+        /* WORKSPACE DE EDICIÓN Y PREVISUALIZACIÓN */
+        .workspace-layout { display: grid; grid-template-columns: 540px 1fr; min-height: calc(100vh - 75px); }
         @media(max-width: 1024px) { .workspace-layout { grid-template-columns: 1fr; } }
 
-        .editor-sidebar { background: var(--lav-panel); border-right: 1px solid var(--lav-border); display: flex; flex-direction: column; height: calc(100vh - 77px); overflow-y: auto; }
-        .editor-tabs { display: flex; background: #0b0f19; border-bottom: 1px solid var(--lav-border); position: sticky; top: 0; z-index: 10; }
+        .editor-sidebar { background: var(--lav-panel); border-right: 1px solid var(--lav-border); display: flex; flex-direction: column; height: calc(100vh - 75px); overflow-y: auto; }
+        .editor-tabs { display: flex; background: #070a12; border-bottom: 1px solid var(--lav-border); position: sticky; top: 0; z-index: 10; }
         .tab-btn {
-            flex: 1; padding: 14px 8px; background: transparent; border: none; border-bottom: 3px solid transparent;
-            color: var(--lav-text-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; text-align: center;
+            flex: 1; padding: 14px 6px; background: transparent; border: none; border-bottom: 3px solid transparent;
+            color: var(--lav-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;
         }
-        .tab-btn.active { color: var(--lav-accent); border-bottom-color: var(--lav-accent); background: rgba(6, 182, 212, 0.05); }
+        .tab-btn i { font-size: 1rem; }
+        .tab-btn.active { color: var(--lav-accent); border-bottom-color: var(--lav-accent); background: rgba(6, 182, 212, 0.08); }
 
         .tab-panel { display: none; padding: 24px; }
         .tab-panel.active { display: block; }
 
-        .form-section-title { font-size: 0.95rem; font-weight: 800; margin-bottom: 16px; color: #fff; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--lav-border); padding-bottom: 8px; }
+        .form-title { font-size: 0.95rem; font-weight: 800; margin-bottom: 16px; color: #fff; border-bottom: 1px solid var(--lav-border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
         .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--lav-text-muted); text-transform: uppercase; margin-bottom: 6px; }
-        .form-control { width: 100%; padding: 11px 14px; background: var(--lav-card); border: 1px solid var(--lav-border); border-radius: var(--radius-element); color: #fff; font-size: 0.9rem; outline: none; }
+        .form-group label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--lav-muted); text-transform: uppercase; margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 11px 14px; background: var(--lav-card); border: 1px solid var(--lav-border); border-radius: var(--radius-elem); color: #fff; font-size: 0.9rem; outline: none; }
         .form-control:focus { border-color: var(--lav-primary); }
         .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 
-        /* UPLOAD DRAG DROP */
-        .dropzone { border: 2px dashed var(--lav-border); border-radius: var(--radius-element); padding: 20px; text-align: center; background: var(--lav-card); cursor: pointer; transition: border-color 0.2s; }
-        .dropzone:hover { border-color: var(--lav-primary); }
-        .dropzone p { font-size: 0.85rem; font-weight: 700; color: #fff; margin-top: 6px; }
-        .dropzone span { font-size: 0.72rem; color: var(--lav-text-muted); }
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-top: 10px; }
+        /* ZONA DE CARGA DE ARCHIVOS */
+        .dropzone { border: 2px dashed var(--lav-border); border-radius: var(--radius-elem); padding: 20px; text-align: center; background: var(--lav-card); cursor: pointer; transition: border-color 0.2s; }
+        .dropzone:hover { border-color: var(--lav-accent); }
+        .dropzone i { font-size: 1.8rem; color: var(--lav-accent); margin-bottom: 6px; }
+        .dropzone p { font-size: 0.85rem; font-weight: 700; }
+        .dropzone span { font-size: 0.72rem; color: var(--lav-muted); }
+
+        .gallery-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-top: 12px; }
         .thumb-box { height: 75px; border-radius: 6px; background-size: cover; background-position: center; border: 1px solid var(--lav-border); position: relative; }
-        .thumb-box button { position: absolute; top: 4px; right: 4px; background: #ef4444; color: #fff; border: none; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; cursor: pointer; }
+        .thumb-box button { position: absolute; top: 4px; right: 4px; background: var(--lav-rose); color: #fff; border: none; width: 20px; height: 20px; border-radius: 50%; font-size: 10px; cursor: pointer; }
 
-        /* 100 DISEÑOS CATÁLOGO */
+        /* CATÁLOGO DE 100 COMPOSICIONES */
+        .designs-filter { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px; }
+        .filter-chip { padding: 4px 12px; border-radius: 20px; background: var(--lav-card); border: 1px solid var(--lav-border); color: var(--lav-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .filter-chip.active { background: var(--lav-accent); color: #fff; border-color: var(--lav-accent); }
+
         .designs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 10px; max-height: 480px; overflow-y: auto; padding-right: 4px; }
-        .design-card { background: var(--lav-card); border: 2px solid var(--lav-border); border-radius: var(--radius-element); padding: 8px; cursor: pointer; transition: all 0.2s; height: 125px; display: flex; flex-direction: column; justify-content: space-between; }
+        .design-card { background: var(--lav-card); border: 2px solid var(--lav-border); border-radius: var(--radius-elem); padding: 8px; cursor: pointer; transition: all 0.2s; height: 120px; display: flex; flex-direction: column; justify-content: space-between; }
         .design-card:hover { border-color: var(--lav-primary); transform: translateY(-2px); }
-        .design-card.selected { border-color: var(--lav-accent); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.3); background: rgba(6, 182, 212, 0.08); }
-        .thumb-mock { background: #111827; height: 50px; border-radius: 4px; border: 1px solid var(--lav-border); }
-        .design-card .title { font-size: 0.75rem; font-weight: 700; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .design-card.selected { border-color: var(--lav-accent); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.3); background: rgba(6, 182, 212, 0.1); }
+        .design-card .mock { background: #070a12; height: 50px; border-radius: 4px; border: 1px solid var(--lav-border); position: relative; }
+        .design-card .code { font-size: 0.65rem; color: var(--lav-accent); font-weight: 800; }
+        .design-card .name { font-size: 0.72rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* PREVIEW STAGE */
+        /* PREVIEW INTERACTIVO */
         .stage-area { background: #030712; padding: 32px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; }
-        .device-frame { width: 400px; min-height: 800px; background: #0f172a; border-radius: 36px; border: 10px solid #1e293b; box-shadow: 0 25px 50px rgba(0,0,0,0.8); overflow: hidden; position: relative; }
-        .device-notch { width: 120px; height: 18px; background: #1e293b; margin: 0 auto; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 10; }
-        .render-stage { width: 100%; height: 100%; overflow-y: auto; background: #0f172a; color: #fff; padding-bottom: 40px; }
+        .device-frame { width: 400px; min-height: 800px; background: var(--tpl-bg); border-radius: 36px; border: 10px solid #1e293b; box-shadow: 0 25px 60px rgba(0,0,0,0.9); overflow: hidden; position: relative; }
+        .device-notch { width: 120px; height: 18px; background: #1e293b; margin: 0 auto; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 20; }
+        .render-stage { width: 100%; height: 100%; overflow-y: auto; background: var(--tpl-bg); color: #fff; font-family: var(--tpl-font); padding-bottom: 40px; }
 
-        /* MODAL */
-        .modal-back { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-back.active { display: flex; }
-        .modal-box { background: var(--lav-panel); border: 1px solid var(--lav-border); border-radius: var(--radius-box); width: 100%; max-width: 440px; padding: 32px; text-align: center; }
+        /* ESTILOS DE RENDERIZADO DE LA TARJETA PÚBLICA */
+        .card-hero-banner { height: 380px; background-size: cover; background-position: center; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
+        .card-hero-banner::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--tpl-bg) 10%, transparent 75%); }
+        .card-hero-price { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 900; color: var(--tpl-primary); position: relative; z-index: 2; }
+        .card-hero-title { font-size: 1.25rem; font-weight: 800; position: relative; z-index: 2; margin-top: 4px; }
+
+        .card-specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 16px 24px; }
+        .spec-box { background: var(--tpl-card); border: 1px solid var(--lav-border); padding: 12px; border-radius: var(--radius-elem); display: flex; align-items: center; gap: 10px; }
+        .spec-box i { font-size: 1.1rem; color: var(--tpl-primary); }
+        .spec-box .val { font-weight: 800; font-size: 0.9rem; display: block; }
+        .spec-box .lbl { font-size: 0.7rem; color: var(--lav-muted); }
+
+        .card-actions-grid { padding: 20px 24px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .btn-card-act { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px; border-radius: var(--radius-elem); text-decoration: none; font-weight: 700; font-size: 0.85rem; color: #fff; }
+
+        /* MODAL DE COMPARTIR */
+        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-backdrop.active { display: flex; }
+        .modal-card { background: var(--lav-panel); border: 1px solid var(--lav-border); border-radius: var(--radius-main); width: 100%; max-width: 440px; padding: 32px; text-align: center; }
     </style>
 </head>
 <body>
@@ -154,49 +195,62 @@
             <div class="brand-icon"><i class="fa-solid fa-gem"></i></div>
             <div class="brand-text">
                 <h1>LAV DIGITAL</h1>
-                <span>PLATAFORMA PRO</span>
+                <span>PLATAFORMA COMERCIAL</span>
             </div>
         </a>
-        <div style="display: flex; gap: 12px;">
+        <div style="display: flex; gap: 10px;">
             <button class="btn-lav btn-secondary" onclick="switchView('dashboard')"><i class="fa-solid fa-border-all"></i> Mis Anuncios</button>
             <button class="btn-lav btn-primary" onclick="createNewCard()"><i class="fa-solid fa-plus"></i> Nueva Tarjeta</button>
         </div>
     </header>
 
-    <!-- DASHBOARD VIEW -->
+    <!-- VISTA 1: DASHBOARD -->
     <main id="view-dashboard" class="app-view active">
         <div class="dash-container">
-            <div class="dash-hero">
+            <div class="dash-banner">
                 <div>
-                    <h2>Inventario Comercial LAV</h2>
-                    <p>Administra, duplica y publica tarjetas digitales de alto impacto para bienes raíces y vehículos con un estándar de diseño superior.</p>
+                    <h2>Panel de Inventario Comercial</h2>
+                    <p>Gestiona, edita, duplica y publica tarjetas digitales de alto nivel para Bienes Raíces y Vehículos.</p>
                 </div>
                 <button class="btn-lav btn-primary" onclick="createNewCard()" style="padding: 14px 24px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Crear Anuncio</button>
             </div>
+
+            <div class="dash-controls">
+                <select id="dash-client-filter" class="select-custom" onchange="renderInventory()">
+                    <option value="ALL">Todos los Clientes</option>
+                </select>
+                <input type="text" id="dash-search" class="input-search" placeholder="Buscar por título, ubicación o marca..." oninput="renderInventory()">
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-lav btn-secondary" onclick="filterCategory('ALL')">Todos</button>
+                    <button class="btn-lav btn-secondary" onclick="filterCategory('real_estate')"><i class="fa-solid fa-house"></i> Inmuebles</button>
+                    <button class="btn-lav btn-secondary" onclick="filterCategory('vehicle')"><i class="fa-solid fa-car"></i> Vehículos</button>
+                </div>
+            </div>
+
             <div id="inventory-grid" class="inventory-grid"></div>
         </div>
     </main>
 
-    <!-- WORKSPACE EDITOR VIEW -->
+    <!-- VISTA 2: EDITOR DE TARJETAS -->
     <main id="view-editor" class="app-view">
         <div class="workspace-layout">
             <div class="editor-sidebar">
                 <div class="editor-tabs">
-                    <button class="tab-btn active" onclick="switchTab('tab-data', event)"><i class="fa-solid fa-pen"></i> Datos</button>
+                    <button class="tab-btn active" onclick="switchTab('tab-data', event)"><i class="fa-solid fa-pen-to-square"></i> Datos</button>
                     <button class="tab-btn" onclick="switchTab('tab-media', event)"><i class="fa-solid fa-images"></i> Fotos</button>
                     <button class="tab-btn" onclick="switchTab('tab-designs', event)"><i class="fa-solid fa-swatchbook"></i> 100 Diseños</button>
-                    <button class="tab-btn" onclick="switchTab('tab-agent', event)"><i class="fa-solid fa-user-tie"></i> Contacto</button>
+                    <button class="tab-btn" onclick="switchTab('tab-agent', event)"><i class="fa-solid fa-user-tie"></i> Asesor</button>
                 </div>
 
                 <!-- TAB 1: DATOS -->
                 <div id="tab-data" class="tab-panel active">
-                    <div class="form-section-title"><i class="fa-solid fa-layer-group"></i> Información General</div>
+                    <div class="form-title"><i class="fa-solid fa-layer-group"></i> Categoría & Operación</div>
                     <div class="form-row-2">
                         <div class="form-group">
                             <label>Categoría</label>
-                            <select id="inp-category" class="form-control" onchange="toggleCategory()">
-                                <option value="real_estate">Inmueble / Propiedad</option>
-                                <option value="vehicle">Vehículo / Auto</option>
+                            <select id="inp-category" class="form-control" onchange="toggleCategoryFields()">
+                                <option value="real_estate">Bienes Raíces / Inmueble</option>
+                                <option value="vehicle">Automotriz / Vehículo</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -209,23 +263,24 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Título del Anuncio</label>
-                        <input type="text" id="inp-title" class="form-control" placeholder="Ej. Casa Residencial Cuernavaca" oninput="updatePreview()">
+                        <label>Título Comercial del Anuncio</label>
+                        <input type="text" id="inp-title" class="form-control" placeholder="Ej. Residencia de Lujo en Tabachines" oninput="updatePreview()">
                     </div>
 
                     <div class="form-row-2">
                         <div class="form-group">
                             <label>Precio ($ MXN)</label>
-                            <input type="number" id="inp-price" class="form-control" placeholder="3500000" oninput="updatePreview()">
+                            <input type="number" id="inp-price" class="form-control" placeholder="4500000" oninput="updatePreview()">
                         </div>
                         <div class="form-group">
-                            <label>Ubicación</label>
+                            <label>Ubicación / Ciudad</label>
                             <input type="text" id="inp-location" class="form-control" placeholder="Cuernavaca, Morelos" oninput="updatePreview()">
                         </div>
                     </div>
 
+                    <!-- Campos Bienes Raíces -->
                     <div id="fields-realestate">
-                        <div class="form-section-title"><i class="fa-solid fa-house"></i> Inmueble</div>
+                        <div class="form-title"><i class="fa-solid fa-house-chimney"></i> Datos del Inmueble</div>
                         <div class="form-row-3">
                             <div class="form-group"><label>Terreno m²</label><input type="number" id="re-land" class="form-control" oninput="updatePreview()"></div>
                             <div class="form-group"><label>Const. m²</label><input type="number" id="re-build" class="form-control" oninput="updatePreview()"></div>
@@ -237,8 +292,9 @@
                         </div>
                     </div>
 
+                    <!-- Campos Vehículos -->
                     <div id="fields-vehicle" style="display: none;">
-                        <div class="form-section-title"><i class="fa-solid fa-car"></i> Vehículo</div>
+                        <div class="form-title"><i class="fa-solid fa-car-side"></i> Ficha del Vehículo</div>
                         <div class="form-row-3">
                             <div class="form-group"><label>Marca</label><input type="text" id="veh-brand" class="form-control" oninput="updatePreview()"></div>
                             <div class="form-group"><label>Modelo</label><input type="text" id="veh-model" class="form-control" oninput="updatePreview()"></div>
@@ -252,267 +308,17 @@
 
                     <div class="form-group">
                         <label>Descripción Comercial</label>
-                        <textarea id="inp-desc" class="form-control" rows="3" placeholder="Destaca los mejores atributos..." oninput="updatePreview()"></textarea>
+                        <textarea id="inp-desc" class="form-control" rows="4" placeholder="Redacta la presentación..." oninput="updatePreview()"></textarea>
                     </div>
                 </div>
 
                 <!-- TAB 2: FOTOS -->
                 <div id="tab-media" class="tab-panel">
-                    <div class="form-section-title"><i class="fa-solid fa-image"></i> Fotografía de Portada</div>
+                    <div class="form-title"><i class="fa-solid fa-image"></i> Fotografía de Portada</div>
                     <div class="dropzone" onclick="document.getElementById('file-cover').click()">
-                        <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: var(--lav-accent);"></i>
-                        <p>Subir Portada Principal</p>
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p>Haz clic para subir Portada</p>
+                        <span>Carga directa desde tu dispositivo</span>
                         <input type="file" id="file-cover" accept="image/*" style="display:none;" onchange="uploadCover(event)">
                     </div>
-                    <div id="cover-preview" style="margin-top:10px;"></div>
-
-                    <div class="form-section-title" style="margin-top:20px;"><i class="fa-solid fa-images"></i> Galería de Fotos</div>
-                    <div class="dropzone" onclick="document.getElementById('file-gallery').click()">
-                        <i class="fa-solid fa-photo-film" style="font-size: 2rem; color: var(--lav-primary);"></i>
-                        <p>Agregar Fotos Secundarias</p>
-                        <input type="file" id="file-gallery" accept="image/*" multiple style="display:none;" onchange="uploadGallery(event)">
-                    </div>
-                    <div id="gallery-grid" class="gallery-grid"></div>
-                </div>
-
-                <!-- TAB 3: 100 DISEÑOS -->
-                <div id="tab-designs" class="tab-panel">
-                    <div class="form-section-title"><i class="fa-solid fa-swatchbook"></i> Selección de 100 Diseños</div>
-                    <div id="designs-grid" class="designs-grid"></div>
-                </div>
-
-                <!-- TAB 4: CONTACTO -->
-                <div id="tab-agent" class="tab-panel">
-                    <div class="form-section-title"><i class="fa-solid fa-address-card"></i> Asesor Comercial</div>
-                    <div class="form-group"><label>Nombre</label><input type="text" id="ag-name" class="form-control" value="Lic. Raúl Aguilar" oninput="updatePreview()"></div>
-                    <div class="form-group"><label>WhatsApp (Lada + Número)</label><input type="text" id="ag-wa" class="form-control" value="527771234567" oninput="updatePreview()"></div>
-                    <div class="form-group"><label>Teléfono Llamada</label><input type="text" id="ag-phone" class="form-control" value="7771234567" oninput="updatePreview()"></div>
-                </div>
-
-                <div style="padding: 16px 24px; background: #0b0f19; border-top: 1px solid var(--lav-border); margin-top: auto;">
-                    <button class="btn-lav btn-primary" style="width: 100%; justify-content: center; padding: 14px;" onclick="publishCard()"><i class="fa-solid fa-cloud-arrow-up"></i> Guardar y Publicar Tarjeta</button>
-                </div>
-            </div>
-
-            <!-- PREVIEW STAGE -->
-            <div class="stage-area">
-                <div class="device-frame">
-                    <div class="device-notch"></div>
-                    <div id="render-stage" class="render-stage"></div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- PUBLIC VIEW -->
-    <main id="view-public" class="app-view">
-        <div style="max-width: 440px; margin: 0 auto; min-height: 100vh;" id="public-stage"></div>
-    </main>
-
-    <!-- SHARE MODAL -->
-    <div id="modal-share" class="modal-back">
-        <div class="modal-box">
-            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 8px;">¡Tarjeta Publicada! 🎉</h3>
-            <p style="color: var(--lav-text-muted); font-size: 0.88rem; margin-bottom: 16px;">Comparte este enlace directo con tus clientes:</p>
-            <input type="text" id="share-url" class="form-control" readonly style="text-align:center; font-weight:700; margin-bottom:16px;">
-            <button class="btn-lav btn-primary" style="width:100%; justify-content:center;" onclick="copyLink()">Copiar Enlace</button>
-            <button class="btn-lav btn-secondary" style="width:100%; justify-content:center; margin-top:8px;" onclick="document.getElementById('modal-share').classList.remove('active')">Cerrar</button>
-        </div>
-    </div>
-
-    <script>
-        let appState = {
-            inventory: JSON.parse(localStorage.getItem('lav_inv')) || [
-                { id: 'demo1', title: 'Residencia Exclusiva Cuernavaca', price: 4900000, category: 'real_estate', location: 'Cuernavaca, Morelos', cover: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80', specs: { beds: 3, baths: 3.5, build: 280 }, agent: { name: 'Lic. Raúl Aguilar', wa: '527771234567', phone: '7771234567' }, description: 'Hermosa residencia con acabados de lujo.' }
-            ],
-            current: null,
-            cover: '',
-            gallery: []
-        };
-
-        const designs = Array.from({ length: 100 }, (_, i) => ({ id: i + 1, name: `Diseño Pro ${i + 1}` }));
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderInventory();
-            renderDesigns();
-            const urlParams = new URLSearchParams(window.location.search);
-            const cardId = urlParams.get('card');
-            if (cardId) renderPublic(cardId);
-        });
-
-        function switchView(view) {
-            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-            document.getElementById(`view-${view}`).classList.add('active');
-            if (view === 'dashboard') renderInventory();
-        }
-
-        function switchTab(tabId, evt) {
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            evt.currentTarget.classList.add('active');
-        }
-
-        function renderInventory() {
-            const grid = document.getElementById('inventory-grid');
-            grid.innerHTML = '';
-            appState.inventory.forEach(card => {
-                const priceFmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(card.price || 0);
-                grid.innerHTML += `
-                    <div class="inv-card">
-                        <div class="inv-hero-img" style="background-image: url('${card.cover || 'https://via.placeholder.com/600'}')">
-                            <span class="inv-badge">${card.category === 'real_estate' ? 'Inmueble' : 'Vehículo'}</span>
-                        </div>
-                        <div class="inv-body">
-                            <div class="inv-price">${priceFmt}</div>
-                            <div class="inv-title">${card.title}</div>
-                            <div class="inv-actions">
-                                <button class="btn-lav btn-primary" onclick="editCard('${card.id}')"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn-lav btn-secondary" onclick="shareCard('${card.id}')"><i class="fa-solid fa-share"></i></button>
-                                <button class="btn-lav btn-secondary" style="color:#ef4444;" onclick="deleteCard('${card.id}')"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function createNewCard() {
-            appState.current = { id: 'card_' + Date.now(), category: 'real_estate', title: '', price: 0, location: '', cover: '', gallery: [], specs: {}, agent: { name: 'Lic. Raúl Aguilar', wa: '527771234567', phone: '7771234567' }, designId: 1 };
-            appState.cover = '';
-            appState.gallery = [];
-            loadEditor(appState.current);
-            switchView('editor');
-        }
-
-        function editCard(id) {
-            const card = appState.inventory.find(c => c.id === id);
-            if (!card) return;
-            appState.current = JSON.parse(JSON.stringify(card));
-            appState.cover = card.cover || '';
-            appState.gallery = card.gallery || [];
-            loadEditor(appState.current);
-            switchView('editor');
-        }
-
-        function loadEditor(card) {
-            document.getElementById('inp-category').value = card.category;
-            document.getElementById('inp-operation').value = card.operation || 'Venta';
-            document.getElementById('inp-title').value = card.title || '';
-            document.getElementById('inp-price').value = card.price || '';
-            document.getElementById('inp-location').value = card.location || '';
-            document.getElementById('inp-desc').value = card.description || '';
-            document.getElementById('ag-name').value = card.agent?.name || '';
-            document.getElementById('ag-wa').value = card.agent?.wa || '';
-            document.getElementById('ag-phone').value = card.agent?.phone || '';
-            toggleCategory();
-            updatePreview();
-        }
-
-        function toggleCategory() {
-            const cat = document.getElementById('inp-category').value;
-            document.getElementById('fields-realestate').style.display = (cat === 'real_estate') ? 'block' : 'none';
-            document.getElementById('fields-vehicle').style.display = (cat === 'vehicle') ? 'block' : 'none';
-            updatePreview();
-        }
-
-        function uploadCover(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                appState.cover = evt.target.result;
-                document.getElementById('cover-preview').innerHTML = `<div class="thumb-box" style="height:100px; background-image:url('${appState.cover}')"></div>`;
-                updatePreview();
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function uploadGallery(e) {
-            Array.from(e.target.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    appState.gallery.push(evt.target.result);
-                    renderGalleryThumbs();
-                    updatePreview();
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function renderGalleryThumbs() {
-            const grid = document.getElementById('gallery-grid');
-            grid.innerHTML = '';
-            appState.gallery.forEach((img, idx) => {
-                grid.innerHTML += `<div class="thumb-box" style="background-image:url('${img}')"><button onclick="appState.gallery.splice(${idx},1);renderGalleryThumbs();updatePreview();">✕</button></div>`;
-            });
-        }
-
-        function renderDesigns() {
-            const grid = document.getElementById('designs-grid');
-            grid.innerHTML = '';
-            designs.forEach(d => {
-                grid.innerHTML += `
-                    <div class="design-card ${d.id === 1 ? 'selected' : ''}" onclick="selectDesign(${d.id}, this)">
-                        <div class="thumb-mock"></div>
-                        <div class="title">${d.name}</div>
-                    </div>
-                `;
-            });
-        }
-
-        function selectDesign(id, el) {
-            document.querySelectorAll('.design-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            if (appState.current) appState.current.designId = id;
-            updatePreview();
-        }
-
-        function updatePreview() {
-            const stage = document.getElementById('render-stage');
-            const title = document.getElementById('inp-title').value || 'Título Comercial de Muestra';
-            const price = Number(document.getElementById('inp-price').value || 0);
-            const priceFmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(price);
-            const loc = document.getElementById('inp-location').value || 'Ubicación';
-            const desc = document.getElementById('inp-desc').value || 'Descripción comercial...';
-            const wa = document.getElementById('ag-wa').value;
-            const phone = document.getElementById('ag-phone').value;
-            const cover = appState.cover || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80';
-
-            stage.innerHTML = `
-                <div style="height:320px; background-size:cover; background-position:center; background-image:url('${cover}'); position:relative; display:flex; flex-direction:column; justify-content:flex-end; padding:20px;">
-                    <div style="position:absolute; inset:0; background:linear-gradient(to top, #0f172a 10%, transparent 70%);"></div>
-                    <div style="font-family:'Outfit'; font-size:1.8rem; font-weight:900; color:var(--lav-accent); position:relative; z-index:2;">${priceFmt}</div>
-                    <div style="font-size:1.1rem; font-weight:800; position:relative; z-index:2; margin-top:2px;">${title}</div>
-                    <div style="font-size:0.8rem; color:#94a3b8; position:relative; z-index:2; margin-top:4px;"><i class="fa-solid fa-location-dot"></i> ${loc}</div>
-                </div>
-                <div style="padding:20px;">
-                    <p style="font-size:0.88rem; color:#cbd5e1; line-height:1.5;">${desc}</p>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;">
-                        ${wa ? `<a href="https://wa.me/${wa}" target="_blank" style="background:#25d366; color:#fff; padding:12px; border-radius:8px; text-align:center; font-weight:700; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px;"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>` : ''}
-                        ${phone ? `<a href="tel:${phone}" style="background:#3b82f6; color:#fff; padding:12px; border-radius:8px; text-align:center; font-weight:700; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px;"><i class="fa-solid fa-phone"></i> Llamar</a>` : ''}
-                    </div>
-                </div>
-            `;
-        }
-
-        function publishCard() {
-            if (!appState.current) return;
-            appState.current.title = document.getElementById('inp-title').value || 'Anuncio';
-            appState.current.price = Number(document.getElementById('inp-price').value || 0);
-            appState.current.location = document.getElementById('inp-location').value;
-            appState.current.description = document.getElementById('inp-desc').value;
-            appState.current.cover = appState.cover;
-            appState.current.gallery = appState.gallery;
-            appState.current.agent = { name: document.getElementById('ag-name').value, wa: document.getElementById('ag-wa').value, phone: document.getElementById('ag-phone').value };
-
-            const idx = appState.inventory.findIndex(c => c.id === appState.current.id);
-            if (idx >= 0) appState.inventory[idx] = appState.current;
-            else appState.inventory.unshift(appState.current);
-
-            localStorage.setItem('lav_inv', JSON.stringify(appState.inventory));
-            shareCard(appState.current.id);
-        }
-
-        function shareCard(id) {
-            const url = window.location.origin + window.location.pathname
+                    <div id="
