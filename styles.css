@@ -82,3 +82,34 @@ body:has(#publicView:not(.hidden)) { overflow-x: hidden !important; }
 @media (min-width: 700px) {
   #publicMount > .public-shell { box-shadow: 0 0 55px #0005 !important; }
 }
+
+
+/* FIX LAV: en la vista previa del editor, la portada debe conservar formato apaisado.
+   Los layouts split/sidebar se apilan solo en el panel de previsualización para evitar
+   que la foto quede como una columna estrecha y vertical. */
+#previewCard.layout-split,
+#previewCard.layout-sidebar {
+  display: block !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+#previewCard.layout-split > .dc-cover,
+#previewCard.layout-sidebar > .dc-cover {
+  display: block !important;
+  width: 100% !important;
+  height: clamp(260px, 34vw, 360px) !important;
+  min-height: 260px !important;
+  max-height: 360px !important;
+}
+#previewCard.layout-split > .dc-content,
+#previewCard.layout-sidebar > .dc-content {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+@media (max-width: 560px) {
+  #previewCard.layout-split > .dc-cover,
+  #previewCard.layout-sidebar > .dc-cover {
+    height: 300px !important;
+    min-height: 260px !important;
+    max-height: 330px !important;
+  }
+}
