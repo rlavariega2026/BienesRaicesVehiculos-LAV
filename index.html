@@ -70,24 +70,29 @@
 .finish-4{background:linear-gradient(125deg,#21170c,#d4af37,#fff1b7)}.finish-4:before{background:linear-gradient(135deg,#392713,#e9d39a);opacity:.9}
 .art-1{border-radius:2px}.art-2{background:linear-gradient(135deg,#f00077,#ff9b35)}.art-3{border-radius:15px}.art-4{background:linear-gradient(130deg,#101010,#5a4523,#f4d37d)}.art-5{background:linear-gradient(135deg,#063d32,#65b6a3)}.art-6{background:linear-gradient(90deg,#fff 0 35%,#17212b 35% 100%)}.art-7{background:linear-gradient(135deg,#9b5de5,#f15bb5,#fee440)}.art-8{background:linear-gradient(135deg,#102e48,#ff686b)}.art-9{background:linear-gradient(135deg,#052c65,#00e5ff)}
 @media(min-width:1000px){.template-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
-/* Redes y contacto: iconos de marca, jerarquía visual y botones de acción reales */
+/* Contacto comercial: botones claros, marca reconocible y acción secundaria */
 .contact-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:20px}
-.contact-actions a.social-action{display:flex;align-items:center;justify-content:flex-start;gap:9px;min-height:49px;padding:10px 11px;border:1px solid #ffffff24;border-radius:13px;text-align:left;text-decoration:none;font-size:12px;font-weight:750;line-height:1.15;box-shadow:0 5px 14px #00000014;transition:transform .16s ease,filter .16s ease;overflow:hidden}
-.contact-actions a.social-action:hover{transform:translateY(-2px);filter:brightness(1.08)}
-.social-icon{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;border-radius:10px;background:#ffffff20}
-.social-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.social-label{min-width:0;overflow-wrap:anywhere;flex:1}
-.social-arrow{font-size:15px;opacity:.7;margin-left:auto}
-.contact-actions a.social-facebook{background:#1877f2;color:#fff;border-color:#1877f2}
-.contact-actions a.social-instagram{background:linear-gradient(120deg,#833ab4,#fd1d1d,#fcb045);color:#fff;border-color:#c13584}
-.contact-actions a.social-tiktok{background:#111;color:#fff;border-color:#333}
-.contact-actions a.social-whatsapp,.contact-actions a.gold-link.social-action{background:#128c52;color:#fff;border-color:#128c52}
-.contact-actions a.social-phone{background:#172b3b;color:#fff;border-color:#304b60}
-.contact-actions a.social-mail{background:#455a64;color:#fff;border-color:#607d8b}
-.contact-actions a.social-map{background:#e9f5ee;color:#176b45;border-color:#c7e5d3}
-.contact-actions a.social-store{background:#1769aa;color:#fff;border-color:#1769aa}
-.contact-actions a.social-shop{background:#ffe600;color:#262626;border-color:#e5cf00}
+.contact-actions a.social-action{display:flex;align-items:center;justify-content:flex-start;gap:11px;min-height:64px;padding:10px 12px;background:#fff!important;color:#17212b!important;border:1px solid #e2e7ec!important;border-radius:15px;text-align:left;text-decoration:none;font-size:13px;font-weight:800;line-height:1.15;box-shadow:0 5px 16px #10182012;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;overflow:hidden}
+.contact-actions a.social-action:hover{transform:translateY(-2px);box-shadow:0 10px 24px #10182020;border-color:#cbd5df!important;filter:none}
+.social-icon{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:12px;background:#f0f3f6!important;color:#344054;box-shadow:inset 0 0 0 1px #10182008}
+.social-icon svg{display:block;width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.social-label{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px;overflow-wrap:anywhere}
+.social-label strong{display:block;font-size:12px;line-height:1.15;font-weight:850;color:#17212b}
+.social-label small{display:block;font-size:10px;line-height:1.2;font-weight:600;color:#74808d}
+.social-arrow{font-size:16px;line-height:1;color:#8a96a3;margin-left:auto;flex:0 0 auto}
+.social-facebook .social-icon{color:#1877f2!important;background:#eaf2ff!important}
+.social-instagram .social-icon{color:#d94687!important;background:#fff0f6!important}
+.social-tiktok .social-icon{color:#111!important;background:#f0f1f3!important}
+.social-whatsapp .social-icon{color:#128c52!important;background:#e8f8ef!important}
+.social-phone .social-icon{color:#172b3b!important;background:#eaf0f5!important}
+.social-mail .social-icon{color:#455a64!important;background:#edf2f4!important}
+.social-map .social-icon{color:#176b45!important;background:#e9f5ee!important}
+.social-store .social-icon{color:#1769aa!important;background:#eaf4ff!important}
+.social-shop .social-icon{color:#252525!important;background:#fff8c7!important}
+.contact-actions a.social-whatsapp{border-color:#bfe7ce!important}
+.contact-actions a.social-whatsapp .social-label strong{color:#087b43}
 .contact-actions a:not(.social-action){border-radius:12px}
+@media(max-width:560px){.contact-actions{gap:8px}.contact-actions a.social-action{min-height:60px;padding:9px 8px;gap:8px;border-radius:12px}.social-icon{flex-basis:32px;width:32px;height:32px;border-radius:10px}.social-icon svg{width:19px;height:19px}.social-label strong{font-size:11px}.social-label small{font-size:9px}.social-arrow{font-size:14px}}
 .card.variant-2{border-radius:2px;box-shadow:none;border:1px solid #d9dde1}
 .card.variant-2 .card-body{border-radius:0}
 .card.variant-3{box-shadow:0 24px 65px #07152630;border:1px solid #ffffff80}
