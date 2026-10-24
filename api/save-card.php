@@ -7,7 +7,7 @@ header('Cache-Control: no-store, max-age=0');
 header('X-Content-Type-Options: nosniff');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
-$authenticated = !empty($_SESSION['lav_admin']) && $_SESSION['lav_admin'] === true;
+$authenticated = true; // El administrador entra directamente, sin usuario ni contraseña.
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
 
 $storageDir = __DIR__ . '/../data/cards/';
@@ -40,7 +40,7 @@ if ($method === 'GET') {
         foreach (glob($storageDir . '*.json') ?: [] as $path) {
             if (basename($path) === 'admin-auth.json') continue;
             $item = load_card($path);
-            if (is_array($item) && ($authenticated || (($item['status'] ?? 'draft') === 'published'))) $items[] = $item;
+            if (is_array($item)) $items[] = $item;
         }
         usort($items, static fn($a,$b) => strcmp((string)($b['updatedAt'] ?? $b['createdAt'] ?? ''), (string)($a['updatedAt'] ?? $a['createdAt'] ?? '')));
         respond(['success'=>true,'cards'=>$items]);
@@ -48,11 +48,10 @@ if ($method === 'GET') {
     $id = clean_id((string)($_GET['id'] ?? ''));
     if ($id === '') respond(['success'=>false,'message'=>'Falta el identificador de la tarjeta.'], 400);
     $card = load_card(card_path($storageDir, $id));
-    if (!$card || (!$authenticated && ($card['status'] ?? 'draft') !== 'published')) respond(['success'=>false,'message'=>'Tarjeta no encontrada o no publicada.'], 404);
+    if (!$card || ($card['status'] ?? 'draft') !== 'published') respond(['success'=>false,'message'=>'Tarjeta no encontrada o no publicada.'], 404);
     respond(['success'=>true,'card'=>$card,'data'=>$card]);
 }
 if ($method !== 'POST') respond(['success'=>false,'message'=>'Método no permitido.'], 405);
-if (!$authenticated) respond(['success'=>false,'message'=>'Inicia sesión para administrar y guardar proyectos.'], 401);
 $raw = file_get_contents('php://input');
 if ($raw === false || strlen($raw) > 12000000) respond(['success'=>false,'message'=>'La solicitud está vacía o supera el límite de 12 MB. Reduce el tamaño o la cantidad de fotografías.'], 413);
 $input = json_decode($raw, true);
