@@ -1,12 +1,9 @@
 <?php
 declare(strict_types=1);
-session_set_cookie_params(['httponly'=>true,'secure'=>!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off','samesite'=>'Lax','path'=>'/']);
-session_start();
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, max-age=0');
 header('X-Content-Type-Options: nosniff');
 function media_reply(array $data, int $status=200) { http_response_code($status); echo json_encode($data, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES); exit; }
-if (empty($_SESSION['lav_admin']) || $_SESSION['lav_admin'] !== true) media_reply(['success'=>false,'message'=>'Inicia sesión para subir imágenes.'],401);
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') media_reply(['success'=>false,'message'=>'Método no permitido.'],405);
 if (!isset($_FILES['image']) || !is_array($_FILES['image'])) media_reply(['success'=>false,'message'=>'No se recibió ninguna imagen.'],400);
 $file=$_FILES['image'];
