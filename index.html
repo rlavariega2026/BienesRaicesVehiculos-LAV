@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienes Raíces y Vehículos - Tarjetas Digitales LAV</title>
+    <title>Creador de Tarjetas Digitales | LAV Digital</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -11,6 +11,7 @@
             --primary-dark: #1d4ed8;
             --slate-900: #0f172a;
             --slate-800: #1e293b;
+            --slate-700: #334155;
             --slate-100: #f1f5f9;
             --slate-50: #f8fafc;
             --border: #cbd5e1;
@@ -18,122 +19,145 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--slate-50); color: var(--slate-900); line-height: 1.5; }
+        body { background: #0b0f19; color: var(--slate-900); line-height: 1.5; min-height: 100vh; }
 
-        #editor-app-container, #public-card-container { width: 100%; min-height: 100vh; }
-        #public-card-container { display: none; background: #ffffff; padding: 20px 10px; }
+        /* VISTAS */
+        #editor-app-container { display: block; }
+        #public-card-container { display: none; background: #0b0f19; min-height: 100vh; padding: 20px 10px; }
 
-        header { background: var(--slate-900); color: white; padding: 20px; text-align: center; }
-        header h1 { font-size: 1.5rem; font-weight: 700; }
-        header p { font-size: 0.9rem; color: #94a3b8; margin-top: 4px; }
+        /* HEADER EDITOR */
+        header.app-header { background: #111827; border-bottom: 1px solid #1f2937; color: white; padding: 20px; text-align: center; }
+        header.app-header h1 { font-size: 1.6rem; font-weight: 800; tracking-tight: -0.025em; background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header.app-header p { font-size: 0.875rem; color: #9ca3af; margin-top: 4px; }
 
-        .main-layout { max-width: 1300px; margin: 20px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 0 15px; }
-        @media (max-width: 960px) { .main-layout { grid-template-columns: 1fr; } }
+        .main-layout { max-width: 1400px; margin: 20px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 0 16px; }
+        @media (max-width: 1024px) { .main-layout { grid-template-columns: 1fr; } }
 
-        .card-box { background: white; border-radius: var(--radius); border: 1px solid var(--border); padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .card-box h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--slate-800); border-bottom: 2px solid var(--slate-100); padding-bottom: 8px; }
+        .card-box { background: #ffffff; border-radius: var(--radius); border: 1px solid #e2e8f0; padding: 24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .card-box h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--slate-800); border-bottom: 2px solid var(--slate-100); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
 
         .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--slate-800); }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; background: #fff; }
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+        .form-group label { display: block; font-size: 0.825rem; font-weight: 700; margin-bottom: 6px; color: var(--slate-700); text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.925rem; background: #fff; color: var(--slate-900); transition: border 0.2s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); outline: none; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
 
-        /* Controles de Carga de Archivos de Computadora */
-        .file-upload-wrapper { border: 2px dashed var(--border); padding: 16px; border-radius: 8px; text-align: center; background: var(--slate-50); cursor: pointer; transition: border-color 0.2s; }
-        .file-upload-wrapper:hover { border-color: var(--primary); }
-        .file-upload-wrapper input { display: none; }
+        /* CARGA DE ARCHIVOS DRAG & DROP */
+        .drop-zone { border: 2px dashed #a5b4fc; background: #f5f3ff; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .drop-zone:hover { background: #eeddff; border-color: #6366f1; }
+        .drop-zone p { font-size: 0.875rem; color: #4338ca; font-weight: 600; }
+        .drop-zone span { font-size: 0.75rem; color: #6b7280; display: block; margin-top: 4px; }
+        .drop-zone input { display: none; }
 
-        .gallery-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-top: 10px; }
-        .gallery-thumb-item { height: 75px; border-radius: 6px; background-size: cover; background-position: center; border: 1px solid var(--border); position: relative; }
+        .preview-thumbs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 12px; }
+        .thumb-preview-box { height: 80px; border-radius: 8px; background-size: cover; background-position: center; border: 2px solid #e2e8f0; position: relative; overflow: hidden; }
+        .thumb-preview-box .remove-btn { position: absolute; top: 4px; right: 4px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        /* Selector de 100 Diseños */
+        /* SELECTOR DE 100 DISEÑOS */
         .designs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .designs-counter-badge { background: var(--primary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+        .designs-counter-badge { background: #6366f1; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
         
         #designs-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
             gap: 12px;
-            max-height: 420px;
+            max-height: 440px;
             overflow-y: auto;
-            padding: 10px;
-            background: var(--slate-100);
-            border-radius: 8px;
-            border: 1px solid var(--border);
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
         }
 
-        .design-thumb-item {
-            background: white;
-            border: 2px solid var(--border);
+        .design-thumb-card {
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
             border-radius: 8px;
             padding: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            height: 120px;
         }
-        .design-thumb-item:hover { border-color: var(--primary); transform: translateY(-2px); }
-        .design-thumb-item.selected { border-color: var(--primary); background: #eff6ff; box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
+        .design-thumb-card:hover { border-color: #6366f1; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(99,102,241,0.15); }
+        .design-thumb-card.selected { border-color: #4f46e5; background: #f5f3ff; box-shadow: 0 0 0 3px rgba(99,102,241,0.3); }
         
-        .thumb-top { display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-bottom: 4px; }
-        .thumb-mock { background: #cbd5e1; height: 45px; border-radius: 4px; margin-bottom: 6px; }
-        .thumb-title { font-size: 11px; font-weight: 700; text-align: center; color: var(--slate-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .thumb-head { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; color: #64748b; margin-bottom: 4px; }
+        .thumb-layout-preview { background: #e2e8f0; height: 55px; border-radius: 4px; padding: 4px; display: flex; flex-direction: column; gap: 3px; justify-content: flex-end; }
+        .thumb-layout-preview .bar { background: #94a3b8; height: 6px; border-radius: 2px; }
+        .thumb-layout-preview .bar.price { width: 60%; background: #6366f1; }
+        .thumb-title-label { font-size: 10.5px; font-weight: 700; text-align: center; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; }
 
-        /* Estilos de Acabados (Colecciones) en Miniatura y Vista Previa */
-        .finish-signature { border-left: 4px solid #0f172a; }
-        .finish-editorial { border-left: 4px solid #b45309; }
-        .finish-colorpop  { border-left: 4px solid #ec4899; }
-        .finish-neon      { border-left: 4px solid #06b6d4; }
-        .finish-luxury    { border-left: 4px solid #d97706; background: #fffbeb; }
+        /* ESTILOS DE ACABADOS (COLECCIONES) */
+        .finish-signature { border-top: 4px solid #0f172a; }
+        .finish-editorial { border-top: 4px solid #b45309; }
+        .finish-colorpop  { border-top: 4px solid #ec4899; }
+        .finish-neon      { border-top: 4px solid #06b6d4; }
+        .finish-luxury    { border-top: 4px solid #d97706; background: #fffbeb; }
 
-        /* Vista Previa Interactiva */
-        .live-preview-wrapper { background: var(--slate-900); padding: 20px; border-radius: var(--radius); color: white; position: sticky; top: 20px; }
-        .card-preview-render { background: white; color: var(--slate-900); border-radius: 10px; overflow: hidden; min-height: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .preview-cover-area { height: 220px; background: #cbd5e1; background-size: cover; background-position: center; position: relative; }
-        .preview-content { padding: 18px; }
-        .preview-price { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 6px; }
-        .preview-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+        /* BOTÓN DE ACCIÓN PRINCIPAL */
+        .btn-submit-main { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; width: 100%; padding: 16px; border-radius: 10px; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(79,70,229,0.4); text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-submit-main:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,70,229,0.6); }
 
-        .btn-action { background: var(--primary); color: white; border: none; width: 100%; padding: 14px; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
-        .btn-action:hover { background: var(--primary-dark); }
+        /* VISTA PREVIA INTERACTIVA */
+        .preview-sticky-box { position: sticky; top: 20px; background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: var(--radius); color: white; }
+        .preview-card-frame { background: #ffffff; color: var(--slate-900); border-radius: 12px; overflow: hidden; min-height: 520px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+        .prev-cover-hero { height: 240px; background: #cbd5e1; background-size: cover; background-position: center; position: relative; }
+        .prev-body-content { padding: 20px; }
+        .prev-price-tag { font-size: 1.6rem; font-weight: 800; color: #4f46e5; margin-bottom: 4px; }
+        .prev-title-tag { font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; }
+        .prev-features-badge { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .prev-badge { background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #475569; }
 
-        /* Vista Pública Tarjeta Digital */
-        .public-card-container { max-width: 480px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border); }
-        .public-hero { width: 100%; height: 280px; background-size: cover; background-position: center; }
-        .public-body { padding: 24px; }
-        .public-price { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
-        .public-title { font-size: 1.3rem; font-weight: 700; color: var(--slate-900); margin-bottom: 12px; }
-        .public-features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; background: var(--slate-50); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85rem; }
+        /* TARJETA PÚBLICA DEL CLIENTE */
+        .public-wrapper { max-width: 480px; margin: 20px auto; background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid #334155; }
+        .public-hero-img { width: 100%; height: 320px; background-size: cover; background-position: center; position: relative; }
+        .public-hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 20px; color: white; }
+        .public-hero-price { font-size: 2rem; font-weight: 800; color: #60a5fa; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .public-content-body { padding: 24px; }
+        .public-card-title { font-size: 1.4rem; font-weight: 800; color: var(--slate-900); margin-bottom: 16px; }
+        
+        .public-specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; font-size: 0.875rem; }
+        .public-specs-grid div { font-weight: 600; color: #475569; }
+        .public-specs-grid strong { color: #0f172a; }
 
-        .contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
-        .contact-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 8px; background: var(--slate-100); border-radius: 10px; text-decoration: none; color: var(--slate-900); font-size: 0.75rem; font-weight: 600; gap: 6px; border: 1px solid var(--border); }
-        .contact-btn svg { width: 22px; height: 22px; fill: currentColor; }
+        .public-gallery-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; }
+        .public-gallery-strip img { height: 90px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
 
-        #share-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal-content { background: white; width: 100%; max-width: 400px; padding: 24px; border-radius: var(--radius); text-align: center; }
+        .public-actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+        .btn-contact { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 8px; background: #f1f5f9; border-radius: 12px; text-decoration: none; color: #0f172a; font-size: 0.75rem; font-weight: 700; gap: 6px; border: 1px solid #cbd5e1; transition: all 0.2s; }
+        .btn-contact:hover { background: #4f46e5; color: white; border-color: #4f46e5; }
+        .btn-contact svg { width: 24px; height: 24px; fill: currentColor; }
+
+        /* MODAL DE COMPARTIR */
+        #share-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .modal-card { background: white; width: 100%; max-width: 420px; padding: 28px; border-radius: 16px; text-align: center; }
+        .modal-card input { width: 100%; padding: 12px; margin: 16px 0; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; text-align: center; font-weight: 600; }
     </style>
 </head>
 <body>
 
+    <!-- 1. EDITOR PRINCIPAL -->
     <div id="editor-app-container">
-        <header>
-            <h1>LAV Digital - Tarjetas Comerciales</h1>
-            <p>Bienes Raíces y Vehículos de Alto Impacto Comercial</p>
+        <header class="app-header">
+            <h1>LAV Digital - Creador Comercial</h1>
+            <p>Generador de Tarjetas Digitales para Bienes Raíces y Vehículos</p>
         </header>
 
         <div class="main-layout">
-            <div class="editor-column">
+            <div class="form-column">
                 
-                <!-- 1. TIPO DE ANUNCIO Y DATOS -->
+                <!-- SECCIÓN 1: DATOS GENERALES -->
                 <div class="card-box">
-                    <h2>1. Información General</h2>
+                    <h2>📌 1. Información General</h2>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Categoría</label>
                             <select id="ad-type" onchange="toggleCategoryFields()">
-                                <option value="real_estate">Inmueble / Propiedad</option>
-                                <option value="vehicle">Vehículo / Automóvil</option>
+                                <option value="real_estate">🏠 Inmueble / Propiedad</option>
+                                <option value="vehicle">🚗 Vehículo / Automóvil</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -147,14 +171,14 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Título Comercial del Anuncio</label>
-                        <input type="text" id="inp-title" placeholder="Ej. Casa Residencial Cuernavaca" oninput="updatePreview()">
+                        <label>Título Comercial</label>
+                        <input type="text" id="inp-title" placeholder="Ej. Casa de Lujo en Tabachines" oninput="updatePreview()">
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label>Precio ($ MXN)</label>
-                            <input type="number" id="inp-price" placeholder="Ej. 2500000" oninput="updatePreview()">
+                            <input type="number" id="inp-price" placeholder="Ej. 3500000" oninput="updatePreview()">
                         </div>
                         <div class="form-group">
                             <label>Ubicación / Ciudad</label>
@@ -163,71 +187,42 @@
                     </div>
                 </div>
 
-                <!-- 2A. CAMPOS DE INMUEBLES -->
-                <div class="card-box" id="box-real-estate-fields">
-                    <h2>2. Ficha Técnica Inmobiliaria</h2>
+                <!-- SECCIÓN 2A: INMUEBLES -->
+                <div class="card-box" id="box-real-estate">
+                    <h2>📐 2. Especificaciones de la Propiedad</h2>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Tipo</label>
+                            <label>Tipo Inmueble</label>
                             <select id="re-type">
                                 <option value="Casa">Casa</option>
                                 <option value="Departamento">Departamento</option>
                                 <option value="Terreno">Terreno</option>
                                 <option value="Local Comercial">Local Comercial</option>
-                                <option value="Oficina">Oficina</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Terreno (m²)</label>
-                            <input type="number" id="re-land-area" placeholder="Ej. 250">
+                            <input type="number" id="re-land" placeholder="Ej. 300" oninput="updatePreview()">
                         </div>
                         <div class="form-group">
                             <label>Construcción (m²)</label>
-                            <input type="number" id="re-build-area" placeholder="Ej. 180">
+                            <input type="number" id="re-build" placeholder="Ej. 220" oninput="updatePreview()">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Recámaras</label>
-                            <input type="number" id="re-bedrooms" placeholder="Ej. 3">
+                            <input type="number" id="re-bedrooms" placeholder="Ej. 3" oninput="updatePreview()">
                         </div>
                         <div class="form-group">
                             <label>Baños</label>
-                            <input type="number" id="re-bathrooms" placeholder="Ej. 2.5" step="0.5">
+                            <input type="number" id="re-bathrooms" placeholder="Ej. 2.5" step="0.5" oninput="updatePreview()">
                         </div>
                         <div class="form-group">
                             <label>Estacionamientos</label>
-                            <input type="number" id="re-parking" placeholder="Ej. 2">
+                            <input type="number" id="re-parking" placeholder="Ej. 2" oninput="updatePreview()">
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Amenidades</label>
-                        <input type="text" id="re-amenities" placeholder="Ej. Alberca, Seguridad 24/7, Jardín">
-                    </div>
-                </div>
-
-                <!-- 2B. CAMPOS DE VEHÍCULOS -->
-                <div class="card-box" id="box-vehicle-fields" style="display: none;">
-                    <h2>2. Ficha Técnica del Vehículo</h2>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Marca</label>
-                            <input type="text" id="veh-brand" placeholder="Ej. BMW">
-                        </div>
-                        <div class="form-group">
-                            <label>Modelo / Versión</label>
-                            <input type="text" id="veh-model" placeholder="Ej. M3 Competition">
-                        </div>
-                        <div class="form-group">
-                            <label>Año</label>
-                            <input type="number" id="veh-year" placeholder="Ej. 2022">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Kilometraje (km)</label>
-                            <input type="number" id="veh-mileage" placeholder="Ej. 35000">
-                        </div>
-                        <div class="form-group">
-                            <label>Transmisión</label>
-                            <select id
+                        <input type="text" id="re-amenities" placeholder="Ej. Alberca, Seguridad 24/7, Jardín" oninput="updatePreview()">
