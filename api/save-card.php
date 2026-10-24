@@ -38,6 +38,7 @@ if ($method === 'GET') {
     if ($action === 'list') {
         $items = [];
         foreach (glob($storageDir . '*.json') ?: [] as $path) {
+            if (basename($path) === 'admin-auth.json') continue;
             $item = load_card($path);
             if (is_array($item) && ($authenticated || (($item['status'] ?? 'draft') === 'published'))) $items[] = $item;
         }
