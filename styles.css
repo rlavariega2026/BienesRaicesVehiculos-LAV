@@ -44,3 +44,21 @@ body:has(#publicView:not(.hidden)){background:#101116;overflow-x:hidden}
   #publicMount .digital-card.public-card.layout-sidebar .dc-cover{height:52svh;min-height:300px}
   #publicMount .digital-card.public-card .dc-content{padding:18px 16px calc(22px + env(safe-area-inset-bottom))}
 }
+
+
+/* Corrección definitiva: tarjeta móvil vertical tipo app, no composición horizontal */
+#publicMount{display:flex;justify-content:center;align-items:flex-start;width:100%;min-height:100svh}
+#publicMount>.public-shell{width:100%;max-width:430px;min-height:100svh;margin:0 auto;padding:0 0 env(safe-area-inset-bottom)!important;overflow:hidden;background:#101116}
+#publicMount .digital-card.public-card{width:100%;max-width:430px;min-height:100svh;margin:0 auto;border:0;border-radius:0;box-shadow:none;display:flex;flex-direction:column;overflow:hidden}
+#publicMount .digital-card.public-card.layout-split,
+#publicMount .digital-card.public-card.layout-sidebar{display:flex;flex-direction:column;min-height:100svh;grid-template-columns:minmax(0,1fr)}
+#publicMount .digital-card.public-card.layout-split .dc-cover,
+#publicMount .digital-card.public-card.layout-sidebar .dc-cover{width:100%;height:42svh;min-height:270px;max-height:420px;grid-column:auto;grid-row:auto}
+#publicMount .digital-card.public-card .dc-content{width:100%;min-width:0;padding:20px 16px calc(24px + env(safe-area-inset-bottom));overflow-wrap:anywhere}
+#publicMount .digital-card.public-card .dc-gallery,
+#publicMount .digital-card.public-card .dc-gallery-viewer,
+#publicMount .digital-card.public-card .dc-contact{max-width:100%;min-width:0}
+@media(min-width:700px){
+ #publicMount>.public-shell{max-width:430px;box-shadow:0 0 55px #0005}
+ #publicMount .digital-card.public-card{max-width:430px}
+}
