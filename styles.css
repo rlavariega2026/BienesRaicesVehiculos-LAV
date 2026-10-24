@@ -19,3 +19,28 @@
 .dc-contact button{flex:1;min-width:100px;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 10px;border-radius:10px;text-decoration:none;background:var(--card-primary);color:#171717;border:0;font-size:10px;font-weight:800;transition:transform .2s,filter .2s}.dc-contact button:hover{transform:translateY(-2px);filter:brightness(1.07)}.dc-contact button.secondary{background:transparent;color:var(--card-text);border:1px solid #ffffff35}
 
 #loadMoreTemplates{width:100%;margin-top:12px}.template-number{font-variant-numeric:tabular-nums}.template-meta small{line-height:1.5}
+
+
+/* Tarjeta pública a pantalla completa, tomando como referencia Tarjetas Digitales LAV */
+html,body{width:100%;min-height:100%;margin:0}
+html{min-height:100%;-webkit-text-size-adjust:100%}
+body:has(#publicView:not(.hidden)){background:#101116;overflow-x:hidden}
+#publicView{width:100%;min-height:100dvh;min-height:100svh;margin:0;padding:0}
+#publicMount{width:100%;min-height:100dvh;min-height:100svh}
+#publicMount>.public-shell{width:100%;max-width:none;min-height:100dvh;min-height:100svh;margin:0;padding:0 0 env(safe-area-inset-bottom)!important;background:#101116;overflow-x:hidden}
+#publicMount>.public-shell>.public-topline,
+#publicMount>.public-shell>div:last-child{display:none!important}
+#publicMount .digital-card.public-card{display:block;width:100%;max-width:none;min-height:100dvh;min-height:100svh;margin:0;border:0;border-radius:0;box-shadow:none;overflow:hidden}
+#publicMount .digital-card.public-card .dc-cover{height:clamp(260px,46dvh,520px);height:clamp(260px,46svh,520px);min-height:260px}
+#publicMount .digital-card.public-card.layout-split{min-height:100dvh;min-height:100svh}
+#publicMount .digital-card.public-card.layout-split .dc-cover{height:clamp(260px,46svh,520px);min-height:260px}
+#publicMount .digital-card.public-card.layout-sidebar .dc-cover{height:clamp(300px,55svh,620px);min-height:300px}
+#publicMount .digital-card.public-card .dc-content{padding:clamp(18px,5vw,30px);padding-bottom:calc(clamp(18px,5vw,30px) + env(safe-area-inset-bottom))}
+#publicMount .digital-card.public-card .dc-gallery-viewer img{max-height:65svh;object-fit:contain}
+@media(max-width:560px){
+  #publicMount .digital-card.public-card{border-radius:0}
+  #publicMount .digital-card.public-card .dc-cover{height:44svh;min-height:270px}
+  #publicMount .digital-card.public-card.layout-split .dc-cover{height:44svh;min-height:270px}
+  #publicMount .digital-card.public-card.layout-sidebar .dc-cover{height:52svh;min-height:300px}
+  #publicMount .digital-card.public-card .dc-content{padding:18px 16px calc(22px + env(safe-area-inset-bottom))}
+}
