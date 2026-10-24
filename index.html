@@ -1,139 +1,77 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAV Digital — Plataforma Comercial Pro</title>
-    
-    <!-- Tipografías Premium -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Iconografía FontAwesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10111a">
+<meta name="description" content="Crea tarjetas digitales premium para propiedades y vehículos con LAV Digital.">
+<title>LAV Digital | Tarjetas de propiedades y vehículos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="appShell">
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="LAV Digital inicio"><span class="brand-mark">L</span><span><b>LAV DIGITAL</b><small>PROPERTY & AUTO STUDIO</small></span></a>
+    <div class="topbar-actions"><span id="saveStatus" class="save-status"><i class="fa-solid fa-cloud"></i> Listo</span><button class="button button-primary" id="newListingTop"><i class="fa-solid fa-plus"></i> Nuevo anuncio</button></div>
+  </header>
 
-    <style>
-        :root {
-            --lav-black: #060911;
-            --lav-panel: #0f172a;
-            --lav-card: #1e293b;
-            --lav-border: #334155;
-            --lav-primary: #6366f1;
-            --lav-primary-hover: #4f46e5;
-            --lav-accent: #06b6d4;
-            --lav-emerald: #10b981;
-            --lav-rose: #f43f5e;
-            --lav-amber: #f59e0b;
-            --lav-text: #f8fafc;
-            --lav-muted: #94a3b8;
-            --radius-box: 16px;
-            --radius-elem: 10px;
+  <main id="dashboardView" class="view">
+    <section class="hero">
+      <div class="hero-copy"><span class="eyebrow">TU INVENTARIO, CON OTRA PRESENCIA</span><h1>Tarjetas digitales que <em>sí destacan.</em></h1><p>Administra clientes, propiedades y vehículos. Diseña anuncios únicos, guarda tus proyectos y comparte tarjetas listas para impresionar.</p><div class="hero-actions"><button class="button button-primary button-large" id="newListingHero"><i class="fa-solid fa-wand-magic-sparkles"></i> Crear tarjeta</button><button class="button button-ghost button-large" id="scrollInventory"><i class="fa-solid fa-layer-group"></i> Ver inventario</button></div></div>
+      <div class="hero-art" aria-hidden="true"><div class="hero-glow"></div><div class="hero-photo hero-photo-back"></div><div class="hero-photo hero-photo-front"><span class="hero-photo-label">DISEÑO · EXPERIENCIA · RESULTADOS</span><div class="hero-photo-bottom"><small>LAV DIGITAL STUDIO</small><strong>Tu próxima gran<br>venta empieza aquí.</strong></div></div><div class="floating-chip"><i class="fa-solid fa-sparkles"></i> Diseño a tu medida</div></div>
+    </section>
+    <section class="stats-grid" id="statsGrid"><article class="stat-card"><span>Anuncios guardados</span><strong id="statTotal">0</strong><i class="fa-regular fa-folder-open"></i></article><article class="stat-card"><span>Publicados</span><strong id="statPublished">0</strong><i class="fa-solid fa-arrow-up-right-from-square"></i></article><article class="stat-card"><span>Clientes</span><strong id="statClients">0</strong><i class="fa-regular fa-building"></i></article><article class="stat-card"><span>Diseños disponibles</span><strong>100+</strong><i class="fa-solid fa-shapes"></i></article></section>
+    <section class="inventory-section" id="inventorySection">
+      <div class="section-heading"><div><span class="eyebrow">CENTRO DE CONTROL</span><h2>Tu inventario</h2><p>Encuentra tus proyectos y vuelve a editarlos cuando quieras.</p></div><button class="button button-outline" id="newListingInventory"><i class="fa-solid fa-plus"></i> Crear anuncio</button></div>
+      <div class="filter-bar"><label class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="searchInput" type="search" placeholder="Buscar por título, cliente o ubicación…"></label><select id="typeFilter" aria-label="Filtrar por tipo"><option value="all">Todos los anuncios</option><option value="property">Bienes raíces</option><option value="vehicle">Vehículos</option><option value="profile">Perfiles / catálogos</option></select><select id="statusFilter" aria-label="Filtrar por estado"><option value="all">Todos los estados</option><option value="draft">Borradores</option><option value="published">Publicados</option><option value="archived">Archivados</option></select><select id="clientFilter" aria-label="Filtrar por cliente"><option value="all">Todos los clientes</option></select></div>
+      <div id="inventoryGrid" class="inventory-grid"></div><div id="emptyState" class="empty-state hidden"><div class="empty-icon"><i class="fa-regular fa-images"></i></div><h3>Tu próximo anuncio empieza aquí</h3><p>Crea una tarjeta, carga tus fotos y elige un diseño que haga justicia a tu propiedad o vehículo.</p><button class="button button-primary" id="newListingEmpty">Crear mi primera tarjeta</button></div>
+    </section>
+    <footer class="app-footer">LAV DIGITAL <span>·</span> Tarjetas digitales de propiedades y vehículos</footer>
+  </main>
 
-            /* Variables dinámicas para previsualización */
-            --tpl-bg: #07090e;
-            --tpl-card-bg: #111827;
-            --tpl-primary: #06b6d4;
-            --tpl-text: #f8fafc;
-            --tpl-font: 'Inter', sans-serif;
-        }
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: var(--lav-black); color: var(--lav-text); font-family: 'Inter', sans-serif; min-height: 100vh; overflow-x: hidden; }
-
-        /* VISTAS DE LA APLICACIÓN */
-        .app-view { display: none; width: 100%; min-height: 100vh; }
-        .app-view.active { display: block; }
-
-        /* HEADER SUPERIOR */
-        header.lav-header {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--lav-border);
-            padding: 14px 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .lav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; cursor: pointer; }
-        .brand-logo {
-            width: 42px; height: 42px;
-            background: linear-gradient(135deg, var(--lav-primary), var(--lav-accent));
-            border-radius: var(--radius-elem);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px; color: #fff; box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
-        }
-        .brand-text h1 { font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 900; color: #fff; letter-spacing: -0.5px; }
-        .brand-text span { font-size: 0.7rem; color: var(--lav-accent); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
-
-        .btn-lav {
-            padding: 10px 18px; border-radius: var(--radius-elem); font-size: 0.85rem; font-weight: 700;
-            cursor: pointer; border: 1px solid transparent; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
-        }
-        .btn-primary { background: linear-gradient(135deg, var(--lav-primary), var(--lav-accent)); color: #fff; box-shadow: 0 4px 14px rgba(99,102,241,0.35); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.5); }
-        .btn-secondary { background: var(--lav-card); color: var(--lav-text); border-color: var(--lav-border); }
-        .btn-secondary:hover { border-color: var(--lav-accent); color: var(--lav-accent); }
-
-        /* VISTA 1: DASHBOARD INVENTARIO */
-        .dash-container { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
-        .dash-hero {
-            background: linear-gradient(135deg, var(--lav-panel), var(--lav-card));
-            border: 1px solid var(--lav-border); border-radius: var(--radius-box);
-            padding: 32px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
-        }
-        .dash-hero h2 { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 6px; }
-        .dash-hero p { color: var(--lav-muted); font-size: 0.95rem; }
-
-        .dash-controls {
-            display: grid; grid-template-columns: 280px 1fr auto; gap: 16px; margin-bottom: 24px;
-            background: var(--lav-panel); padding: 16px; border-radius: var(--radius-box); border: 1px solid var(--lav-border);
-        }
-        .select-custom, .input-custom {
-            width: 100%; padding: 11px 14px; background: var(--lav-card); border: 1px solid var(--lav-border);
-            border-radius: var(--radius-elem); color: #fff; font-size: 0.9rem; outline: none;
-        }
-
-        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
-        .inv-card {
-            background: var(--lav-panel); border: 1px solid var(--lav-border); border-radius: var(--radius-box);
-            overflow: hidden; transition: transform 0.25s, border-color 0.25s; display: flex; flex-direction: column;
-        }
-        .inv-card:hover { transform: translateY(-4px); border-color: var(--lav-primary); box-shadow: 0 12px 30px rgba(0,0,0,0.5); }
-        .inv-hero { height: 200px; background-size: cover; background-position: center; position: relative; }
-        .inv-badge-type {
-            position: absolute; top: 12px; left: 12px; background: rgba(6, 9, 17, 0.85); backdrop-filter: blur(6px);
-            padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; color: var(--lav-accent); text-transform: uppercase; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .inv-badge-status {
-            position: absolute; top: 12px; right: 12px; padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-        }
-        .status-pub { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid var(--lav-emerald); }
-        .status-draft { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid var(--lav-amber); }
-
-        .inv-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-        .inv-price { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--lav-accent); margin-bottom: 4px; }
-        .inv-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
-        .inv-client { font-size: 0.8rem; color: var(--lav-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
-        .inv-actions { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr 1fr 42px; gap: 6px; padding-top: 14px; border-top: 1px solid var(--lav-border); }
-
-        /* VISTA 2: EDITOR WORKSPACE */
-        .workspace-layout { display: grid; grid-template-columns: 540px 1fr; min-height: calc(100vh - 71px); }
-        @media(max-width: 1024px) { .workspace-layout { grid-template-columns: 1fr; } }
-
-        .editor-sidebar { background: var(--lav-panel); border-right: 1px solid var(--lav-border); display: flex; flex-direction: column; height: calc(100vh - 71px); overflow-y: auto; }
-        .editor-tabs { display: flex; background: var(--lav-black); border-bottom: 1px solid var(--lav-border); position: sticky; top: 0; z-index: 10; }
-        .tab-btn {
-            flex: 1; padding: 14px 6px; background: transparent; border: none; border-bottom: 3px solid transparent;
-            color: var(--lav-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;
-        }
-        .tab-btn i { font-size: 1rem; }
-        .tab-btn.active { color: var(--lav-accent); border-bottom-color: var(--lav-accent); background: rgba(6, 182, 212, 0.08); }
-
-        .tab-panel { display: none; padding: 24px; }
-        .tab-panel.active { display: block; }
-
-        .form-title { font-size: 0.95rem; font-weight: 800
+  <main id="editorView" class="view hidden">
+    <div class="editor-toolbar"><button class="button button-ghost" id="backToInventory"><i class="fa-solid fa-arrow-left"></i> Inventario</button><div class="editor-project-name"><span class="live-dot"></span><span id="editorModeLabel">Nuevo proyecto</span><small id="editorIdLabel">Borrador sin guardar</small></div><div class="toolbar-actions"><button class="button button-outline" id="saveDraftBtn"><i class="fa-regular fa-floppy-disk"></i> Guardar</button><button class="button button-primary" id="publishBtn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Publicar tarjeta</button></div></div>
+    <div class="editor-layout">
+      <aside class="editor-panel">
+        <div class="step-tabs" role="tablist"><button class="step-tab active" data-step="details"><span>01</span> Datos</button><button class="step-tab" data-step="photos"><span>02</span> Fotos</button><button class="step-tab" data-step="design"><span>03</span> Diseño</button><button class="step-tab" data-step="customize"><span>04</span> Estilo</button></div>
+        <section class="editor-step active" id="step-details">
+          <div class="panel-intro"><span class="eyebrow">INFORMACIÓN DEL ANUNCIO</span><h2>Construye tu tarjeta</h2><p>Los datos se conservan cuando cambias de diseño.</p></div>
+          <div class="form-section"><h3><i class="fa-regular fa-user"></i> Cliente / propietario</h3><div class="field"><label for="clientName">Nombre del cliente o empresa *</label><input id="clientName" placeholder="Ej. Inmobiliaria LAV, Agencia Premier" required></div><div class="field"><label for="contactName">Nombre de contacto</label><input id="contactName" placeholder="Persona que atenderá a los interesados"></div><div class="field"><label for="logoFile">Logotipo (opcional)</label><label class="file-drop compact"><i class="fa-solid fa-cloud-arrow-up"></i><span>Subir logotipo</span><input id="logoFile" type="file" accept="image/*" hidden></label><div id="logoPreview" class="small-image-preview"></div></div></div>
+          <div class="form-section"><h3><i class="fa-solid fa-list-check"></i> Datos principales</h3><div class="field-grid"><div class="field"><label for="listingType">Tipo de anuncio</label><select id="listingType"><option value="property">Bienes raíces</option><option value="vehicle">Vehículo</option><option value="profile">Perfil / catálogo</option></select></div><div class="field" id="operationField"><label for="operation">Operación</label><select id="operation"><option value="Venta">Venta</option><option value="Renta">Renta</option><option value="Traspaso">Traspaso</option></select></div></div><div class="field"><label for="listingTitle">Título del anuncio *</label><input id="listingTitle" placeholder="Ej. Residencia contemporánea con jardín"></div><div class="field-grid"><div class="field"><label for="price">Precio</label><input id="price" inputmode="decimal" placeholder="Ej. 4850000"></div><div class="field"><label for="currency">Moneda</label><select id="currency"><option value="MXN">MXN · Peso mexicano</option><option value="USD">USD · Dólar</option></select></div></div><div class="field"><label for="location">Ubicación</label><input id="location" placeholder="Colonia, ciudad, estado"></div><div class="field"><label for="description">Descripción</label><textarea id="description" rows="4" placeholder="Describe lo que hace especial a este anuncio…"></textarea></div></div>
+          <div class="form-section" id="propertyFields"><h3><i class="fa-solid fa-house"></i> Características del inmueble</h3><div class="field-grid"><div class="field"><label for="propertyType">Tipo de inmueble</label><select id="propertyType"><option>Casa</option><option>Departamento</option><option>Terreno</option><option>Local comercial</option><option>Oficina</option><option>Bodega</option><option>Rancho</option><option>Otro</option></select></div><div class="field"><label for="landArea">Terreno (m²)</label><input id="landArea" inputmode="decimal" placeholder="250"></div><div class="field"><label for="builtArea">Construcción (m²)</label><input id="builtArea" inputmode="decimal" placeholder="180"></div><div class="field"><label for="bedrooms">Recámaras</label><input id="bedrooms" type="number" min="0" placeholder="3"></div><div class="field"><label for="bathrooms">Baños</label><input id="bathrooms" type="number" min="0" step=".5" placeholder="2"></div><div class="field"><label for="parking">Estacionamientos</label><input id="parking" type="number" min="0" placeholder="2"></div></div><div class="field"><label for="amenities">Amenidades y características</label><input id="amenities" placeholder="Alberca, jardín, vigilancia, terraza…"></div></div>
+          <div class="form-section hidden" id="vehicleFields"><h3><i class="fa-solid fa-car-side"></i> Ficha técnica del vehículo</h3><div class="field-grid"><div class="field"><label for="vehicleType">Tipo</label><select id="vehicleType"><option>Automóvil</option><option>Camioneta</option><option>SUV</option><option>Motocicleta</option><option>Pickup</option><option>Van</option><option>Otro</option></select></div><div class="field"><label for="make">Marca</label><input id="make" placeholder="Toyota"></div><div class="field"><label for="model">Modelo</label><input id="model" placeholder="Corolla"></div><div class="field"><label for="version">Versión</label><input id="version" placeholder="SE 2.0"></div><div class="field"><label for="year">Año</label><input id="year" type="number" min="1900" max="2100" placeholder="2024"></div><div class="field"><label for="mileage">Kilometraje</label><input id="mileage" inputmode="numeric" placeholder="35,000 km"></div><div class="field"><label for="transmission">Transmisión</label><select id="transmission"><option>Automática</option><option>Manual</option><option>CVT</option><option>Otra</option></select></div><div class="field"><label for="fuel">Combustible</label><select id="fuel"><option>Gasolina</option><option>Diésel</option><option>Híbrido</option><option>Eléctrico</option><option>Otro</option></select></div></div></div>
+          <div class="form-section"><h3><i class="fa-solid fa-address-card"></i> Contacto</h3><div class="field"><label for="phone">Teléfono</label><input id="phone" inputmode="tel" placeholder="777 000 0000"></div><div class="field"><label for="whatsapp">WhatsApp (con código de país)</label><input id="whatsapp" inputmode="tel" placeholder="527770000000"></div><div class="field"><label for="email">Correo</label><input id="email" type="email" placeholder="contacto@empresa.com"></div><div class="field-grid"><div class="field"><label for="facebook">Facebook</label><input id="facebook" type="url" placeholder="https://facebook.com/…"></div><div class="field"><label for="instagram">Instagram</label><input id="instagram" type="url" placeholder="https://instagram.com/…"></div></div><div class="field"><label for="mapsUrl">Enlace de Google Maps (opcional)</label><input id="mapsUrl" type="url" placeholder="https://maps.google.com/…"></div></div>
+        </section>
+        <section class="editor-step" id="step-photos">
+          <div class="panel-intro"><span class="eyebrow">IMAGEN Y GALERÍA</span><h2>Haz que destaque</h2><p>La portada es independiente de la galería. Puedes cambiar las fotos sin perder el diseño.</p></div>
+          <div class="form-section"><h3>Fotografía de portada</h3><label class="file-drop" id="coverDrop"><i class="fa-solid fa-image"></i><strong>Subir foto principal</strong><span>JPG, PNG o WEBP desde tu dispositivo</span><input id="coverFile" type="file" accept="image/*" hidden></label><div id="coverPreview" class="cover-preview"></div></div>
+          <div class="form-section"><h3>Galería de fotografías <span id="galleryCount" class="count-pill">0 fotos</span></h3><label class="file-drop compact"><i class="fa-solid fa-images"></i><span>Añadir varias fotografías</span><input id="galleryFiles" type="file" accept="image/*" multiple hidden></label><div id="galleryManager" class="gallery-manager"></div><p class="hint">Arrastra las miniaturas para reordenarlas. Las imágenes se optimizan para cargar más rápido.</p></div>
+          <div class="form-section"><h3>Estilo de galería</h3><div class="choice-grid gallery-style-choices"><label class="choice-card"><input type="radio" name="galleryStyle" value="slide" checked><span><i class="fa-solid fa-arrow-right-arrow-left"></i><b>Deslizamiento</b><small>Transición lateral</small></span></label><label class="choice-card"><input type="radio" name="galleryStyle" value="fade"><span><i class="fa-regular fa-images"></i><b>Fundido</b><small>Transición suave</small></span></label><label class="choice-card"><input type="radio" name="galleryStyle" value="book"><span><i class="fa-solid fa-book-open"></i><b>Libro</b><small>Cambio de página</small></span></label><label class="choice-card"><input type="radio" name="galleryStyle" value="grid"><span><i class="fa-solid fa-grip"></i><b>Mosaico</b><small>Composición editorial</small></span></label></div></div>
+        </section>
+        <section class="editor-step" id="step-design">
+          <div class="panel-intro"><span class="eyebrow">BIBLIOTECA DE DISEÑO</span><h2>Encuentra tu estilo</h2><p>20 composiciones estructurales × 5 colecciones estéticas. Cada opción cambia la composición y el acabado.</p></div>
+          <div class="template-tools"><input id="templateSearch" type="search" placeholder="Buscar diseño…"><select id="templateCategory"><option value="all">Todas las categorías</option><option value="property">Inmobiliario</option><option value="vehicle">Automotriz</option><option value="universal">Universal</option></select><select id="templateSkin"><option value="all">Todas las colecciones</option><option value="signature">Signature</option><option value="editorial">Editorial</option><option value="colorpop">Color Pop</option><option value="neon">Neon Studio</option><option value="luxury">Luxury</option></select></div>
+          <div class="template-summary"><strong id="templateResults">100 diseños</strong><span>Selecciona una miniatura para actualizar la vista previa.</span></div><div id="templateGrid" class="template-grid"></div>
+        </section>
+        <section class="editor-step" id="step-customize">
+          <div class="panel-intro"><span class="eyebrow">TU IDENTIDAD VISUAL</span><h2>Personaliza los detalles</h2><p>Crea una apariencia propia y comprueba cada cambio en la vista previa.</p></div>
+          <div class="form-section"><h3>Colores</h3><div class="color-grid"><label>Color principal<input id="customPrimary" type="color" value="#c9a96e"></label><label>Fondo<input id="customBackground" type="color" value="#10131c"></label><label>Texto<input id="customText" type="color" value="#f8f7f4"></label><label>Acento<input id="customAccent" type="color" value="#e4c58a"></label></div><div class="field"><label for="gradientStyle">Degradado de fondo</label><select id="gradientStyle"><option value="none">Color sólido</option><option value="diagonal">Diagonal elegante</option><option value="radial">Radial luminoso</option><option value="sunset">Atardecer</option><option value="ocean">Océano</option><option value="aurora">Aurora</option></select></div><div class="field"><label for="fontStyle">Tipografía</label><select id="fontStyle"><option value="sans">Moderna</option><option value="serif">Editorial</option><option value="condensed">Compacta</option></select></div></div>
+          <div class="form-section"><h3>Fondo con imagen propia</h3><label class="file-drop compact"><i class="fa-regular fa-image"></i><span>Subir imagen de fondo</span><input id="backgroundFile" type="file" accept="image/*" hidden></label><div id="backgroundPreview" class="small-image-preview"></div><button class="button button-ghost button-small" id="removeBackground" type="button">Quitar imagen de fondo</button></div>
+          <div class="form-section"><h3>Opciones de presentación</h3><div class="field"><label for="cardRadius">Redondeo de esquinas</label><input id="cardRadius" type="range" min="0" max="32" value="18"></div><div class="field"><label for="imageHeight">Altura de fotografía principal</label><input id="imageHeight" type="range" min="180" max="540" step="10" value="340"></div><div class="field"><label for="overlayStrength">Intensidad del sombreado de foto</label><input id="overlayStrength" type="range" min="0" max="90" value="42"></div><button class="button button-outline" id="resetDesign" type="button"><i class="fa-solid fa-rotate-left"></i> Restaurar estilo de plantilla</button></div>
+        </section>
+        <div class="editor-bottom-actions"><button class="button button-outline" id="saveDraftBottom"><i class="fa-regular fa-floppy-disk"></i> Guardar borrador</button><button class="button button-primary" id="publishBottom"><i class="fa-solid fa-paper-plane"></i> Publicar tarjeta</button></div>
+      </aside>
+      <section class="preview-workspace"><div class="preview-heading"><div><span class="eyebrow">VISTA PREVIA EN VIVO</span><h2>Así se verá tu tarjeta</h2></div><div class="device-switch"><button class="active" data-device="mobile" aria-label="Vista móvil"><i class="fa-solid fa-mobile-screen"></i></button><button data-device="desktop" aria-label="Vista escritorio"><i class="fa-solid fa-desktop"></i></button></div></div><div class="preview-stage"><div id="previewCard" class="digital-card preview-card layout-cinematic skin-signature"><div class="preview-placeholder"><i class="fa-regular fa-images"></i><h3>Tu diseño aparecerá aquí</h3><p>Completa los datos y carga una fotografía para comenzar.</p></div></div></div><div class="preview-footer"><span><i class="fa-solid fa-circle-check"></i> El preview se actualiza al editar</span><span id="previewDesignName">Cinemático · Signature</span></div></section>
+    </div>
+  </main>
+  <main id="publicView" class="view hidden"><div id="publicMount"></div></main>
+  <div id="toastRegion" class="toast-region" aria-live="polite"></div>
+  <dialog id="confirmDialog" class="confirm-dialog"><form method="dialog"><h3 id="confirmTitle">Confirmar acción</h3><p id="confirmMessage">¿Deseas continuar?</p><div class="dialog-actions"><button class="button button-outline" value="cancel">Cancelar</button><button class="button button-danger" id="confirmAccept" value="confirm">Confirmar</button></div></form></dialog>
+</div>
+<script src="app.js" defer></script>
+</body>
+</html>
