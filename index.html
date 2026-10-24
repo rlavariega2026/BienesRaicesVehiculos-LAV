@@ -3,322 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAV Digital — Plataforma Comercial Premium</title>
-    
-    <!-- Fuentes Tipográficas Pro -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome para Iconografía Comercial -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <title>LAV Digital — Tarjetas Comerciales Pro</title>
     <style>
         :root {
-            --lav-bg: #070a12;
-            --lav-panel: #0f172a;
-            --lav-card: #1e293b;
-            --lav-border: #334155;
-            --lav-primary: #4f46e5;
-            --lav-accent: #06b6d4;
-            --lav-rose: #f43f5e;
-            --lav-emerald: #10b981;
-            --lav-text: #f8fafc;
-            --lav-muted: #94a3b8;
-            
-            --radius-main: 16px;
-            --radius-elem: 10px;
-
-            /* Variables Dinámicas para Plantillas */
-            --tpl-bg: #0f172a;
-            --tpl-card: #1e293b;
-            --tpl-primary: #3b82f6;
-            --tpl-font: 'Inter', sans-serif;
+            --bg: #090d16;
+            --panel: #111827;
+            --card: #1f2937;
+            --border: #374151;
+            --primary: #4f46e5;
+            --accent: #06b6d4;
+            --text: #f9fafb;
+            --muted: #9ca3af;
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: var(--lav-bg); color: var(--lav-text); font-family: 'Inter', sans-serif; min-height: 100vh; overflow-x: hidden; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; }
 
-        /* VISTAS PRINCIPALES */
-        .app-view { display: none; width: 100%; min-height: 100vh; }
-        .app-view.active { display: block; }
+        .view { display: none; width: 100%; min-height: 100vh; }
+        .view.active { display: block; }
 
-        /* HEADER SUPERIOR GLOBAL */
-        header.lav-topbar {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--lav-border);
-            padding: 16px 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .lav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-        .brand-icon {
-            width: 42px; height: 42px;
-            background: linear-gradient(135deg, var(--lav-primary), var(--lav-accent));
-            border-radius: var(--radius-elem);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px; color: #fff; box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
-        }
-        .brand-text h1 { font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; color: #fff; }
-        .brand-text span { font-size: 0.7rem; color: var(--lav-accent); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+        header { background: var(--panel); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 1.2rem; color: var(--accent); }
 
-        .btn-lav {
-            padding: 10px 18px; border-radius: var(--radius-elem); font-size: 0.85rem; font-weight: 700;
-            cursor: pointer; border: 1px solid transparent; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
-        }
-        .btn-primary { background: var(--lav-primary); color: #fff; box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
-        .btn-primary:hover { background: #4338ca; transform: translateY(-1px); }
-        .btn-secondary { background: var(--lav-card); color: var(--lav-text); border-color: var(--lav-border); }
-        .btn-secondary:hover { border-color: var(--lav-accent); color: var(--lav-accent); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        .btn { background: var(--primary); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn:hover { opacity: 0.9; }
 
-        /* DASHBOARD - GESTIÓN DE INVENTARIO Y CLIENTES */
-        .dash-container { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
-        .dash-banner {
-            background: linear-gradient(135deg, var(--lav-panel), var(--lav-card));
-            border: 1px solid var(--lav-border); border-radius: var(--radius-main);
-            padding: 32px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
-        }
-        .dash-banner h2 { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 6px; }
-        .dash-banner p { color: var(--lav-muted); font-size: 0.95rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+        .card-item { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .card-hero { height: 180px; background-size: cover; background-position: center; }
+        .card-body { padding: 16px; }
+        .card-price { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+        .card-title { font-size: 1rem; font-weight: 700; margin: 6px 0; }
 
-        .dash-controls {
-            display: grid; grid-template-columns: 280px 1fr auto; gap: 16px; margin-bottom: 24px;
-            background: var(--lav-panel); padding: 16px; border-radius: var(--radius-main); border: 1px solid var(--lav-border);
-        }
-        .select-custom, .input-search {
-            width: 100%; padding: 10px 14px; background: var(--lav-card); border: 1px solid var(--lav-border);
-            border-radius: var(--radius-elem); color: #fff; font-size: 0.9rem; outline: none;
-        }
+        .editor-layout { display: grid; grid-template-columns: 450px 1fr; min-height: calc(100vh - 65px); }
+        @media(max-width: 900px) { .editor-layout { grid-template-columns: 1fr; } }
 
-        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
-        .inv-card {
-            background: var(--lav-panel); border: 1px solid var(--lav-border); border-radius: var(--radius-main);
-            overflow: hidden; transition: transform 0.2s, border-color 0.2s; display: flex; flex-direction: column;
-        }
-        .inv-card:hover { transform: translateY(-4px); border-color: var(--lav-primary); }
-        .inv-hero { height: 190px; background-size: cover; background-position: center; position: relative; }
-        .inv-badge {
-            position: absolute; top: 12px; left: 12px; background: rgba(7,10,18,0.85); backdrop-filter: blur(4px);
-            padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; color: var(--lav-accent); text-transform: uppercase;
-        }
-        .inv-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-        .inv-price { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--lav-accent); margin-bottom: 4px; }
-        .inv-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
-        .inv-client { font-size: 0.8rem; color: var(--lav-muted); margin-bottom: 16px; }
-        .inv-actions { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr 42px; gap: 8px; padding-top: 14px; border-top: 1px solid var(--lav-border); }
+        .sidebar { background: var(--panel); border-right: 1px solid var(--border); padding: 20px; height: calc(100vh - 65px); overflow-y: auto; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+        .form-control { width: 100%; padding: 10px; background: var(--card); border: 1px solid var(--border); border-radius: 6px; color: #fff; font-size: 0.9rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-        /* WORKSPACE DE EDICIÓN Y PREVISUALIZACIÓN */
-        .workspace-layout { display: grid; grid-template-columns: 540px 1fr; min-height: calc(100vh - 75px); }
-        @media(max-width: 1024px) { .workspace-layout { grid-template-columns: 1fr; } }
+        .stage-area { background: #030712; padding: 24px; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; }
+        .phone-frame { width: 380px; min-height: 720px; background: #0f172a; border-radius: 30px; border: 8px solid #1e293b; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
 
-        .editor-sidebar { background: var(--lav-panel); border-right: 1px solid var(--lav-border); display: flex; flex-direction: column; height: calc(100vh - 75px); overflow-y: auto; }
-        .editor-tabs { display: flex; background: #070a12; border-bottom: 1px solid var(--lav-border); position: sticky; top: 0; z-index: 10; }
-        .tab-btn {
-            flex: 1; padding: 14px 6px; background: transparent; border: none; border-bottom: 3px solid transparent;
-            color: var(--lav-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;
-        }
-        .tab-btn i { font-size: 1rem; }
-        .tab-btn.active { color: var(--lav-accent); border-bottom-color: var(--lav-accent); background: rgba(6, 182, 212, 0.08); }
-
-        .tab-panel { display: none; padding: 24px; }
-        .tab-panel.active { display: block; }
-
-        .form-title { font-size: 0.95rem; font-weight: 800; margin-bottom: 16px; color: #fff; border-bottom: 1px solid var(--lav-border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--lav-muted); text-transform: uppercase; margin-bottom: 6px; }
-        .form-control { width: 100%; padding: 11px 14px; background: var(--lav-card); border: 1px solid var(--lav-border); border-radius: var(--radius-elem); color: #fff; font-size: 0.9rem; outline: none; }
-        .form-control:focus { border-color: var(--lav-primary); }
-        .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-
-        /* ZONA DE CARGA DE ARCHIVOS */
-        .dropzone { border: 2px dashed var(--lav-border); border-radius: var(--radius-elem); padding: 20px; text-align: center; background: var(--lav-card); cursor: pointer; transition: border-color 0.2s; }
-        .dropzone:hover { border-color: var(--lav-accent); }
-        .dropzone i { font-size: 1.8rem; color: var(--lav-accent); margin-bottom: 6px; }
-        .dropzone p { font-size: 0.85rem; font-weight: 700; }
-        .dropzone span { font-size: 0.72rem; color: var(--lav-muted); }
-
-        .gallery-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; margin-top: 12px; }
-        .thumb-box { height: 75px; border-radius: 6px; background-size: cover; background-position: center; border: 1px solid var(--lav-border); position: relative; }
-        .thumb-box button { position: absolute; top: 4px; right: 4px; background: var(--lav-rose); color: #fff; border: none; width: 20px; height: 20px; border-radius: 50%; font-size: 10px; cursor: pointer; }
-
-        /* CATÁLOGO DE 100 COMPOSICIONES */
-        .designs-filter { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px; }
-        .filter-chip { padding: 4px 12px; border-radius: 20px; background: var(--lav-card); border: 1px solid var(--lav-border); color: var(--lav-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
-        .filter-chip.active { background: var(--lav-accent); color: #fff; border-color: var(--lav-accent); }
-
-        .designs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 10px; max-height: 480px; overflow-y: auto; padding-right: 4px; }
-        .design-card { background: var(--lav-card); border: 2px solid var(--lav-border); border-radius: var(--radius-elem); padding: 8px; cursor: pointer; transition: all 0.2s; height: 120px; display: flex; flex-direction: column; justify-content: space-between; }
-        .design-card:hover { border-color: var(--lav-primary); transform: translateY(-2px); }
-        .design-card.selected { border-color: var(--lav-accent); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.3); background: rgba(6, 182, 212, 0.1); }
-        .design-card .mock { background: #070a12; height: 50px; border-radius: 4px; border: 1px solid var(--lav-border); position: relative; }
-        .design-card .code { font-size: 0.65rem; color: var(--lav-accent); font-weight: 800; }
-        .design-card .name { font-size: 0.72rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* PREVIEW INTERACTIVO */
-        .stage-area { background: #030712; padding: 32px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; }
-        .device-frame { width: 400px; min-height: 800px; background: var(--tpl-bg); border-radius: 36px; border: 10px solid #1e293b; box-shadow: 0 25px 60px rgba(0,0,0,0.9); overflow: hidden; position: relative; }
-        .device-notch { width: 120px; height: 18px; background: #1e293b; margin: 0 auto; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 20; }
-        .render-stage { width: 100%; height: 100%; overflow-y: auto; background: var(--tpl-bg); color: #fff; font-family: var(--tpl-font); padding-bottom: 40px; }
-
-        /* ESTILOS DE RENDERIZADO DE LA TARJETA PÚBLICA */
-        .card-hero-banner { height: 380px; background-size: cover; background-position: center; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
-        .card-hero-banner::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--tpl-bg) 10%, transparent 75%); }
-        .card-hero-price { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 900; color: var(--tpl-primary); position: relative; z-index: 2; }
-        .card-hero-title { font-size: 1.25rem; font-weight: 800; position: relative; z-index: 2; margin-top: 4px; }
-
-        .card-specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 16px 24px; }
-        .spec-box { background: var(--tpl-card); border: 1px solid var(--lav-border); padding: 12px; border-radius: var(--radius-elem); display: flex; align-items: center; gap: 10px; }
-        .spec-box i { font-size: 1.1rem; color: var(--tpl-primary); }
-        .spec-box .val { font-weight: 800; font-size: 0.9rem; display: block; }
-        .spec-box .lbl { font-size: 0.7rem; color: var(--lav-muted); }
-
-        .card-actions-grid { padding: 20px 24px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .btn-card-act { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px; border-radius: var(--radius-elem); text-decoration: none; font-weight: 700; font-size: 0.85rem; color: #fff; }
-
-        /* MODAL DE COMPARTIR */
-        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-backdrop.active { display: flex; }
-        .modal-card { background: var(--lav-panel); border: 1px solid var(--lav-border); border-radius: var(--radius-main); width: 100%; max-width: 440px; padding: 32px; text-align: center; }
+        .preview-card-hero { height: 280px; background-size: cover; background-position: center; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; }
+        .preview-card-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, #0f172a 10%, transparent 70%); }
     </style>
 </head>
 <body>
 
-    <!-- TOPBAR -->
-    <header class="lav-topbar">
-        <a href="#" class="lav-brand" onclick="switchView('dashboard')">
-            <div class="brand-icon"><i class="fa-solid fa-gem"></i></div>
-            <div class="brand-text">
-                <h1>LAV DIGITAL</h1>
-                <span>PLATAFORMA COMERCIAL</span>
-            </div>
-        </a>
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-lav btn-secondary" onclick="switchView('dashboard')"><i class="fa-solid fa-border-all"></i> Mis Anuncios</button>
-            <button class="btn-lav btn-primary" onclick="createNewCard()"><i class="fa-solid fa-plus"></i> Nueva Tarjeta</button>
-        </div>
+    <header>
+        <h1 onclick="goDash()" style="cursor:pointer;">LAV DIGITAL - Plataforma Comercial</h1>
+        <button class="btn" onclick="newCard()">+ Nueva Tarjeta</button>
     </header>
 
-    <!-- VISTA 1: DASHBOARD -->
-    <main id="view-dashboard" class="app-view active">
-        <div class="dash-container">
-            <div class="dash-banner">
-                <div>
-                    <h2>Panel de Inventario Comercial</h2>
-                    <p>Gestiona, edita, duplica y publica tarjetas digitales de alto nivel para Bienes Raíces y Vehículos.</p>
-                </div>
-                <button class="btn-lav btn-primary" onclick="createNewCard()" style="padding: 14px 24px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Crear Anuncio</button>
-            </div>
-
-            <div class="dash-controls">
-                <select id="dash-client-filter" class="select-custom" onchange="renderInventory()">
-                    <option value="ALL">Todos los Clientes</option>
-                </select>
-                <input type="text" id="dash-search" class="input-search" placeholder="Buscar por título, ubicación o marca..." oninput="renderInventory()">
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-lav btn-secondary" onclick="filterCategory('ALL')">Todos</button>
-                    <button class="btn-lav btn-secondary" onclick="filterCategory('real_estate')"><i class="fa-solid fa-house"></i> Inmuebles</button>
-                    <button class="btn-lav btn-secondary" onclick="filterCategory('vehicle')"><i class="fa-solid fa-car"></i> Vehículos</button>
-                </div>
-            </div>
-
-            <div id="inventory-grid" class="inventory-grid"></div>
+    <!-- DASHBOARD -->
+    <main id="v-dash" class="view active">
+        <div class="container">
+            <h2>Inventario de Tarjetas Digitales</h2>
+            <div id="inv-grid" class="grid"></div>
         </div>
     </main>
 
-    <!-- VISTA 2: EDITOR DE TARJETAS -->
-    <main id="view-editor" class="app-view">
-        <div class="workspace-layout">
-            <div class="editor-sidebar">
-                <div class="editor-tabs">
-                    <button class="tab-btn active" onclick="switchTab('tab-data', event)"><i class="fa-solid fa-pen-to-square"></i> Datos</button>
-                    <button class="tab-btn" onclick="switchTab('tab-media', event)"><i class="fa-solid fa-images"></i> Fotos</button>
-                    <button class="tab-btn" onclick="switchTab('tab-designs', event)"><i class="fa-solid fa-swatchbook"></i> 100 Diseños</button>
-                    <button class="tab-btn" onclick="switchTab('tab-agent', event)"><i class="fa-solid fa-user-tie"></i> Asesor</button>
+    <!-- EDITOR -->
+    <main id="v-edit" class="view">
+        <div class="editor-layout">
+            <div class="sidebar">
+                <h3>Editor de Anuncio</h3>
+                <div class="form-group" style="margin-top:14px;">
+                    <label>Categoría</label>
+                    <select id="e-cat" class="form-control" onchange="preview()">
+                        <option value="real_estate">Bienes Raíces</option>
+                        <option value="vehicle">Vehículo</option>
+                    </select>
                 </div>
-
-                <!-- TAB 1: DATOS -->
-                <div id="tab-data" class="tab-panel active">
-                    <div class="form-title"><i class="fa-solid fa-layer-group"></i> Categoría & Operación</div>
-                    <div class="form-row-2">
-                        <div class="form-group">
-                            <label>Categoría</label>
-                            <select id="inp-category" class="form-control" onchange="toggleCategoryFields()">
-                                <option value="real_estate">Bienes Raíces / Inmueble</option>
-                                <option value="vehicle">Automotriz / Vehículo</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Operación</label>
-                            <select id="inp-operation" class="form-control" onchange="updatePreview()">
-                                <option value="Venta">Venta</option>
-                                <option value="Renta">Renta</option>
-                            </select>
-                        </div>
-                    </div>
-
+                <div class="form-group">
+                    <label>Título Comercial</label>
+                    <input type="text" id="e-title" class="form-control" placeholder="Ej. Casa en Cuernavaca" oninput="preview()">
+                </div>
+                <div class="form-row">
                     <div class="form-group">
-                        <label>Título Comercial del Anuncio</label>
-                        <input type="text" id="inp-title" class="form-control" placeholder="Ej. Residencia de Lujo en Tabachines" oninput="updatePreview()">
+                        <label>Precio ($ MXN)</label>
+                        <input type="number" id="e-price" class="form-control" placeholder="3500000" oninput="preview()">
                     </div>
-
-                    <div class="form-row-2">
-                        <div class="form-group">
-                            <label>Precio ($ MXN)</label>
-                            <input type="number" id="inp-price" class="form-control" placeholder="4500000" oninput="updatePreview()">
-                        </div>
-                        <div class="form-group">
-                            <label>Ubicación / Ciudad</label>
-                            <input type="text" id="inp-location" class="form-control" placeholder="Cuernavaca, Morelos" oninput="updatePreview()">
-                        </div>
-                    </div>
-
-                    <!-- Campos Bienes Raíces -->
-                    <div id="fields-realestate">
-                        <div class="form-title"><i class="fa-solid fa-house-chimney"></i> Datos del Inmueble</div>
-                        <div class="form-row-3">
-                            <div class="form-group"><label>Terreno m²</label><input type="number" id="re-land" class="form-control" oninput="updatePreview()"></div>
-                            <div class="form-group"><label>Const. m²</label><input type="number" id="re-build" class="form-control" oninput="updatePreview()"></div>
-                            <div class="form-group"><label>Recámaras</label><input type="number" id="re-beds" class="form-control" oninput="updatePreview()"></div>
-                        </div>
-                        <div class="form-row-2">
-                            <div class="form-group"><label>Baños</label><input type="number" id="re-baths" class="form-control" step="0.5" oninput="updatePreview()"></div>
-                            <div class="form-group"><label>Estacionamiento</label><input type="number" id="re-parking" class="form-control" oninput="updatePreview()"></div>
-                        </div>
-                    </div>
-
-                    <!-- Campos Vehículos -->
-                    <div id="fields-vehicle" style="display: none;">
-                        <div class="form-title"><i class="fa-solid fa-car-side"></i> Ficha del Vehículo</div>
-                        <div class="form-row-3">
-                            <div class="form-group"><label>Marca</label><input type="text" id="veh-brand" class="form-control" oninput="updatePreview()"></div>
-                            <div class="form-group"><label>Modelo</label><input type="text" id="veh-model" class="form-control" oninput="updatePreview()"></div>
-                            <div class="form-group"><label>Año</label><input type="number" id="veh-year" class="form-control" oninput="updatePreview()"></div>
-                        </div>
-                        <div class="form-row-2">
-                            <div class="form-group"><label>Kilometraje</label><input type="number" id="veh-km" class="form-control" oninput="updatePreview()"></div>
-                            <div class="form-group"><label>Transmisión</label><select id="veh-trans" class="form-control" onchange="updatePreview()"><option value="Automática">Automática</option><option value="Manual">Manual</option></select></div>
-                        </div>
-                    </div>
-
                     <div class="form-group">
-                        <label>Descripción Comercial</label>
-                        <textarea id="inp-desc" class="form-control" rows="4" placeholder="Redacta la presentación..." oninput="updatePreview()"></textarea>
+                        <label>Ubicación</label>
+                        <input type="text" id="e-loc" class="form-control" placeholder="Morelos" oninput="preview()">
                     </div>
                 </div>
+                <div class="form-group">
+                    <label>Foto de Portada (Archivo)</label>
+                    <input type="file" class="form-control" accept="image/*" onchange="uploadCover(event)">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp (Ej. 527771234567)</label>
+                    <input type="text" id="e-wa" class="form-control" placeholder="527771234567" oninput="preview()">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="e-desc" class="form-control" rows="3" oninput="preview()"></textarea>
+                </div>
+                <button class="btn" style="width:100%; margin-top:10px;" onclick="savePub()">Guardar y Publicar</button>
+            </div>
 
-                <!-- TAB 2: FOTOS -->
-                <div id="tab-media" class="tab-panel">
-                    <div class="form-title"><i class="fa-solid fa-image"></i> Fotografía de Portada</div>
-                    <div class="dropzone" onclick="document.getElementById('file-cover').click()">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <p>Haz clic para subir Portada</p>
-                        <span>Carga directa desde tu dispositivo</span>
-                        <input type="file" id="file-cover" accept="image/*" style="display:none;" onchange="uploadCover(event)">
+            <div class="stage-area">
+                <div class="phone-frame" id="stage-render"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- PUBLIC VIEW -->
+    <main id="v-pub" class="view">
+        <div style="max-width: 420px; margin: 0 auto; min-height: 100vh; background:#0f172a;" id="pub-render"></div>
+    </main>
+
+    <script>
+        let db = JSON.parse(localStorage.getItem('lav_db')) || [
+            { id: 'demo1', title: 'Residencia en Cuernavaca', price: 4500000, loc: 'Cuernavaca, Morelos', cover: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80', wa: '527771234567', desc: 'Hermosa propiedad con alberca.' }
+        ];
+        let currentCard = null;
+        let tempCover = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('card');
+            if (id) {
+                renderPublic(id);
+            } else {
+                goDash();
+            }
+        });
+
+        function goDash() {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('v-dash').classList.add('active');
+            renderInv();
+        }
+
+        function renderInv() {
+            const grid = document.getElementById('inv-grid');
+            grid.innerHTML = '';
+            db.forEach(item => {
+                const priceFmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(item.price || 0);
+                grid.innerHTML += `
+                    <div class="card-item">
+                        <div class="card-hero" style="background-image:url('${item.cover || ''}')"></div>
+                        <div class="card-body">
+                            <div class="card-price">${priceFmt}</div>
+                            <div class="card-title">${item.title}</div>
+                            <div style="display:flex; gap:8px; margin-top:12px;">
+                                <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="edit('${item.id}')">Editar</button>
+                                <button class="btn" style="padding:6px 12px; font-size:0.8rem; background:#334155;" onclick="share('${item.id}')">Link</button>
+                            </div>
+                        </div>
                     </div>
-                    <div id="
+                `;
+            });
+        }
+
+        function newCard() {
+            currentCard = { id: 'c_' + Date.now(), title: '', price: 0, loc: '', cover: '', wa: '', desc: '' };
+            tempCover = '';
+            loadEditor();
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('v-edit').classList.add('active');
+        }
+
+        function edit(id) {
+            currentCard = db.find(x => x.id === id);
+            if (!currentCard) return;
+            tempCover = currentCard.cover || '';
+            loadEditor();
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('v-edit').classList.add('active');
+        }
+
+        function loadEditor() {
+            document.getElementById('e-title').value = currentCard.title || '';
+            document.getElementById('e-price').value = currentCard.price || '';
+            document.getElementById('e-loc').value = currentCard.loc || '';
+            document.getElementById('e-wa').value = currentCard.wa || '';
+            document.getElementById('e-desc').value = currentCard.desc || '';
+            preview();
+        }
+
+        function uploadCover(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                tempCover = evt.target.result;
+                preview();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function preview() {
+            const stage = document.getElementById('stage-render');
+            const title = document.getElementById('e-title').value || 'Título de Muestra';
+            const price = Number(document.getElementById('e-price').value || 0);
+            const priceFmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(price);
+            const loc = document.getElementById('e-loc').value || 'Ubicación';
+            const desc = document.getElementById('e-desc').value || 'Descripción...';
+            const wa = document.getElementById('e-wa').value;
+            const cover = tempCover || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80';
+
+            stage.innerHTML = `
+                <div class="preview-card-hero" style="background-image:url('${cover}')">
+                    <div style="font-size:1.8rem; font-weight:900; color:var(--accent); position:relative; z-index:2;">${priceFmt}</div>
+                    <div style="font-size:1.1rem; font-weight:800; position:relative; z-index:2; margin-top:4px;">${title}</div>
+                    <div style="font-size:0.8rem; color:#cbd5e1; position:relative; z-index:2; margin-top:4px;">📍 ${loc}</div>
+                </div>
+                <div style="padding:20px;">
+                    <p style="font-size:0.88rem; color:#cbd5e1; line-height:1.5;">${desc}</p>
+                    ${wa ? `<a href="https://wa.me/${wa}" target="_blank" style="display:block; background:#25d366; color:#fff; text-align:center; padding:12px; border-radius:8px; font-weight:700; text-decoration:none; margin-top:20px;">💬 Contactar por WhatsApp</a>` : ''}
+                </div>
+            `;
+        }
+
+        function savePub() {
+            if (!currentCard) return;
+            currentCard.title = document.getElementById('e-title').value;
+            currentCard.price = Number(document.getElementById('e-price').value);
+            currentCard.loc = document.getElementById('e-loc').value;
+            currentCard.wa = document.getElementById('e-wa').value;
+            currentCard.desc = document.getElementById('e-desc').value;
+            currentCard.cover = tempCover;
+
+            const idx = db.findIndex(x => x.id === currentCard.id);
+            if (idx >= 0) db[idx] = currentCard;
+            else db.unshift(currentCard);
+
+            localStorage.setItem('lav_db', JSON.stringify(db));
+            share(currentCard.id);
+        }
+
+        function share(id) {
+            const url = window.location.origin + window.location.pathname + `?card=${id}`;
+            prompt('¡Tarjeta publicada con éxito! Copia este enlace:', url);
+        }
+
+        function renderPublic(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('v-pub').classList.add('active');
+            const item = db.find(x => x.id === id) || db[0];
+            const priceFmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(item.price || 0);
+
+            document.getElementById('pub-render').innerHTML = `
+                <div class="preview-card-hero" style="height:350px; background-image:url('${item.cover || ''}')">
+                    <div style="font-size:2rem; font-weight:900; color:var(--accent); position:relative; z-index:2;">${priceFmt}</div>
+                    <div style="font-size:1.2rem; font-weight:800; position:relative; z-index:2; margin-top:4px;">${item.title}</div>
+                    <div style="font-size:0.85rem; color:#cbd5e1; position:relative; z-index:2; margin-top:4px;">📍 ${item.loc}</div>
+                </div>
+                <div style="padding:24px;">
+                    <p style="font-size:0.95rem; color:#cbd5e1; line-height:1.6;">${item.desc || ''}</p>
+                    ${item.wa ? `<a href="https://wa.me/${item.wa}" target="_blank" style="display:block; background:#25d366; color:#fff; text-align:center; padding:14px; border-radius:10px; font-weight:700; text-decoration:none; margin-top:24px;">💬 Contactar por WhatsApp</a>` : ''}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
