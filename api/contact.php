@@ -24,7 +24,7 @@ if (!is_array($card) || ($card['status'] ?? '') !== 'published') {
     exit;
 }
 function vcard_escape($value): string {
-    return str_replace(["\\\\", "\r", "\n", ";", ","], ["\\\\\\\\", "", "\\n", "\\;", "\\,"], trim((string)$value));
+    return str_replace(["\\", "\r", "\n", ";", ","], ["\\\\", "", "\\n", "\\;", "\\,"], trim((string)$value));
 }
 $full = trim((string)($card['contactName'] ?? $card['clientName'] ?? 'Contacto'));
 if ($full === '') $full = 'Contacto';
