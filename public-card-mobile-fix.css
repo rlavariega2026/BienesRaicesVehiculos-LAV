@@ -396,3 +396,53 @@ body:has(#publicView:not(.hidden)) {
     padding: 20px 16px 24px !important;
   }
 }
+
+
+/* Vista pública compartida: mostrar únicamente la tarjeta, sin cabecera ni pie de portal. */
+body:has(#publicView:not(.hidden)) {
+  min-height: 100svh !important;
+  background: radial-gradient(ellipse at 50% 0%, #252b3a 0%, #0d1018 65%) !important;
+}
+body:has(#publicView:not(.hidden)) #publicView {
+  display: block !important;
+  min-height: 100svh !important;
+  background: transparent !important;
+}
+body:has(#publicView:not(.hidden)) #publicMount {
+  min-height: 100svh !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px 12px 28px !important;
+}
+#publicMount .public-topline,
+#publicMount .public-footer {
+  display: none !important;
+}
+#publicMount > .public-shell {
+  width: min(100%, 480px) !important;
+  min-height: 0 !important;
+  margin: auto !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border-radius: 24px !important;
+  background: #101116 !important;
+  box-shadow: 0 24px 80px #0008 !important;
+}
+#publicMount .digital-card.public-card {
+  width: 100% !important;
+  max-width: 480px !important;
+  margin: 0 auto !important;
+  border-radius: 24px !important;
+}
+@media (max-width: 560px) {
+  body:has(#publicView:not(.hidden)) #publicMount {
+    align-items: flex-start !important;
+    padding: 8px 8px calc(16px + env(safe-area-inset-bottom)) !important;
+  }
+  #publicMount > .public-shell,
+  #publicMount .digital-card.public-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 20px !important;
+  }
+}
