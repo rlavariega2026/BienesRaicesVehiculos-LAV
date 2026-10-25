@@ -199,15 +199,21 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
       return;
     }
     const contactUrl=new URL("api/contact.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]).href;
-    // Android: invocar el manejador nativo de vCard; el sistema puede mostrar Contactos
-    // o un selector de aplicaciones según el teléfono y las apps instaladas.
+    const name=String(c.contactName||c.clientName||c.title||"Contacto").trim();
+    const phone=String(c.phone||c.whatsapp||"").trim();
+    const email=String(c.email||"").trim();
     if (/Android/i.test(navigator.userAgent)) {
-      const u=new URL(contactUrl);
-      location.href="intent://"+u.host+u.pathname+u.search+"#Intent;scheme=https;type=text/x-vcard;action=android.intent.action.VIEW;end";
+      // Abrir directamente el formulario de alta de Contactos de Android, precargado.
+      const extras=["S.name="+encodeURIComponent(name)];
+      if(phone) extras.push("S.phone="+encodeURIComponent(phone));
+      if(email) extras.push("S.email="+encodeURIComponent(email));
+      const intent="intent://contacts/#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir/contact;"+extras.join(";")+";end";
+      location.href=intent;
       return;
     }
-    // iOS: abrir la vCard para que el sistema muestre la ficha con la opción de añadir.
-    window.location.assign(contactUrl);
+    // iPhone/iPad: iOS no permite a una web insertar contactos directamente;
+    // abre la vCard para mostrar la ficha y la opción del sistema para añadirla.
+    location.href=contactUrl;
   }
   async function share(c) {
     if(!c?.id)return toast("Guarda la tarjeta primero.","error");
