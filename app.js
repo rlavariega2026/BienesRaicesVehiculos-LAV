@@ -193,10 +193,32 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
   function cardUrl(c) {
     let u=new URL(location.href.split("?")[0]);u.searchParams.set("card",c.id);if(c.publicName)u.searchParams.set("nombre",slug(c.publicName));return u.href
   }
-  function saveContact(c) {
-    let full=(c.contactName||c.clientName||"Contacto").trim(),parts=full.split(/\s+/),last=parts.length>1?parts.pop():"",first=parts.join(" ")||full;const v=s=>String(s||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/;/g,"\\;").replace(/,/g,"\\,");let rows=["BEGIN:VCARD","VERSION:3.0","N:"+v(last)+";"+v(first)+";;;","FN:"+v(full)];if(c.clientName)rows.push("ORG:"+v(c.clientName));if(c.phone)rows.push("TEL;TYPE=WORK,VOICE:"+v(c.phone));if(c.whatsapp)rows.push("TEL;TYPE=CELL:"+v(c.whatsapp));if(c.email)rows.push("EMAIL;TYPE=INTERNET:"+v(c.email));if(c.location)rows.push("ADR;TYPE=WORK:;;"+v(c.location)+";;;;");if(c.facebook)rows.push("URL:"+v(c.facebook));rows.push("URL:"+v(cardUrl(c)),"END:VCARD");let blob=new Blob([rows.join("\r\n")], {
-      type:"text/vcard;charset=utf-8"
-    }),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=slug(full)+".vcf";document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);toast("Contacto preparado para guardarse en el teléfono.")
+  async function saveContact(c) {
+    let full=(c.contactName||c.clientName||"Contacto").trim(),parts=full.split(/\s+/),last=parts.length>1?parts.pop():"",first=parts.join(" ")||full;
+    const v=s=>String(s||"").replace(/\\/g,"\\\\").replace(/\r?\n/g,"\\n").replace(/;/g,"\\;").replace(/,/g,"\\,");
+    let rows=["BEGIN:VCARD","VERSION:3.0","N:"+v(last)+";"+v(first)+";;;","FN:"+v(full)];
+    if(c.clientName)rows.push("ORG:"+v(c.clientName));
+    if(c.phone)rows.push("TEL;TYPE=WORK,VOICE:"+v(c.phone));
+    if(c.whatsapp)rows.push("TEL;TYPE=CELL:"+v(c.whatsapp));
+    if(c.email)rows.push("EMAIL;TYPE=INTERNET:"+v(c.email));
+    if(c.location)rows.push("ADR;TYPE=WORK:;;"+v(c.location)+";;;;");
+    if(c.facebook)rows.push("URL:"+v(c.facebook));
+    rows.push("URL:"+v(cardUrl(c)),"END:VCARD");
+    let blob=new Blob([rows.join("\r\n")],{type:"text/vcard;charset=utf-8"}),file=new File([blob],slug(full)+".vcf",{type:"text/vcard"});
+    // En móviles, abrir el menú nativo para compartir/importar el contacto; descargar solo como respaldo.
+    if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){
+      try{
+        await navigator.share({files:[file],title:"Guardar contacto: "+full,text:"Añade este contacto a tu agenda."});
+        toast("Se abrió el menú del teléfono para guardar el contacto.");
+        return;
+      }catch(e){
+        if(e&&e.name==="AbortError")return;
+      }
+    }
+    let url=URL.createObjectURL(blob),link=document.createElement("a");
+    link.href=url;link.download=slug(full)+".vcf";link.style.display="none";document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),3000);
+    toast("El teléfono descargó el contacto. Ábrelo desde Descargas para añadirlo a Contactos.");
   }
   async function share(c) {
     if(!c?.id)return toast("Guarda la tarjeta primero.","error");let u=cardUrl(c);try {
@@ -282,9 +304,9 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
       catch {
       }
     }
-    cards=all;let catalog=c.kind==="profile"?all.filter(x=>x.clientName===c.clientName&&x.status==="published"&&x.kind!=="profile"):[];$("#publicMount").innerHTML='<div class="public-shell"><div class="public-topline"><span>LAV DIGITAL · '+esc((c.clientName||"TARJETA").toUpperCase())+'</span><span>✦ TARJETA DIGITAL</span></div>'+card(c, {
+    cards=all;let catalog=c.kind==="profile"?all.filter(x=>x.clientName===c.clientName&&x.status==="published"&&x.kind!=="profile"):[];$("#publicMount").innerHTML='<div class="public-shell">'+card(c, {
       publicMode:true,catalog
-    })+'<div style="text-align:center;color:#ffffff70;font-size:9px;letter-spacing:1px;padding:24px">PRESENTADO POR LAV DIGITAL</div></div>';document.title=(c.publicName||c.title||c.clientName)+" | Tarjeta digital";document.querySelector('meta[name="theme-color"]')?.setAttribute("content",c.theme?.background||"#101116")
+    })+'</div>';document.title=(c.publicName||c.title||c.clientName)+" | Tarjeta digital";document.querySelector('meta[name="theme-color"]')?.setAttribute("content",c.theme?.background||"#101116")
   }
   function noPublic(m) {
     $("#publicMount").innerHTML='<div class="public-shell" style="min-height:100vh;padding:15vh 24px;color:white;text-align:center"><h1>Esta tarjeta no está disponible</h1><p style="color:#b4b6c3;line-height:1.7">'+esc(m)+'</p><a href="'+esc(location.pathname)+'" class="button button-primary">Ir a LAV Digital</a></div>'
