@@ -198,14 +198,16 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
       toast("Primero publica la tarjeta para guardar el contacto.", "error");
       return;
     }
-    // Abrir el archivo vCard real. Android lo descarga para abrirlo desde la notificación;
-    // iPhone puede mostrar la ficha importable en la vista previa del archivo.
     const contactUrl=new URL("api/contact.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]).href;
-    const link=document.createElement("a");
-    link.href=contactUrl;
-    link.rel="noopener";
-    link.setAttribute("type","text/vcard");
-    link.click();
+    // Android: invocar el manejador nativo de vCard; el sistema puede mostrar Contactos
+    // o un selector de aplicaciones según el teléfono y las apps instaladas.
+    if (/Android/i.test(navigator.userAgent)) {
+      const u=new URL(contactUrl);
+      location.href="intent://"+u.host+u.pathname+u.search+"#Intent;scheme=https;type=text/x-vcard;action=android.intent.action.VIEW;end";
+      return;
+    }
+    // iOS: abrir la vCard para que el sistema muestre la ficha con la opción de añadir.
+    window.location.assign(contactUrl);
   }
   async function share(c) {
     if(!c?.id)return toast("Guarda la tarjeta primero.","error");
