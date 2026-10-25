@@ -193,27 +193,32 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
   function cardUrl(c) {
     let u=new URL(location.href.split("?")[0]);u.searchParams.set("card",c.id);if(c.publicName)u.searchParams.set("nombre",slug(c.publicName));return u.href
   }
-  async function saveContact(c) {
+  function saveContact(c) {
     if(!c?.id) {
-      toast("Primero publica la tarjeta para poder abrir el contacto directamente.", "error");
+      toast("Primero publica la tarjeta para guardar el contacto.", "error");
       return;
     }
+    // Abrir el archivo vCard real. Android lo descarga para abrirlo desde la notificación;
+    // iPhone puede mostrar la ficha importable en la vista previa del archivo.
     const contactUrl=new URL("api/contact.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]).href;
-    // Android: solicitar al sistema que abra el archivo vCard con una aplicación compatible.
-    if(/Android/i.test(navigator.userAgent)) {
-      const target=new URL(contactUrl);
-      location.href="intent://"+target.host+target.pathname+target.search+"#Intent;scheme=https;type=text/x-vcard;action=android.intent.action.VIEW;end";
-      return;
-    }
-    // iPhone/iPad y otros sistemas: el servidor entrega text/vcard en línea para mostrar la ficha importable.
-    location.href=contactUrl;
+    const link=document.createElement("a");
+    link.href=contactUrl;
+    link.rel="noopener";
+    link.setAttribute("type","text/vcard");
+    link.click();
   }
   async function share(c) {
-    if(!c?.id)return toast("Guarda la tarjeta primero.","error");let u=cardUrl(c);try {
-      await navigator.clipboard.writeText(u);toast("Enlace copiado: "+u)
+    if(!c?.id)return toast("Guarda la tarjeta primero.","error");
+    const u=cardUrl(c);
+    if(navigator.share) {
+      try { await navigator.share({title:c.publicName||c.title||c.clientName||"Tarjeta digital",text:"Te comparto esta tarjeta digital",url:u}); return; }
+      catch(e) { if(e?.name==="AbortError")return; }
     }
-    catch {
-      let d=document.createElement("div");d.className="lightbox";d.innerHTML='<div style="background:white;color:#222;padding:24px;border-radius:14px;max-width:90vw;overflow-wrap:anywhere"><h3>Enlace de la tarjeta</h3><p>'+esc(u)+'</p><button class="button button-primary" data-close>Entendido</button></div>';document.body.append(d);d.querySelector("button").onclick=()=>d.remove()
+    try {
+      await navigator.clipboard.writeText(u);
+      toast("Enlace copiado. Ya puedes pegarlo en WhatsApp o donde quieras compartirlo.");
+    } catch {
+      let d=document.createElement("div");d.className="lightbox";d.innerHTML='<div style="background:white;color:#222;padding:24px;border-radius:14px;max-width:90vw;overflow-wrap:anywhere"><h3>Enlace de la tarjeta</h3><p>'+esc(u)+'</p><button class="button button-primary" data-close>Copiar enlace</button></div>';document.body.append(d);d.querySelector("button").onclick=async()=>{try{await navigator.clipboard.writeText(u);d.remove();toast("Enlace copiado.");}catch{}} 
     }
   }
   function ask(title,msg) {
