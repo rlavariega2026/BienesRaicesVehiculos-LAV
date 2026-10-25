@@ -198,22 +198,10 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
       toast("Primero publica la tarjeta para guardar el contacto.", "error");
       return;
     }
+    // En móvil se entrega una vCard estándar. El navegador/sistema muestra la
+    // opción compatible para abrirla o importarla; la web no puede guardar sin permiso.
     const contactUrl=new URL("api/contact.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]).href;
-    const name=String(c.contactName||c.clientName||c.title||"Contacto").trim();
-    const phone=String(c.phone||c.whatsapp||"").trim();
-    const email=String(c.email||"").trim();
-    if (/Android/i.test(navigator.userAgent)) {
-      // Abrir directamente el formulario de alta de Contactos de Android, precargado.
-      const extras=["S.name="+encodeURIComponent(name)];
-      if(phone) extras.push("S.phone="+encodeURIComponent(phone));
-      if(email) extras.push("S.email="+encodeURIComponent(email));
-      const intent="intent://contacts/#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir/contact;"+extras.join(";")+";end";
-      location.href=intent;
-      return;
-    }
-    // iPhone/iPad: iOS no permite a una web insertar contactos directamente;
-    // abre la vCard para mostrar la ficha y la opción del sistema para añadirla.
-    location.href=contactUrl;
+    window.location.href=contactUrl;
   }
   async function share(c) {
     if(!c?.id)return toast("Guarda la tarjeta primero.","error");
