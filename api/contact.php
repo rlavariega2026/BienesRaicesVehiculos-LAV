@@ -44,7 +44,11 @@ if (!empty($card['facebook'])) $rows[] = 'URL:'.vcard_escape($card['facebook']);
 $rows[] = 'URL:'.vcard_escape($url);
 $rows[] = 'END:VCARD';
 header('Content-Type: text/vcard; charset=utf-8');
-header('Content-Disposition: inline; filename="' . preg_replace('/[^a-zA-Z0-9_-]/', '-', $full) . '.vcf"');
+$vcfName = preg_replace('/[^a-zA-Z0-9_-]/', '-', $full) . '.vcf';
+/* Android: descargar el VCF para abrirlo desde la notificación y guardarlo en Contactos.
+   iOS y otros: mostrarlo en línea para ofrecer la vista previa/importación compatible. */
+$isAndroid = stripos((string)($_SERVER['HTTP_USER_AGENT'] ?? ''), 'Android') !== false;
+header('Content-Disposition: ' . ($isAndroid ? 'attachment' : 'inline') . '; filename="' . $vcfName . '"');
 header('Cache-Control: no-store, max-age=0');
 header('X-Content-Type-Options: nosniff');
 echo implode("\r\n", $rows) . "\r\n";
