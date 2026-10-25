@@ -1,1 +1,19 @@
-{"name":"LAV Bienes Raíces y Vehículos","short_name":"LAV Tarjetas","description":"Tarjetas digitales para propiedades y vehículos","start_url":"./","scope":"./","display":"standalone","orientation":"portrait","background_color":"#101820","theme_color":"#101820","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
+{
+  "name": "LAV Bienes Raíces y Vehículos",
+  "short_name": "LAV Tarjetas",
+  "description": "Tarjetas digitales para propiedades y vehículos",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#101820",
+  "theme_color": "#101820",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
