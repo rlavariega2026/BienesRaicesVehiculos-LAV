@@ -194,31 +194,19 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
     let u=new URL(location.href.split("?")[0]);u.searchParams.set("card",c.id);if(c.publicName)u.searchParams.set("nombre",slug(c.publicName));return u.href
   }
   async function saveContact(c) {
-    let full=(c.contactName||c.clientName||"Contacto").trim(),parts=full.split(/\s+/),last=parts.length>1?parts.pop():"",first=parts.join(" ")||full;
-    const v=s=>String(s||"").replace(/\\/g,"\\\\").replace(/\r?\n/g,"\\n").replace(/;/g,"\\;").replace(/,/g,"\\,");
-    let rows=["BEGIN:VCARD","VERSION:3.0","N:"+v(last)+";"+v(first)+";;;","FN:"+v(full)];
-    if(c.clientName)rows.push("ORG:"+v(c.clientName));
-    if(c.phone)rows.push("TEL;TYPE=WORK,VOICE:"+v(c.phone));
-    if(c.whatsapp)rows.push("TEL;TYPE=CELL:"+v(c.whatsapp));
-    if(c.email)rows.push("EMAIL;TYPE=INTERNET:"+v(c.email));
-    if(c.location)rows.push("ADR;TYPE=WORK:;;"+v(c.location)+";;;;");
-    if(c.facebook)rows.push("URL:"+v(c.facebook));
-    rows.push("URL:"+v(cardUrl(c)),"END:VCARD");
-    let blob=new Blob([rows.join("\r\n")],{type:"text/vcard;charset=utf-8"}),file=new File([blob],slug(full)+".vcf",{type:"text/vcard"});
-    // En móviles, abrir el menú nativo para compartir/importar el contacto; descargar solo como respaldo.
-    if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){
-      try{
-        await navigator.share({files:[file],title:"Guardar contacto: "+full,text:"Añade este contacto a tu agenda."});
-        toast("Se abrió el menú del teléfono para guardar el contacto.");
-        return;
-      }catch(e){
-        if(e&&e.name==="AbortError")return;
-      }
+    if(!c?.id) {
+      toast("Primero publica la tarjeta para poder abrir el contacto directamente.", "error");
+      return;
     }
-    let url=URL.createObjectURL(blob),link=document.createElement("a");
-    link.href=url;link.download=slug(full)+".vcf";link.style.display="none";document.body.append(link);link.click();link.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),3000);
-    toast("El teléfono descargó el contacto. Ábrelo desde Descargas para añadirlo a Contactos.");
+    const contactUrl=new URL("api/contact.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]).href;
+    // Android: solicitar al sistema que abra el archivo vCard con una aplicación compatible.
+    if(/Android/i.test(navigator.userAgent)) {
+      const target=new URL(contactUrl);
+      location.href="intent://"+target.host+target.pathname+target.search+"#Intent;scheme=https;type=text/x-vcard;action=android.intent.action.VIEW;end";
+      return;
+    }
+    // iPhone/iPad y otros sistemas: el servidor entrega text/vcard en línea para mostrar la ficha importable.
+    location.href=contactUrl;
   }
   async function share(c) {
     if(!c?.id)return toast("Guarda la tarjeta primero.","error");let u=cardUrl(c);try {
