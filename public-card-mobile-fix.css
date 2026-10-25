@@ -320,3 +320,79 @@ body {
     padding-right: 12px !important;
   }
 }
+
+
+/* TARJETA PUBLICADA: que se perciba como tarjeta digital, no como página de portal. */
+body:has(#publicView:not(.hidden)) {
+  background: #0d1018 !important;
+  padding: 0 !important;
+}
+#publicMount {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  width: 100% !important;
+  min-height: 100svh !important;
+  padding: clamp(12px, 3vw, 30px) 12px 36px !important;
+  background: radial-gradient(ellipse at top, #222838 0%, #0d1018 58%) !important;
+}
+#publicMount > .public-shell {
+  width: 100% !important;
+  max-width: 480px !important;
+  min-height: 0 !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 1px solid #ffffff18 !important;
+  border-radius: 24px !important;
+  background: var(--card-bg, #101116) !important;
+  box-shadow: 0 24px 80px #0007 !important;
+}
+#publicMount .digital-card.public-card,
+#publicMount .digital-card.public-card.layout-split,
+#publicMount .digital-card.public-card.layout-sidebar {
+  width: 100% !important;
+  max-width: 480px !important;
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 0 auto !important;
+  border: 0 !important;
+  border-radius: 24px !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+#publicMount .digital-card.public-card > .dc-cover {
+  height: clamp(230px, 38svh, 330px) !important;
+  min-height: 230px !important;
+  max-height: 330px !important;
+  border-radius: 0 !important;
+}
+#publicMount .digital-card.public-card > .dc-content {
+  padding: 22px 20px 28px !important;
+}
+#publicMount .digital-card.public-card .dc-contact {
+  gap: 9px !important;
+}
+#publicMount .digital-card.public-card .dc-contact > * {
+  border-radius: 12px !important;
+}
+@media (max-width: 560px) {
+  #publicMount {
+    padding: 10px 9px calc(18px + env(safe-area-inset-bottom)) !important;
+  }
+  #publicMount > .public-shell,
+  #publicMount .digital-card.public-card,
+  #publicMount .digital-card.public-card.layout-split,
+  #publicMount .digital-card.public-card.layout-sidebar {
+    max-width: 100% !important;
+    border-radius: 20px !important;
+  }
+  #publicMount .digital-card.public-card > .dc-cover {
+    height: clamp(220px, 34svh, 300px) !important;
+    min-height: 220px !important;
+    max-height: 300px !important;
+  }
+  #publicMount .digital-card.public-card > .dc-content {
+    padding: 20px 16px 24px !important;
+  }
+}
