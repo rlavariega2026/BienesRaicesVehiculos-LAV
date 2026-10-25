@@ -28,7 +28,7 @@ function vcard_escape($value): string {
 }
 $full = trim((string)($card['contactName'] ?? $card['clientName'] ?? 'Contacto'));
 if ($full === '') $full = 'Contacto';
-$parts = preg_split('/\\s+/', $full) ?: [$full];
+$parts = preg_split('/\s+/', $full) ?: [$full];
 $last = count($parts) > 1 ? (string)array_pop($parts) : '';
 $first = trim(implode(' ', $parts));
 if ($first === '') $first = $full;
