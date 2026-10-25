@@ -2527,108 +2527,44 @@ body:has(#publicView:not(.hidden))  {
     box-shadow: 0 0 55px #0005 !important;
   }
 }
-/* FIX LAV: en la vista previa del editor, la portada debe conservar formato apaisado.
-   Los layouts split/sidebar se apilan solo en el panel de previsualización para evitar
-   que la foto quede como una columna estrecha y vertical. */
-#previewCard.layout-split, #previewCard.layout-sidebar  {
-  display: block !important;
-  grid-template-columns: minmax(0, 1fr) !important;
+/* VISTA PREVIA: conservar los diseños originales de cada tarjeta.
+   Solo apilar las composiciones divididas cuando el espacio disponible sea estrecho. */
+.preview-card {
+  width: min(100%, 680px);
 }
-#previewCard.layout-split > .dc-cover, #previewCard.layout-sidebar > .dc-cover  {
-  display: block !important;
-  width: 100% !important;
-  height: clamp(260px, 34vw, 360px) !important;
-  min-height: 260px !important;
-  max-height: 360px !important;
+.preview-card.desktop-preview {
+  width: min(100%, 900px);
 }
-#previewCard.layout-split > .dc-content, #previewCard.layout-sidebar > .dc-content  {
-  width: 100% !important;
-  min-width: 0 !important;
+#previewCard > article.digital-card {
+  width: 100%;
+  min-width: 0;
+  height: auto;
 }
-@media (max-width: 560px)  {
-  #previewCard.layout-split > .dc-cover, #previewCard.layout-sidebar > .dc-cover  {
-    height: 300px !important;
-    min-height: 260px !important;
-    max-height: 330px !important;
+#previewCard > article.digital-card .dc-cover {
+  background-size: cover;
+  background-position: center;
+}
+@media (max-width: 680px) {
+  #previewCard > article.digital-card.layout-split,
+  #previewCard > article.digital-card.layout-sidebar {
+    display: block;
+    grid-template-columns: minmax(0, 1fr);
   }
-}
-/* FIX VISTA PREVIA: la foto principal siempre se muestra en un marco apaisado,
-   sin depender del diseño seleccionado. No altera las tarjetas publicadas. */
-#previewCard > .dc-cover  {
-  display: block !important;
-  width: 100% !important;
-  height: clamp(260px, 34vw, 360px) !important;
-  min-height: 260px !important;
-  max-height: 360px !important;
-  background-size: cover !important;
-  background-position: center center !important;
-  grid-column: 1 / -1 !important;
-  grid-row: auto !important;
-}
-#previewCard.layout-split, #previewCard.layout-sidebar  {
-  display: block !important;
-  grid-template-columns: minmax(0, 1fr) !important;
-}
-#previewCard > .dc-content  {
-  width: 100% !important;
-  min-width: 0 !important;
-}
-@media (max-width: 560px)  {
-  #previewCard > .dc-cover  {
-    height: 300px !important;
-    min-height: 260px !important;
-    max-height: 330px !important;
+  #previewCard > article.digital-card.layout-split > .dc-cover,
+  #previewCard > article.digital-card.layout-sidebar > .dc-cover {
+    width: 100%;
+    height: clamp(260px, 60vw, 360px);
+    min-height: 260px;
+    max-height: 360px;
   }
-}
-/* CORRECCIÓN DEFINITIVA: el editor contiene una tarjeta article dentro de #previewCard.
-   Las reglas anteriores apuntaban al contenedor exterior y nunca alcanzaban la portada real. */
-#previewCard > article.digital-card  {
-  display: block !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  height: auto !important;
-  overflow: visible !important;
-  grid-template-columns: minmax(0, 1fr) !important;
-  grid-template-rows: auto auto !important;
-}
-#previewCard > article.digital-card.layout-split, #previewCard > article.digital-card.layout-sidebar  {
-  display: block !important;
-  grid-template-columns: minmax(0, 1fr) !important;
-}
-#previewCard > article.digital-card > .dc-cover  {
-  display: block !important;
-  position: relative !important;
-  width: 100% !important;
-  height: clamp(280px, 36vw, 420px) !important;
-  min-height: 280px !important;
-  max-height: 420px !important;
-  grid-column: 1 / -1 !important;
-  grid-row: 1 !important;
-  background-size: cover !important;
-  background-position: center center !important;
-}
-#previewCard > article.digital-card > .dc-content  {
-  display: block !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  height: auto !important;
-  grid-column: 1 / -1 !important;
-  grid-row: 2 !important;
-  overflow: visible !important;
-}
-#previewCard > article.digital-card.layout-sidebar .dc-specs  {
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-}
-#previewCard > article.digital-card.layout-sidebar .dc-contact  {
-  flex-direction: row !important;
-  flex-wrap: wrap !important;
-}
-@media (max-width: 560px)  {
-  #previewCard > article.digital-card > .dc-cover  {
-    height: 300px !important;
-    min-height: 260px !important;
-    max-height: 340px !important;
+  #previewCard > article.digital-card.layout-sidebar > .dc-content {
+    padding: 20px;
+  }
+  #previewCard > article.digital-card.layout-sidebar .dc-specs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #previewCard > article.digital-card.layout-sidebar .dc-contact {
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
