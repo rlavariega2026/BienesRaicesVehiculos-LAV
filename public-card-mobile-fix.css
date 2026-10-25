@@ -446,3 +446,65 @@ body:has(#publicView:not(.hidden)) #publicMount {
     border-radius: 20px !important;
   }
 }
+
+
+/* FIX DEFINITIVO DE LA VISTA PUBLICA: tarjeta al ras de pantalla en móviles. */
+body:has(#publicView:not(.hidden)),
+body:has(#publicView:not(.hidden)) #appShell,
+body:has(#publicView:not(.hidden)) #publicView,
+body:has(#publicView:not(.hidden)) #publicMount {
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  min-height:100dvh !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:#101116 !important;
+}
+body:has(#publicView:not(.hidden)) #publicMount {
+  display:block !important;
+}
+body:has(#publicView:not(.hidden)) #publicMount > .public-shell,
+body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card {
+  display:flex !important;
+  flex-direction:column !important;
+  width:100% !important;
+  max-width:none !important;
+  min-height:100dvh !important;
+  height:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card > .dc-cover {
+  flex:0 0 38dvh !important;
+  height:38dvh !important;
+  min-height:260px !important;
+  max-height:440px !important;
+  border-radius:0 !important;
+}
+body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card > .dc-content {
+  flex:1 0 auto !important;
+  padding:22px 18px calc(28px + env(safe-area-inset-bottom)) !important;
+  border-radius:0 !important;
+}
+@media (min-width:700px) {
+  body:has(#publicView:not(.hidden)) #publicMount {
+    display:flex !important;
+    align-items:flex-start !important;
+    justify-content:center !important;
+    padding:24px !important;
+    background:#0d1018 !important;
+  }
+  body:has(#publicView:not(.hidden)) #publicMount > .public-shell,
+  body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card {
+    width:min(100%,520px) !important;
+    max-width:520px !important;
+    min-height:0 !important;
+    border-radius:22px !important;
+    overflow:hidden !important;
+  }
+}
