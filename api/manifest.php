@@ -28,7 +28,7 @@ $theme = is_array($card['theme'] ?? null) ? $card['theme'] : [];
 $manifest = [
     'id' => $baseUrl . 'index.html?card=' . rawurlencode($id),
     'name' => $name . ' | LAV Digital',
-    'short_name' => mb_substr($name !== '' ? $name : 'LAV Tarjeta', 0, 24, 'UTF-8'),
+    'short_name' => function_exists('mb_substr') ? mb_substr($name !== '' ? $name : 'LAV Tarjeta', 0, 24, 'UTF-8') : substr($name !== '' ? $name : 'LAV Tarjeta', 0, 24),
     'description' => 'Tarjeta digital de ' . (string)($card['clientName'] ?? 'LAV Digital'),
     'start_url' => $baseUrl . 'index.html?card=' . rawurlencode($id),
     'scope' => $baseUrl,
