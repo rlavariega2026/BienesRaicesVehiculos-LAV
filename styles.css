@@ -2673,3 +2673,9 @@ body:has(#publicView:not(.hidden))  {
 .multi-item-card .dc-gallery-item img{width:100%;height:100%;object-fit:cover}
 .multi-item-card .dc-gallery-controls button{z-index:3}
 @media(max-width:560px){.multi-photo-grid{grid-template-columns:1fr}.multi-cover-preview{min-height:100px}.multi-item-style{padding:11px}.multi-item-card{margin-bottom:12px}}
+
+/* Inventario múltiple: mostrar cada anuncio como fotografía enlazada. */
+.dc-catalog-photo{display:block;position:relative;overflow:hidden;min-width:0;border-radius:12px;aspect-ratio:4/3;background:#171b22;cursor:pointer;}
+.dc-catalog-photo img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s ease,filter .35s ease;}
+.dc-catalog-photo:hover img{transform:scale(1.045);filter:brightness(1.04);}
+.dc-catalog-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));}
