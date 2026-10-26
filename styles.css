@@ -2611,3 +2611,33 @@ body:has(#publicView:not(.hidden))  {
 .template-thumb .dc-contact,.template-thumb .dc-section-label{display:none!important}
 .catalog-workflow-hint{padding:11px 12px;border-radius:10px;background:#f0efff;color:#4b467a;line-height:1.6}
 @media(max-width:520px){.catalog-workflow-hint{font-size:11px}}
+
+/* Correcciones puntuales 2026-10-26: controles visibles y efectos de galería */
+.dc-gallery-controls{position:relative;z-index:4;min-height:54px}
+.dc-gallery-controls button{display:inline-flex!important;align-items:center;justify-content:center;width:44px;min-width:44px;height:40px;padding:0!important;border:1px solid #ffffff85!important;border-radius:10px!important;background:#f7f7f72b!important;color:#fff!important;font-family:Arial,sans-serif!important;font-size:34px!important;font-weight:700!important;line-height:1!important;cursor:pointer!important;opacity:1!important;visibility:visible!important;box-shadow:0 2px 12px #0008}
+.dc-gallery-controls button:hover{background:#ffffff55!important;transform:scale(1.05)}
+.dc-gallery-controls .dc-gallery-count{font-size:12px;opacity:1}
+.multi-item-editor{padding:14px;margin:12px 0;border:1px solid var(--line,#343642);border-radius:14px;background:var(--panel,#191a22)}
+.multi-item-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.multi-item-heading strong{font-size:.9rem}
+.dc-catalog-detail{font-size:.78rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;opacity:.85}
+.dc-gallery-viewer.effect-zoom img{transform:scale(1);transition:transform .42s ease,opacity .35s ease}
+.dc-gallery-viewer.effect-zoom.changing img{transform:scale(.72);opacity:0}
+.dc-gallery-viewer.effect-flip img{transform:perspective(900px) rotateY(0);backface-visibility:hidden;transition:transform .38s ease,opacity .28s ease}
+.dc-gallery-viewer.effect-flip.changing img{transform:perspective(900px) rotateY(78deg);opacity:.1}
+.dc-gallery-viewer.effect-vertical img{transform:translateY(0);transition:transform .32s ease,opacity .28s ease}
+.dc-gallery-viewer.effect-vertical.changing img{transform:translateY(-28px);opacity:.12}
+.dc-gallery-viewer.effect-blur img{filter:blur(0);transition:filter .32s ease,opacity .32s ease}
+.dc-gallery-viewer.effect-blur.changing img{filter:blur(12px);opacity:.12}
+.dc-gallery-viewer.effect-reveal{isolation:isolate}
+.dc-gallery-viewer.effect-reveal:after{content:"";position:absolute;z-index:2;inset:0;background:var(--card-primary,#c9a96e);transform:scaleX(0);transform-origin:left;pointer-events:none}
+.dc-gallery-viewer.effect-reveal.changing:after{animation:lavGalleryReveal .32s ease}
+@keyframes lavGalleryReveal{0%{transform:scaleX(0)}45%{transform:scaleX(1)}100%{transform:scaleX(0);transform-origin:right}}
+.dc-gallery-viewer.effect-stack img{transform:translateY(0) scale(1);transition:transform .32s ease,opacity .3s ease}
+.dc-gallery-viewer.effect-stack.changing img{transform:translateY(12px) scale(.92);opacity:.15}
+.dc-gallery-viewer.effect-wipe img{clip-path:inset(0 0 0 0);transition:clip-path .32s ease,opacity .32s ease}
+.dc-gallery-viewer.effect-wipe.changing img{clip-path:inset(0 100% 0 0);opacity:.15}
+.dc-gallery-viewer.effect-cube{perspective:900px}
+.dc-gallery-viewer.effect-cube img{transform:rotateX(0) scale(1);transition:transform .35s ease,opacity .3s ease}
+.dc-gallery-viewer.effect-cube.changing img{transform:rotateX(65deg) scale(.85);opacity:.12}
+@media(max-width:520px){.dc-gallery-controls button{width:42px;min-width:42px;height:40px;font-size:32px!important}.multi-item-editor{padding:11px}}
