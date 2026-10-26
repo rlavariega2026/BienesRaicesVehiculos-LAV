@@ -74,3 +74,56 @@ body:has(#publicView:not(.hidden)) #publicMount .dc-gallery-viewer img {touch-ac
     transition-duration:.01ms!important;animation-duration:.01ms!important
   }
 }
+
+
+/* Acabado visual premium para portada y fichas */
+body:has(#publicView:not(.hidden)) #publicMount .dc-cover {
+  isolation:isolate;
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-brand {
+  max-width:calc(100% - 140px);
+  padding:7px 11px 7px 7px;
+  border:1px solid #ffffff35;
+  border-radius:999px;
+  background:#08090b66;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-brand span {
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-title {
+  text-shadow:0 4px 22px #0007;
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-price {
+  display:inline-flex;align-items:baseline;gap:5px;
+  margin-top:5px;padding:7px 12px;
+  border:1px solid color-mix(in srgb,var(--card-primary) 55%,#ffffff20);
+  border-radius:10px;
+  background:color-mix(in srgb,var(--card-bg) 60%,#00000020);
+  box-shadow:0 8px 22px #0002;
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-spec {
+  border-color:color-mix(in srgb,var(--card-primary) 25%,#ffffff16);
+  background:linear-gradient(145deg,#ffffff0d,#ffffff03);
+  box-shadow:inset 0 1px #ffffff08,0 7px 18px #0000000c;
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-spec i {
+  font-size:15px;
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-section-label {
+  display:flex;align-items:center;gap:10px;
+  letter-spacing:1.7px;
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-section-label::after {
+  content:"";height:1px;flex:1;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--card-primary) 70%,transparent),transparent);
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-footer {
+  border-top:1px solid #ffffff0d;
+  letter-spacing:1.8px;
+}
+body:has(#publicView:not(.hidden)) #publicMount .install-card-button {
+  border-color:color-mix(in srgb,var(--card-primary) 65%,#ffffff25);
+  background:color-mix(in srgb,var(--card-primary) 16%,var(--card-bg));
+}
