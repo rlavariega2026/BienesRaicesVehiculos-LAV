@@ -86,5 +86,5 @@ if ($encoded === false) respond(['success'=>false,'message'=>'No se pudieron pro
 if (strlen($encoded) > 11500000) respond(['success'=>false,'message'=>'La tarjeta es demasiado pesada. Reduce las fotografías y vuelve a guardar.'], 413);
 $path = card_path($storageDir, $id);
 if (file_put_contents($path, $encoded, LOCK_EX) === false) respond(['success'=>false,'message'=>'No se pudo guardar en el servidor. Revisa los permisos de la carpeta data/cards.'], 500);
-$publicUrl = 'https://lavdigitalmkt.com/bienes-raices-vehiculos/?card=' . rawurlencode($id);
+$publicUrl = 'https://lavdigitalmkt.com/bienes-raices-vehiculos/card.php?id=' . rawurlencode($id);
 respond(['success'=>true,'id'=>$id,'url'=>$publicUrl,'card'=>$card]);
