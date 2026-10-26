@@ -40,7 +40,7 @@
     id:k===0?l[0]+"-"+s[0]:l[0]+"-"+s[0]+"-"+p[0],layout:l[0],name:l[1],category:l[2],desc:l[3],skin:s[0],skinName:s[1],palette:p[0],paletteName:p[1],colors:p[2],number:(i*5+j)*P.length+k+1
   }))));
   const B= {
-    id:null,clientName:"",contactName:"",kind:"property",status:"draft",operation:"Venta",title:"",price:"",currency:"MXN",location:"",description:"",propertyType:"Casa",landArea:"",builtArea:"",bedrooms:"",bathrooms:"",parking:"",amenities:"",vehicleType:"Automóvil",make:"",model:"",version:"",year:"",mileage:"",transmission:"Automática",fuel:"Gasolina",phone:"",whatsapp:"",email:"",facebook:"",instagram:"",mapsUrl:"",logo:"",cover:"",gallery:[],backgroundImage:"",templateId:"cinematic-signature",galleryStyle:"slide",theme: {
+    id:null,clientName:"",contactName:"",kind:"property",status:"draft",operation:"Venta",title:"",price:"",currency:"MXN",location:"",description:"",propertyType:"Casa",landArea:"",builtArea:"",bedrooms:"",bathrooms:"",parking:"",amenities:"",vehicleType:"Automóvil",make:"",model:"",version:"",year:"",mileage:"",transmission:"Automática",fuel:"Gasolina",phone:"",whatsapp:"",email:"",facebook:"",instagram:"",marketplace:"",mercadolibre:"",mapsUrl:"",logo:"",cover:"",gallery:[],backgroundImage:"",templateId:"cinematic-signature",galleryStyle:"slide",theme: {
       primary:"#c9a96e",background:"#10131c",text:"#f8f7f4",accent:"#e4c58a",gradient:"none",font:"sans",radius:18,imageHeight:340,overlay:42
     },createdAt:null,updatedAt:null
   };
@@ -55,9 +55,9 @@ function money(c){let n=Number(String(c.price||"").replace(/[^\d.-]/g,""));if(!c
 function grad(t){let b=t.background,p=t.primary;return({none:"linear-gradient(0deg,"+b+","+b+")",diagonal:"linear-gradient(135deg,"+b+","+p+" 180%)",radial:"radial-gradient(ellipse at 80% 0%,"+p+","+b+" 72%)",sunset:"linear-gradient(135deg,#24142e,#9d435b,#f1a86d)",ocean:"linear-gradient(135deg,#071c2c,#155b6d,#65c9b7)",aurora:"linear-gradient(135deg,#11152d,#3d326c,#176b72)"})[t.gradient]||"linear-gradient(0deg,"+b+","+b+")"}
 function css(c){let t={...B.theme,...c.theme},f={sans:'"DM Sans",sans-serif',serif:'"Playfair Display",serif',condensed:'"Arial Narrow",sans-serif'}[t.font];return '--card-bg:'+t.background+';--card-primary:'+t.primary+';--card-text:'+t.text+';--card-accent:'+t.accent+';--card-radius:'+t.radius+'px;--cover-height:'+t.imageHeight+'px;--shade:'+t.overlay+'%;--card-font:'+(f||f)+';--card-gradient:'+grad(t)+';--custom-bg-image:'+(c.backgroundImage?'url('+c.backgroundImage+')':'none')}
 function facts(c){return(c.kind==="vehicle"?[[c.year,"Año","calendar"],[c.mileage,"Kilometraje","gauge-high"],[c.transmission,"Transmisión","gears"],[c.fuel,"Combustible","gas-pump"],[c.make,"Marca","car"],[c.version,"Versión","tag"]]:c.kind==="property"?[[c.landArea,"Terreno","vector-square","m²"],[c.builtArea,"Construcción","ruler-combined","m²"],[c.bedrooms,"Recámaras","bed"],[c.bathrooms,"Baños","bath"],[c.parking,"Estacionamiento","car"]]:[]).filter(x=>x[0]!==""&&x[0]!=null)}
-function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"");if(w)a.push('<a href="https://wa.me/'+esc(w)+'" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>');if(c.phone)a.push('<a class="secondary" href="tel:'+esc(c.phone.replace(/[^+\d]/g,""))+'"><i class="fa-solid fa-phone"></i> Llamar</a>');if(c.email)a.push('<a class="secondary" href="mailto:'+esc(c.email)+'"><i class="fa-regular fa-envelope"></i> Correo</a>');let m=safe(c.mapsUrl)|| (c.location?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(c.location):"");if(m)a.push('<a class="secondary" href="'+esc(m)+'" target="_blank" rel="noopener"><i class="fa-solid fa-location-dot"></i> Ubicación</a>');for(let [k,ic] of [["facebook","facebook-f"],["instagram","instagram"]])if(safe(c[k]))a.push('<a class="secondary" href="'+esc(safe(c[k]))+'" target="_blank" rel="noopener"><i class="fa-brands fa-'+ic+'"></i> '+k+'</a>');if(c.id)a.push('<button class="secondary" data-save-contact><i class="fa-solid fa-address-card"></i> Guardar contacto</button><button class="secondary" data-share-card><i class="fa-solid fa-share-nodes"></i> Compartir tarjeta</button><button class="secondary" data-show-qr><i class="fa-solid fa-qrcode"></i> QR</button>');return a.length?'<div class="dc-contact">'+a.join("")+'</div>':""}
+function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"");if(w)a.push('<a href="https://wa.me/'+esc(w)+'" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>');if(c.phone)a.push('<a class="secondary" href="tel:'+esc(c.phone.replace(/[^+\d]/g,""))+'"><i class="fa-solid fa-phone"></i> Llamar</a>');if(c.email)a.push('<a class="secondary" href="mailto:'+esc(c.email)+'"><i class="fa-regular fa-envelope"></i> Correo</a>');let m=safe(c.mapsUrl)|| (c.location?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(c.location):"");if(m)a.push('<a class="secondary" href="'+esc(m)+'" target="_blank" rel="noopener"><i class="fa-solid fa-location-dot"></i> Ubicación</a>');for(let [k,ic,label] of [["facebook","facebook-f","Facebook"],["instagram","instagram","Instagram"],["marketplace","store","Marketplace"],["mercadolibre","handshake","Mercado Libre"]])if(safe(c[k]))a.push('<a class="secondary social-'+k+'" href="'+esc(safe(c[k]))+'" target="_blank" rel="noopener"><i class="'+(k==="facebook"||k==="instagram"?'fa-brands':'fa-solid')+' fa-'+ic+'"></i> '+label+'</a>');if(c.id)a.push('<button class="secondary" data-save-contact><i class="fa-solid fa-address-card"></i> Guardar contacto</button><button class="secondary" data-share-card><i class="fa-solid fa-share-nodes"></i> Compartir tarjeta</button><button class="secondary" data-show-qr><i class="fa-solid fa-qrcode"></i> QR</button>');return a.length?'<div class="dc-contact">'+a.join("")+'</div>':""}
   function gallery(c,i=0,thumb=false) {
-    let p=c.gallery||[];if(!p.length||thumb)return"";i=(i+p.length)%p.length;return'<div class="dc-section-label">GALERÍA · '+p.length+' FOTOGRAFÍAS</div><div class="dc-gallery-viewer effect-'+esc(c.galleryStyle||"slide")+'"><img src="'+esc(p[i])+'" alt="Fotografía '+(i+1)+'" data-lightbox-index="'+i+'"><div class="dc-gallery-controls"><button data-gallery-prev aria-label="Anterior"><i class="fa-solid fa-arrow-left"></i></button><span class="dc-gallery-count">'+(i+1)+' / '+p.length+'</span><button data-gallery-next aria-label="Siguiente"><i class="fa-solid fa-arrow-right"></i></button></div></div><div class="dc-gallery">'+p.slice(0,6).map((x,j)=>'<button class="dc-gallery-item" data-gallery-go="'+j+'"><img src="'+esc(x)+'" alt="Foto '+(j+1)+'"></button>').join("")+'</div>'
+    let p=c.gallery||[];if(!p.length||thumb)return"";i=(i+p.length)%p.length;return'<div class="dc-section-label">GALERÍA · '+p.length+' FOTOGRAFÍAS</div><div class="dc-gallery-viewer effect-'+esc(c.galleryStyle||"slide")+'"><img src="'+esc(p[i])+'" alt="Fotografía '+(i+1)+'" data-lightbox-index="'+i+'" data-gallery-index="'+i+'"><div class="dc-gallery-controls"><button data-gallery-prev aria-label="Anterior"><i class="fa-solid fa-arrow-left"></i></button><span class="dc-gallery-count">'+(i+1)+' / '+p.length+'</span><button data-gallery-next aria-label="Siguiente"><i class="fa-solid fa-arrow-right"></i></button></div></div><div class="dc-gallery">'+p.slice(0,6).map((x,j)=>'<button class="dc-gallery-item" data-gallery-go="'+j+'"><img src="'+esc(x)+'" alt="Foto '+(j+1)+'"></button>').join("")+'</div>'
   }
   function card(c,o= {
   }) {
@@ -75,14 +75,14 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
     $("#dashboardView").classList.toggle("hidden",v!=="dash");$("#editorView").classList.toggle("hidden",v!=="edit");$("#publicView").classList.toggle("hidden",v!=="public");scrollTo(0,0)
   }
   function fill(c) {
-    let keys=["clientName","contactName","operation","price","currency","location","description","propertyType","landArea","builtArea","bedrooms","bathrooms","parking","amenities","vehicleType","make","model","version","year","mileage","transmission","fuel","phone","whatsapp","email","facebook","instagram","mapsUrl"];keys.forEach(k=> {
+    let keys=["clientName","contactName","operation","price","currency","location","description","propertyType","landArea","builtArea","bedrooms","bathrooms","parking","amenities","vehicleType","make","model","version","year","mileage","transmission","fuel","phone","whatsapp","email","facebook","instagram","marketplace","mercadolibre","mapsUrl"];keys.forEach(k=> {
       if($("#"+k))$("#"+k).value=c[k]??""
     });$("#listingTitle").value=c.title||"";$("#listingType").value=c.kind||"property";$("#propertyFields").classList.toggle("hidden",c.kind!=="property");$("#vehicleFields").classList.toggle("hidden",c.kind!=="vehicle");$("#operationField").classList.toggle("hidden",c.kind!=="property");let t= {
       ...B.theme,...c.theme
     };for(let k of ["primary","background","text","accent"])$("#custom"+k[0].toUpperCase()+k.slice(1)).value=t[k];$("#gradientStyle").value=t.gradient;$("#fontStyle").value=t.font;$("#cardRadius").value=t.radius;$("#imageHeight").value=t.imageHeight;$("#overlayStrength").value=t.overlay;$$('input[name="galleryStyle"]').forEach(x=>x.checked=x.value===(c.galleryStyle||"slide"));$("#coverPreview").innerHTML=c.cover?'<img src="'+esc(c.cover)+'">':"";$("#logoPreview").innerHTML=c.logo?'<img src="'+esc(c.logo)+'">':"";$("#removeLogo").classList.toggle("hidden",!c.logo);$("#backgroundPreview").innerHTML=c.backgroundImage?'<img src="'+esc(c.backgroundImage)+'">':"";galleryManager()
   }
   function read() {
-    if(!cur)return;for(let k of ["clientName","contactName","operation","price","currency","location","description","propertyType","landArea","builtArea","bedrooms","bathrooms","parking","amenities","vehicleType","make","model","version","year","mileage","transmission","fuel","phone","whatsapp","email","facebook","instagram","mapsUrl"])if($("#"+k))cur[k]=$("#"+k).value.trim();cur.title=$("#listingTitle").value.trim();cur.kind=$("#listingType").value;cur.galleryStyle=$('input[name="galleryStyle"]:checked')?.value||"slide";cur.theme= {
+    if(!cur)return;for(let k of ["clientName","contactName","operation","price","currency","location","description","propertyType","landArea","builtArea","bedrooms","bathrooms","parking","amenities","vehicleType","make","model","version","year","mileage","transmission","fuel","phone","whatsapp","email","facebook","instagram","marketplace","mercadolibre","mapsUrl"])if($("#"+k))cur[k]=$("#"+k).value.trim();cur.title=$("#listingTitle").value.trim();cur.kind=$("#listingType").value;cur.galleryStyle=$('input[name="galleryStyle"]:checked')?.value||"slide";cur.theme= {
       primary:$("#customPrimary").value,background:$("#customBackground").value,text:$("#customText").value,accent:$("#customAccent").value,gradient:$("#gradientStyle").value,font:$("#fontStyle").value,radius:+$("#cardRadius").value,imageHeight:+$("#imageHeight").value,overlay:+$("#overlayStrength").value
     };return cur
   }
@@ -198,16 +198,32 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
     if(!link||!c?.id)return;
     link.href=new URL("api/manifest.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]).href;
   }
-  function saveContact(c) {
+  async function saveContact(c) {
     if(!c?.id) {
       toast("Primero publica la tarjeta para guardar el contacto.", "error");
       return;
     }
     const contactUrl=new URL("api/contact.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]).href;
-    // Abrir la vCard desde el gesto del usuario permite que el navegador móvil
-    // la entregue al selector de Contactos/Importar cuando el sistema lo admite.
-    const opened=window.open(contactUrl,"_blank","noopener");
-    if(!opened) window.location.href=contactUrl;
+    const full=String(c.contactName||c.clientName||"Contacto").trim();
+    const clean=v=>String(v||"").replace(/\\/g,"\\\\").replace(/\r?\n/g,"\\n").replace(/;/g,"\\;").replace(/,/g,"\\,");
+    const rows=["BEGIN:VCARD","VERSION:3.0","FN:"+clean(full)];
+    if(c.clientName)rows.push("ORG:"+clean(c.clientName));
+    if(c.phone)rows.push("TEL;TYPE=WORK,VOICE:"+clean(c.phone));
+    if(c.whatsapp)rows.push("TEL;TYPE=CELL:"+clean(c.whatsapp));
+    if(c.email)rows.push("EMAIL;TYPE=INTERNET:"+clean(c.email));
+    for(const k of ["facebook","instagram","marketplace","mercadolibre","mapsUrl"])if(safe(c[k]))rows.push("URL:"+clean(safe(c[k])));
+    rows.push("URL:"+clean(cardUrl(c)),"END:VCARD");
+    try {
+      const file=new File([rows.join("\r\n")+"\r\n"],(full.replace(/[^a-z0-9_-]/gi,"-")||"contacto")+".vcf",{type:"text/vcard;charset=utf-8"});
+      if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})) {
+        await navigator.share({title:"Guardar contacto",text:"Elige Contactos o Guardar en contactos si tu teléfono ofrece esa opción.",files:[file]});
+        return;
+      }
+    } catch(e) {
+      if(e?.name==="AbortError")return;
+    }
+    const opened=window.open(contactUrl,"_blank");
+    if(!opened)window.location.href=contactUrl;
   }
   async function share(c) {
     if(!c?.id)return toast("Guarda la tarjeta primero.","error");
@@ -377,8 +393,8 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
           gidx=(gidx+d+c.gallery.length)%c.gallery.length;preview()
         }
         else {
-          let im=el.querySelector(".dc-gallery-viewer img"),i=c.gallery.indexOf(im.src);i=(i+d+c.gallery.length)%c.gallery.length;let v=el.querySelector(".dc-gallery-viewer");v.classList.add("changing");setTimeout(()=> {
-            im.src=c.gallery[i];el.querySelector(".dc-gallery-count").textContent=(i+1)+" / "+c.gallery.length;v.classList.remove("changing")
+          let im=el.querySelector(".dc-gallery-viewer img"),current=Number(im?.dataset.galleryIndex||0),i=(current+d+c.gallery.length)%c.gallery.length,v=el.querySelector(".dc-gallery-viewer");v.classList.add("changing");setTimeout(()=> {
+            im.src=c.gallery[i];im.dataset.galleryIndex=String(i);im.dataset.lightboxIndex=String(i);im.alt="Fotografía "+(i+1);el.querySelector(".dc-gallery-count").textContent=(i+1)+" / "+c.gallery.length;el.querySelectorAll("[data-gallery-go]").forEach(b=>b.classList.toggle("active",Number(b.dataset.galleryGo)===i));v.classList.remove("changing")
           },160)
         }
         return
@@ -388,8 +404,8 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
           gidx=i;preview()
         }
         else {
-          let v=el.querySelector(".dc-gallery-viewer");v.classList.add("changing");setTimeout(()=> {
-            el.querySelector(".dc-gallery-viewer img").src=c.gallery[i];el.querySelector(".dc-gallery-count").textContent=(i+1)+" / "+c.gallery.length;v.classList.remove("changing")
+          let v=el.querySelector(".dc-gallery-viewer"),im=el.querySelector(".dc-gallery-viewer img");v.classList.add("changing");setTimeout(()=> {
+            im.src=c.gallery[i];im.dataset.galleryIndex=String(i);im.dataset.lightboxIndex=String(i);im.alt="Fotografía "+(i+1);el.querySelector(".dc-gallery-count").textContent=(i+1)+" / "+c.gallery.length;el.querySelectorAll("[data-gallery-go]").forEach(b=>b.classList.toggle("active",Number(b.dataset.galleryGo)===i));v.classList.remove("changing")
           },160)
         }
         return
