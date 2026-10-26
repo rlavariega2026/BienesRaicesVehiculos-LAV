@@ -2650,3 +2650,26 @@ body:has(#publicView:not(.hidden))  {
 /* Mosaico: transición de salida y entrada */
 .dc-gallery-viewer.effect-grid img{transform:scale(1);clip-path:inset(0);transition:transform .3s ease,clip-path .3s ease,opacity .3s ease}
 .dc-gallery-viewer.effect-grid.changing img{transform:scale(.94);clip-path:inset(12% 12%);opacity:.12}
+
+/* Editor de anuncios múltiples: fotos, galería y diseño independiente por artículo */
+.multi-photo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}
+.multi-photo-control{display:flex;flex-direction:column;gap:9px;min-width:0}
+.multi-photo-control>label:first-child{font-size:.86rem;font-weight:700;color:var(--text,#eee)}
+.multi-photo-control .file-drop{min-height:56px;cursor:pointer}
+.multi-cover-preview{min-height:120px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px dashed var(--line,#41424c);border-radius:12px;background:#11131a;color:#9b9eaa;font-size:.8rem;text-align:center;padding:8px}
+.multi-cover-preview img{display:block;width:100%;max-height:240px;object-fit:cover;border-radius:8px}
+.multi-item-gallery-preview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.multi-gallery-thumb{position:relative;min-width:0;overflow:hidden;border-radius:8px;background:#11131a;aspect-ratio:1}
+.multi-gallery-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.multi-gallery-thumb button{position:absolute;right:4px;top:4px;width:26px;height:26px;border:0;border-radius:50%;background:#000c;color:#fff;font-size:19px;line-height:1;cursor:pointer}
+.multi-item-style{margin-top:18px;padding:14px;border:1px solid var(--line,#343642);border-radius:12px;background:color-mix(in srgb,var(--panel,#191a22) 85%,#fff 2%)}
+.multi-item-style h4{margin:0 0 12px;font-size:.92rem}
+.multi-item-card{width:100%;max-width:100%;min-width:0;margin:0 0 16px;align-self:stretch;overflow:hidden}
+.multi-item-card .dc-cover{width:100%;max-width:100%}
+.multi-item-card .dc-content{min-width:0;overflow-wrap:anywhere}
+.multi-item-card .dc-gallery-viewer img{width:100%;object-fit:contain}
+.multi-item-card .dc-gallery{display:flex;gap:7px;overflow-x:auto}
+.multi-item-card .dc-gallery-item{flex:0 0 68px;width:68px;height:58px;padding:0;overflow:hidden}
+.multi-item-card .dc-gallery-item img{width:100%;height:100%;object-fit:cover}
+.multi-item-card .dc-gallery-controls button{z-index:3}
+@media(max-width:560px){.multi-photo-grid{grid-template-columns:1fr}.multi-cover-preview{min-height:100px}.multi-item-style{padding:11px}.multi-item-card{margin-bottom:12px}}
