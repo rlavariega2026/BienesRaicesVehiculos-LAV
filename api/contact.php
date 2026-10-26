@@ -42,6 +42,8 @@ if (!empty($card['email'])) $rows[] = 'EMAIL;TYPE=INTERNET:'.vcard_escape($card[
 if (!empty($card['location'])) $rows[] = 'ADR;TYPE=WORK:;;'.vcard_escape($card['location']).';;;;';
 if (!empty($card['facebook'])) $rows[] = 'URL:'.vcard_escape($card['facebook']);
 if (!empty($card['instagram'])) $rows[] = 'URL:'.vcard_escape($card['instagram']);
+if (!empty($card['marketplace'])) $rows[] = 'URL:'.vcard_escape($card['marketplace']);
+if (!empty($card['mercadolibre'])) $rows[] = 'URL:'.vcard_escape($card['mercadolibre']);
 if (!empty($card['mapsUrl'])) $rows[] = 'URL:'.vcard_escape($card['mapsUrl']);
 $rows[] = 'URL:'.vcard_escape($url);
 $rows[] = 'END:VCARD';
