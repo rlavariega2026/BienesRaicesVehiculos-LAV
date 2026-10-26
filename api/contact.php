@@ -33,7 +33,7 @@ $last = count($parts) > 1 ? (string)array_pop($parts) : '';
 $first = trim(implode(' ', $parts));
 if ($first === '') $first = $full;
 $base = rtrim(dirname(dirname((string)($_SERVER['SCRIPT_NAME'] ?? '/api/contact.php'))), '/');
-$url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'https://') . ($_SERVER['HTTP_HOST'] ?? '') . $base . '/index.html?card=' . rawurlencode($id);
+$url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'https://') . ($_SERVER['HTTP_HOST'] ?? '') . $base . '/card.php?id=' . rawurlencode($id);
 $rows = ['BEGIN:VCARD','VERSION:3.0','N:'.vcard_escape($last).';'.vcard_escape($first).';;;','FN:'.vcard_escape($full)];
 if (!empty($card['clientName'])) $rows[] = 'ORG:'.vcard_escape($card['clientName']);
 if (!empty($card['phone'])) $rows[] = 'TEL;TYPE=WORK,VOICE:'.vcard_escape($card['phone']);
