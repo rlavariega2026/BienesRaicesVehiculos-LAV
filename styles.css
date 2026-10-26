@@ -2679,3 +2679,6 @@ body:has(#publicView:not(.hidden))  {
 .dc-catalog-photo img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s ease,filter .35s ease;}
 .dc-catalog-photo:hover img{transform:scale(1.045);filter:brightness(1.04);}
 .dc-catalog-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));}
+
+/* Título legible superpuesto a la fotografía de cada propiedad del inventario múltiple. */
+.dc-catalog-photo .dc-catalog-title{position:absolute;inset:auto 0 0;display:block;padding:34px 12px 12px;color:#fff;font-size:clamp(13px,2.4vw,17px);font-weight:750;line-height:1.25;letter-spacing:.01em;text-shadow:0 1px 3px #000;overflow-wrap:anywhere;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.82) 100%);pointer-events:none}
