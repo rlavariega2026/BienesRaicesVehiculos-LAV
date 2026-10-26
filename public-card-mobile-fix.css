@@ -29,3 +29,48 @@ body:has(#publicView:not(.hidden)) #publicMount .public-topline,body:has(#public
  body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-content{padding:20px 14px calc(26px + env(safe-area-inset-bottom))!important}
  body:has(#publicView:not(.hidden)) #publicMount .dc-gallery-item img{height:120px}
 }
+
+
+/* Pulido visual de tarjeta pública: controles accesibles, galería y contacto */
+body:has(#publicView:not(.hidden)) #publicMount .dc-gallery-controls button {
+  min-width:42px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:12px;border:1px solid color-mix(in srgb,var(--card-primary) 65%,white 12%);
+  background:color-mix(in srgb,var(--card-primary) 16%,#101116);color:var(--card-text);
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-gallery-controls button:active {
+  transform:scale(.96);background:color-mix(in srgb,var(--card-primary) 30%,#101116)
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-gallery-item {
+  position:relative;border-radius:12px;border:1px solid #ffffff18;background:#0a0c11
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-gallery-item.active {
+  outline:2px solid var(--card-primary);outline-offset:1px
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-contact a,
+body:has(#publicView:not(.hidden)) #publicMount .dc-contact button {
+  min-height:44px;border-radius:12px;font-size:11px;letter-spacing:.1px;
+  box-shadow:0 5px 16px #00000016;transition:transform .18s ease,background .18s ease,border-color .18s ease;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-contact a.secondary {
+  background:color-mix(in srgb,var(--card-bg) 82%,white 4%);
+  border-color:color-mix(in srgb,var(--card-primary) 38%,#ffffff25)
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-contact a.secondary:hover,
+body:has(#publicView:not(.hidden)) #publicMount .dc-contact button:hover {
+  border-color:var(--card-primary);transform:translateY(-1px)
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-contact .social-marketplace i {color:#60a5fa}
+body:has(#publicView:not(.hidden)) #publicMount .dc-contact .social-mercadolibre i {color:#facc15}
+body:has(#publicView:not(.hidden)) #publicMount .dc-gallery-viewer {
+  border:1px solid #ffffff16;box-shadow:0 12px 32px #00000020
+}
+body:has(#publicView:not(.hidden)) #publicMount .dc-gallery-viewer img {touch-action:pan-y}
+@media(prefers-reduced-motion:reduce) {
+  body:has(#publicView:not(.hidden)) #publicMount *,
+  body:has(#publicView:not(.hidden)) #publicMount *::before,
+  body:has(#publicView:not(.hidden)) #publicMount *::after {
+    transition-duration:.01ms!important;animation-duration:.01ms!important
+  }
+}
