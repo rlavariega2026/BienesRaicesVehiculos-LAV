@@ -2641,3 +2641,12 @@ body:has(#publicView:not(.hidden))  {
 .dc-gallery-viewer.effect-cube img{transform:rotateX(0) scale(1);transition:transform .35s ease,opacity .3s ease}
 .dc-gallery-viewer.effect-cube.changing img{transform:rotateX(65deg) scale(.85);opacity:.12}
 @media(max-width:520px){.dc-gallery-controls button{width:42px;min-width:42px;height:40px;font-size:32px!important}.multi-item-editor{padding:11px}}
+
+/* Alineación por texto: los valores seleccionados tienen prioridad en la tarjeta y en la vista previa. */
+.digital-card .dc-description[style*="text-align:left"]{text-align:left!important}
+.digital-card .dc-description[style*="text-align:center"]{text-align:center!important}
+.digital-card .dc-description[style*="text-align:right"]{text-align:right!important}
+.digital-card .dc-description[style*="text-align:justify"]{text-align:justify!important}
+/* Mosaico: transición de salida y entrada */
+.dc-gallery-viewer.effect-grid img{transform:scale(1);clip-path:inset(0);transition:transform .3s ease,clip-path .3s ease,opacity .3s ease}
+.dc-gallery-viewer.effect-grid.changing img{transform:scale(.94);clip-path:inset(12% 12%);opacity:.12}
