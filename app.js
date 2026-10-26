@@ -44,7 +44,8 @@
       primary:"#c9a96e",background:"#10131c",text:"#f8f7f4",accent:"#e4c58a",gradient:"none",font:"sans",radius:18,imageHeight:340,overlay:42
     },createdAt:null,updatedAt:null
   };
-  let cards=[],cur=null,gidx=0,templatePage=1;
+  let cards=[],cur=null,gidx=0,templatePage=1,deferredInstallPrompt=null;
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;});
   const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),copy=o=>JSON.parse(JSON.stringify(o)),img=c=>c.cover||(c.kind==="vehicle"?CAR:HOME);
 function safe(v){if(!v)return"";try{let u=new URL(v,location.href);return ["http:","https:"].includes(u.protocol)?u.href:""}catch{return""}}
 function toast(m,t="success"){let e=document.createElement("div");e.className="toast "+t;e.textContent=m;$("#toastRegion").append(e);setTimeout(()=>e.remove(),4200)}
@@ -55,13 +56,13 @@ function money(c){let n=Number(String(c.price||"").replace(/[^\d.-]/g,""));if(!c
 function grad(t){let b=t.background,p=t.primary;return({none:"linear-gradient(0deg,"+b+","+b+")",diagonal:"linear-gradient(135deg,"+b+","+p+" 180%)",radial:"radial-gradient(ellipse at 80% 0%,"+p+","+b+" 72%)",sunset:"linear-gradient(135deg,#24142e,#9d435b,#f1a86d)",ocean:"linear-gradient(135deg,#071c2c,#155b6d,#65c9b7)",aurora:"linear-gradient(135deg,#11152d,#3d326c,#176b72)"})[t.gradient]||"linear-gradient(0deg,"+b+","+b+")"}
 function css(c){let t={...B.theme,...c.theme},f={sans:'"DM Sans",sans-serif',serif:'"Playfair Display",serif',condensed:'"Arial Narrow",sans-serif'}[t.font];return '--card-bg:'+t.background+';--card-primary:'+t.primary+';--card-text:'+t.text+';--card-accent:'+t.accent+';--card-radius:'+t.radius+'px;--cover-height:'+t.imageHeight+'px;--shade:'+t.overlay+'%;--card-font:'+(f||f)+';--card-gradient:'+grad(t)+';--custom-bg-image:'+(c.backgroundImage?'url('+c.backgroundImage+')':'none')}
 function facts(c){return(c.kind==="vehicle"?[[c.year,"Año","calendar"],[c.mileage,"Kilometraje","gauge-high"],[c.transmission,"Transmisión","gears"],[c.fuel,"Combustible","gas-pump"],[c.make,"Marca","car"],[c.version,"Versión","tag"]]:c.kind==="property"?[[c.landArea,"Terreno","vector-square","m²"],[c.builtArea,"Construcción","ruler-combined","m²"],[c.bedrooms,"Recámaras","bed"],[c.bathrooms,"Baños","bath"],[c.parking,"Estacionamiento","car"]]:[]).filter(x=>x[0]!==""&&x[0]!=null)}
-function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"");if(w)a.push('<a href="https://wa.me/'+esc(w)+'" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>');if(c.phone)a.push('<a class="secondary" href="tel:'+esc(c.phone.replace(/[^+\d]/g,""))+'"><i class="fa-solid fa-phone"></i> Llamar</a>');if(c.email)a.push('<a class="secondary" href="mailto:'+esc(c.email)+'"><i class="fa-regular fa-envelope"></i> Correo</a>');let m=safe(c.mapsUrl)|| (c.location?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(c.location):"");if(m)a.push('<a class="secondary" href="'+esc(m)+'" target="_blank" rel="noopener"><i class="fa-solid fa-location-dot"></i> Ubicación</a>');for(let [k,ic,label] of [["facebook","facebook-f","Facebook"],["instagram","instagram","Instagram"],["marketplace","store","Marketplace"],["mercadolibre","handshake","Mercado Libre"]])if(safe(c[k]))a.push('<a class="secondary social-'+k+'" href="'+esc(safe(c[k]))+'" target="_blank" rel="noopener"><i class="'+(k==="facebook"||k==="instagram"?'fa-brands':'fa-solid')+' fa-'+ic+'"></i> '+label+'</a>');if(c.id)a.push('<button class="secondary" data-save-contact><i class="fa-solid fa-address-card"></i> Guardar contacto</button><button class="secondary" data-share-card><i class="fa-solid fa-share-nodes"></i> Compartir tarjeta</button><button class="secondary" data-show-qr><i class="fa-solid fa-qrcode"></i> QR</button>');return a.length?'<div class="dc-contact">'+a.join("")+'</div>':""}
+function contact(c,publicMode=false){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"");if(w)a.push('<a href="https://wa.me/'+esc(w)+'" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>');if(c.phone)a.push('<a class="secondary" href="tel:'+esc(c.phone.replace(/[^+\d]/g,""))+'"><i class="fa-solid fa-phone"></i> Llamar</a>');if(c.email)a.push('<a class="secondary" href="mailto:'+esc(c.email)+'"><i class="fa-regular fa-envelope"></i> Correo</a>');let m=safe(c.mapsUrl)|| (c.location?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(c.location):"");if(m)a.push('<a class="secondary" href="'+esc(m)+'" target="_blank" rel="noopener"><i class="fa-solid fa-location-dot"></i> Ubicación</a>');for(let [k,ic,label] of [["facebook","facebook-f","Facebook"],["instagram","instagram","Instagram"],["marketplace","store","Marketplace"],["mercadolibre","handshake","Mercado Libre"]])if(safe(c[k]))a.push('<a class="secondary social-'+k+'" href="'+esc(safe(c[k]))+'" target="_blank" rel="noopener"><i class="'+(k==="facebook"||k==="instagram"?'fa-brands':'fa-solid')+' fa-'+ic+'"></i> '+label+'</a>');if(c.id)a.push('<button class="secondary" data-save-contact><i class="fa-solid fa-address-card"></i> Guardar contacto</button><button class="secondary" data-share-card><i class="fa-solid fa-share-nodes"></i> Compartir tarjeta</button><button class="secondary" data-show-qr><i class="fa-solid fa-qrcode"></i> QR</button>');if(c.id&&publicMode)a.push('<button class="secondary install-card-button" data-install-card><i class="fa-solid fa-mobile-screen-button"></i> Instalar tarjeta</button>');return a.length?'<div class="dc-contact">'+a.join("")+'</div>':""}
   function gallery(c,i=0,thumb=false) {
     let p=c.gallery||[];if(!p.length||thumb)return"";i=(i+p.length)%p.length;return'<div class="dc-section-label">GALERÍA · '+p.length+' FOTOGRAFÍAS</div><div class="dc-gallery-viewer effect-'+esc(c.galleryStyle||"slide")+'"><img src="'+esc(p[i])+'" alt="Fotografía '+(i+1)+'" data-lightbox-index="'+i+'" data-gallery-index="'+i+'"><div class="dc-gallery-controls"><button data-gallery-prev aria-label="Anterior"><i class="fa-solid fa-arrow-left"></i></button><span class="dc-gallery-count">'+(i+1)+' / '+p.length+'</span><button data-gallery-next aria-label="Siguiente"><i class="fa-solid fa-arrow-right"></i></button></div></div><div class="dc-gallery">'+p.slice(0,6).map((x,j)=>'<button class="dc-gallery-item" data-gallery-go="'+j+'"><img src="'+esc(x)+'" alt="Foto '+(j+1)+'"></button>').join("")+'</div>'
   }
   function card(c,o= {
   }) {
-    let th=!!o.thumb,pt=!!o.publicMode,t=T.find(x=>x.id===c.templateId)||T[0],kind=c.kind==="vehicle"?(c.vehicleType||"Vehículo"):c.kind==="profile"?"Perfil comercial":c.propertyType||"Propiedad",p=money(c),f=facts(c),cat=o.catalog||[],catalog=c.kind==="profile"&&cat.length?'<div class="dc-section-label">ANUNCIOS DISPONIBLES</div><div class="dc-gallery">'+cat.map(x=>'<a class="dc-gallery-item" href="?card='+encodeURIComponent(x.id)+'"><img src="'+esc(img(x))+'" alt="'+esc(x.title)+'"></a>').join("")+'</div>':"",title=c.title||c.clientName||"Anuncio destacado",kicker=c.kind==="vehicle"?[c.make,c.model,c.year].filter(Boolean).join(" · "):c.kind==="property"?[c.operation,kind].join(" · "):"PRESENTACIÓN COMERCIAL";return'<article class="digital-card layout-'+t.layout+' skin-'+t.skin+(pt?" public-card":"")+'" data-card-id="'+esc(c.id||"preview")+'" style="'+css(c)+'"><div class="dc-cover" style="background-image:linear-gradient(180deg,#0001,#0000),url(&quot;'+esc(th?(c.kind==="vehicle"?CAR:HOME):img(c))+'&quot;)"><div class="dc-brand">'+(c.logo&&!th?'<img class="dc-logo" src="'+esc(c.logo)+'" alt="Logo">':"")+'<span>'+esc((c.clientName||"LAV DIGITAL").toUpperCase())+'</span></div><span class="dc-kind">'+esc(kind)+'</span><div class="dc-cover-copy"><div class="dc-kicker">'+esc(kicker)+'</div><h2 class="dc-title">'+esc(title)+'</h2>'+(p?'<div class="dc-price">'+esc(p)+(c.operation==="Renta"&&c.kind==="property"?" <small>/ mes</small>":"")+'</div>':"")+'<div class="dc-location">'+(c.location?'<i class="fa-solid fa-location-dot"></i> '+esc(c.location):"")+'</div></div>'+(th?"":'<button class="dc-cover-open" data-lightbox-index="-1" aria-label="Ampliar portada"></button>')+'</div><div class="dc-content">'+(c.description?'<p class="dc-description">'+esc(c.description)+'</p>':"")+(f.length?'<div class="dc-specs">'+f.slice(0,6).map(x=>'<div class="dc-spec"><i class="fa-solid fa-'+x[2]+'"></i><strong>'+esc(x[0]+(x[3]?" "+x[3]:""))+'</strong><span>'+esc(x[1])+'</span></div>').join("")+'</div>':"")+(c.amenities?'<div class="dc-section-label">CARACTERÍSTICAS</div><p class="dc-description">'+esc(c.amenities)+'</p>':"")+gallery(c,o.galleryIndex||0,th)+catalog+'<div class="dc-section-label">'+(c.contactName?"CONTACTO · "+esc(c.contactName):"CONTACTO DIRECTO")+'</div>'+contact(c)+'<div class="dc-footer">PRESENTADO POR '+esc((c.clientName||"LAV DIGITAL").toUpperCase())+'</div></div></article>'
+    let th=!!o.thumb,pt=!!o.publicMode,t=T.find(x=>x.id===c.templateId)||T[0],kind=c.kind==="vehicle"?(c.vehicleType||"Vehículo"):c.kind==="profile"?"Perfil comercial":c.propertyType||"Propiedad",p=money(c),f=facts(c),cat=o.catalog||[],catalog=c.kind==="profile"&&cat.length?'<div class="dc-section-label">ANUNCIOS DISPONIBLES</div><div class="dc-gallery">'+cat.map(x=>'<a class="dc-gallery-item" href="?card='+encodeURIComponent(x.id)+'"><img src="'+esc(img(x))+'" alt="'+esc(x.title)+'"></a>').join("")+'</div>':"",title=c.title||c.clientName||"Anuncio destacado",kicker=c.kind==="vehicle"?[c.make,c.model,c.year].filter(Boolean).join(" · "):c.kind==="property"?[c.operation,kind].join(" · "):"PRESENTACIÓN COMERCIAL";return'<article class="digital-card layout-'+t.layout+' skin-'+t.skin+(pt?" public-card":"")+'" data-card-id="'+esc(c.id||"preview")+'" style="'+css(c)+'"><div class="dc-cover" style="background-image:linear-gradient(180deg,#0001,#0000),url(&quot;'+esc(th?(c.kind==="vehicle"?CAR:HOME):img(c))+'&quot;)"><div class="dc-brand">'+(c.logo&&!th?'<img class="dc-logo" src="'+esc(c.logo)+'" alt="Logo">':"")+'<span>'+esc((c.clientName||"LAV DIGITAL").toUpperCase())+'</span></div><span class="dc-kind">'+esc(kind)+'</span><div class="dc-cover-copy"><div class="dc-kicker">'+esc(kicker)+'</div><h2 class="dc-title">'+esc(title)+'</h2>'+(p?'<div class="dc-price">'+esc(p)+(c.operation==="Renta"&&c.kind==="property"?" <small>/ mes</small>":"")+'</div>':"")+'<div class="dc-location">'+(c.location?'<i class="fa-solid fa-location-dot"></i> '+esc(c.location):"")+'</div></div>'+(th?"":'<button class="dc-cover-open" data-lightbox-index="-1" aria-label="Ampliar portada"></button>')+'</div><div class="dc-content">'+(c.description?'<p class="dc-description">'+esc(c.description)+'</p>':"")+(f.length?'<div class="dc-specs">'+f.slice(0,6).map(x=>'<div class="dc-spec"><i class="fa-solid fa-'+x[2]+'"></i><strong>'+esc(x[0]+(x[3]?" "+x[3]:""))+'</strong><span>'+esc(x[1])+'</span></div>').join("")+'</div>':"")+(c.amenities?'<div class="dc-section-label">CARACTERÍSTICAS</div><p class="dc-description">'+esc(c.amenities)+'</p>':"")+gallery(c,o.galleryIndex||0,th)+catalog+'<div class="dc-section-label">'+(c.contactName?"CONTACTO · "+esc(c.contactName):"CONTACTO DIRECTO")+'</div>'+contact(c,pt)+'<div class="dc-footer">PRESENTADO POR '+esc((c.clientName||"LAV DIGITAL").toUpperCase())+'</div></div></article>'
   }
   function date(v) {
     if(!v)return"ahora";let d=new Date(v);return isNaN(d)?"":new Intl.DateTimeFormat("es-MX", {
@@ -191,12 +192,33 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
     return String(v||"tarjeta-digital").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,70)||"tarjeta-digital"
   }
   function cardUrl(c) {
-    let u=new URL(location.href.split("?")[0]);u.searchParams.set("card",c.id);if(c.publicName)u.searchParams.set("nombre",slug(c.publicName));return u.href
+    let u=new URL("card.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]);if(c.publicName)u.searchParams.set("nombre",slug(c.publicName));return u.href
   }
   function setPublicCardManifest(c) {
     const link=document.querySelector('link[rel="manifest"]');
     if(!link||!c?.id)return;
     link.href=new URL("api/manifest.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]).href;
+  }
+  async function installCard() {
+    if(deferredInstallPrompt) {
+      const promptEvent=deferredInstallPrompt;deferredInstallPrompt=null;
+      try {
+        await promptEvent.prompt();
+        const choice=await promptEvent.userChoice;
+        if(choice?.outcome==="accepted")toast("Sigue los pasos del teléfono para terminar la instalación.");
+        else toast("Puedes instalarla cuando quieras desde el menú del navegador.");
+      } catch { showInstallInstructions(); }
+      return;
+    }
+    showInstallInstructions();
+  }
+  function showInstallInstructions() {
+    const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+    const message=ios
+      ?"En iPhone o iPad: pulsa Compartir en Safari y elige “Añadir a pantalla de inicio”. Después abre la tarjeta desde el icono que se crea."
+      :"En Android: abre el menú ⋮ de Chrome y elige “Instalar aplicación” o “Añadir a pantalla de inicio”. Después abre la tarjeta desde el icono para verla sin la barra del navegador.";
+    const d=document.createElement("div");d.className="lightbox";d.innerHTML='<button class="lightbox-close" aria-label="Cerrar">×</button><div style="background:#fff;color:#222;padding:24px;border-radius:18px;max-width:420px;margin:16px"><div style="font-size:28px;margin-bottom:12px"><i class="fa-solid fa-mobile-screen-button"></i></div><h3 style="margin-top:0">Instalar tarjeta digital</h3><p style="line-height:1.7">'+esc(message)+'</p><button class="button button-primary" data-close-install>Entendido</button></div>';
+    document.body.append(d);d.querySelector(".lightbox-close").onclick=()=>d.remove();d.querySelector("[data-close-install]").onclick=()=>d.remove();
   }
   async function saveContact(c) {
     if(!c?.id) {
@@ -413,6 +435,7 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
       let lb=e.target.closest("[data-lightbox-index]");if(lb&&c) {
         lightbox(c,+lb.dataset.lightboxIndex);return
       }
+      if(e.target.closest("[data-install-card]")) { installCard(); return; }
       if(e.target.closest("[data-save-contact]")) {
         saveContact(c);return
       }
@@ -423,7 +446,7 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
     })
   }
   async function boot() {
-    init();let id=new URLSearchParams(location.search).get("card");if(id) {
+    init();const params=new URLSearchParams(location.search);let id=(location.pathname.endsWith("/card.php")||location.pathname==="card.php")?params.get("id"):params.get("card");if(id) {
       show("public");$(".topbar").classList.add("hidden");await publicPage(id);return
     }
     try {
