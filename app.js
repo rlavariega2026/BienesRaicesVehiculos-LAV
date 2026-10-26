@@ -193,15 +193,40 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
   function cardUrl(c) {
     let u=new URL(location.href.split("?")[0]);u.searchParams.set("card",c.id);if(c.publicName)u.searchParams.set("nombre",slug(c.publicName));return u.href
   }
+  let publicManifestUrl=null;
+  function setPublicCardManifest(c) {
+    const link=document.querySelector('link[rel="manifest"]');
+    if(!link||!c?.id)return;
+    const base=new URL("./",location.href).href;
+    const manifest={
+      name:(c.publicName||c.title||c.clientName||"Tarjeta digital")+" | LAV Digital",
+      short_name:(c.publicName||c.title||c.clientName||"LAV Tarjeta").slice(0,24),
+      description:"Tarjeta digital de "+(c.clientName||"LAV Digital"),
+      start_url:location.href,
+      scope:base,
+      display:"standalone",
+      orientation:"portrait",
+      background_color:c.theme?.background||"#101820",
+      theme_color:c.theme?.background||"#101820",
+      icons:[{src:new URL("icon.svg",base).href,sizes:"any",type:"image/svg+xml",purpose:"any maskable"}]
+    };
+    try {
+      const next=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"}));
+      link.href=next;
+      if(publicManifestUrl)URL.revokeObjectURL(publicManifestUrl);
+      publicManifestUrl=next;
+    } catch {}
+  }
   function saveContact(c) {
     if(!c?.id) {
       toast("Primero publica la tarjeta para guardar el contacto.", "error");
       return;
     }
-    // En móvil se entrega una vCard estándar. El navegador/sistema muestra la
-    // opción compatible para abrirla o importarla; la web no puede guardar sin permiso.
     const contactUrl=new URL("api/contact.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]).href;
-    window.location.href=contactUrl;
+    // Abrir la vCard desde el gesto del usuario permite que el navegador móvil
+    // la entregue al selector de Contactos/Importar cuando el sistema lo admite.
+    const opened=window.open(contactUrl,"_blank","noopener");
+    if(!opened) window.location.href=contactUrl;
   }
   async function share(c) {
     if(!c?.id)return toast("Guarda la tarjeta primero.","error");
@@ -281,7 +306,7 @@ function contact(c){let a=[],w=String(c.whatsapp||c.phone||"").replace(/\D/g,"")
       }
       if(!c)return noPublic("No se pudo recuperar el anuncio desde el servidor.")
     }
-    if(c.status!=="published")return noPublic("El anuncio no está publicado o ya no está disponible.");let all=[];try {
+    if(c.status!=="published")return noPublic("El anuncio no está publicado o ya no está disponible.");setPublicCardManifest(c);document.body.classList.add("public-card-mode");let all=[];try {
       all=(await get( {
         action:"list"
       })).cards||[]
