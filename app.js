@@ -105,7 +105,8 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     cur.catalogItems.push({kind:"property",title:"",price:"",currency:cur.currency||"MXN",location:"",photo:"",description:""});
     renderMultiItems(cur);preview();stat("Artículo agregado; guarda el anuncio para conservarlo");
   }
-\n  function read() {
+
+  function read() {
     if(!cur)return;readMultiItems();for(let k of ["clientName","contactName","operation","price","currency","location","description","propertyType","landArea","builtArea","bedrooms","bathrooms","parking","amenities","vehicleType","make","model","version","year","mileage","transmission","fuel","phone","whatsapp","email","facebook","instagram","marketplace","mercadolibre","mapsUrl"])if($("#"+k))cur[k]=k==="description"?$("#"+k).value:$("#"+k).value.trim();cur.title=$("#listingTitle").value.trim();cur.kind=$("#listingType").value;cur.galleryStyle=$('input[name="galleryStyle"]:checked')?.value||"slide";cur.theme= {
       primary:$("#customPrimary").value,background:$("#customBackground").value,text:$("#customText").value,accent:$("#customAccent").value,gradient:$("#gradientStyle").value,font:$("#fontStyle").value,radius:+$("#cardRadius").value,imageHeight:+$("#imageHeight").value,overlay:+$("#overlayStrength").value,descriptionAlign:$("#descriptionAlign")?.value||"left",textStyles:Object.fromEntries(["brand","kind","kicker","title","price","location","description","specs","amenities","section","contact"].map(k=>[k,$("#textColor_"+k)?.value||({brand:"#ffffff",kind:"#ffffff",kicker:"#e4c58a",title:"#ffffff",price:"#ffffff",location:"#ffffff",description:"#f8f7f4",specs:"#f8f7f4",amenities:"#f8f7f4",section:"#c9a96e",contact:"#f8f7f4"}[k])]))
     };return cur
