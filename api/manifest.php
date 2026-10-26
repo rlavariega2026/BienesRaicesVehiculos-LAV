@@ -26,11 +26,11 @@ $baseUrl = 'https://' . $host . $basePath;
 $name = trim((string)($card['publicName'] ?? $card['title'] ?? $card['clientName'] ?? 'Tarjeta digital'));
 $theme = is_array($card['theme'] ?? null) ? $card['theme'] : [];
 $manifest = [
-    'id' => $baseUrl . 'index.html?card=' . rawurlencode($id),
+    'id' => $baseUrl . 'card.php?id=' . rawurlencode($id),
     'name' => $name . ' | LAV Digital',
     'short_name' => function_exists('mb_substr') ? mb_substr($name !== '' ? $name : 'LAV Tarjeta', 0, 24, 'UTF-8') : substr($name !== '' ? $name : 'LAV Tarjeta', 0, 24),
     'description' => 'Tarjeta digital de ' . (string)($card['clientName'] ?? 'LAV Digital'),
-    'start_url' => $baseUrl . 'index.html?card=' . rawurlencode($id),
+    'start_url' => $baseUrl . 'card.php?id=' . rawurlencode($id),
     'scope' => $baseUrl,
     'display' => 'standalone',
     'orientation' => 'portrait',
