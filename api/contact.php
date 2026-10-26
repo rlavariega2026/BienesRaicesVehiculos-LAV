@@ -41,6 +41,8 @@ if (!empty($card['whatsapp'])) $rows[] = 'TEL;TYPE=CELL:'.vcard_escape($card['wh
 if (!empty($card['email'])) $rows[] = 'EMAIL;TYPE=INTERNET:'.vcard_escape($card['email']);
 if (!empty($card['location'])) $rows[] = 'ADR;TYPE=WORK:;;'.vcard_escape($card['location']).';;;;';
 if (!empty($card['facebook'])) $rows[] = 'URL:'.vcard_escape($card['facebook']);
+if (!empty($card['instagram'])) $rows[] = 'URL:'.vcard_escape($card['instagram']);
+if (!empty($card['mapsUrl'])) $rows[] = 'URL:'.vcard_escape($card['mapsUrl']);
 $rows[] = 'URL:'.vcard_escape($url);
 $rows[] = 'END:VCARD';
 header('Content-Type: text/vcard; charset=utf-8');
