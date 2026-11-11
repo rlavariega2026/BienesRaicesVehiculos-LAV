@@ -232,13 +232,25 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
   function slug(v) {
     return String(v||"tarjeta-digital").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,70)||"tarjeta-digital"
   }
-  function cardUrl(c) {
-    let u=new URL("card.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]);if(c.publicName)u.searchParams.set("nombre",slug(c.publicName));if(Number.isInteger(c.catalogItemIndex))u.searchParams.set("item",String(c.catalogItemIndex));return u.href
+  function catalogUrl(c) {
+    let u=new URL("catalog.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]);
+    if(c.publicName)u.searchParams.set("nombre",slug(c.publicName));
+    return u.href;
   }
-  function setPublicCardManifest(c) {
+  function cardUrl(c) {
+    if(c.kind==="profile"&&!Number.isInteger(c.catalogItemIndex))return catalogUrl(c);
+    let u=new URL("card.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]);
+    if(c.publicName)u.searchParams.set("nombre",slug(c.publicName));
+    if(Number.isInteger(c.catalogItemIndex))u.searchParams.set("item",String(c.catalogItemIndex));
+    return u.href;
+  }
+  function setPublicCardManifest(c,catalogMode=false) {
     const link=document.querySelector('link[rel="manifest"]');
     if(!link||!c?.id)return;
-    link.href=new URL("api/manifest.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]).href;
+    const url=new URL("api/manifest.php",location.href.split("?")[0]);
+    url.searchParams.set("id",c.id);
+    if(catalogMode)url.searchParams.set("view","catalog");
+    link.href=url.href;
   }
   async function installCard() {
     if(deferredInstallPrompt) {
@@ -383,35 +395,49 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       }
     }
   }
+  function renderCatalogPage(profile,items) {
+    const theme={...B.theme,...(profile.theme||{})},cover=profile.cover||(items[0]?img(items[0]):HOME),title=profile.publicName||profile.clientName||"Catálogo",subtitle=profile.description||"Conoce nuestro inventario disponible";
+    const cardsHtml=items.map(item=>{
+      const embedded=Number.isInteger(item.catalogItemIndex),href=embedded?cardUrl({...profile,catalogItemIndex:item.catalogItemIndex}):cardUrl(item),kind=item.kind==="vehicle"?(item.vehicleType||"Vehículo"):(item.propertyType||"Propiedad"),price=money(item)||"Precio por consultar";
+      return '<a class="catalog-listing-card" href="'+esc(href)+'" style="--listing-accent:'+esc(item.theme?.primary||theme.primary)+';--listing-bg:'+esc(item.theme?.background||theme.background)+';--listing-text:'+esc(item.theme?.text||theme.text)+'"><div class="catalog-listing-photo" style="background-image:linear-gradient(0deg,#08090dd9 0%,#08090d00 68%),url(&quot;'+esc(img(item))+'&quot;)"><span class="catalog-listing-kind">'+esc(kind)+'</span><span class="catalog-listing-open">Ver anuncio <i class="fa-solid fa-arrow-up-right-from-square"></i></span></div><div class="catalog-listing-copy"><h2>'+esc(item.title||kind)+'</h2><strong>'+esc(price)+'</strong><p>'+(item.location?'<i class="fa-solid fa-location-dot"></i> '+esc(item.location):'Consulta los detalles')+'</p></div></a>';
+    }).join("");
+    const mixed=items.some(x=>x.kind==="vehicle")&&items.some(x=>x.kind!=="vehicle"),count=items.length+" "+(mixed?"anuncios":items.every(x=>x.kind==="vehicle")?"vehículos":"propiedades");
+    $("#publicMount").innerHTML='<main class="catalog-public-shell" style="--catalog-primary:'+esc(theme.primary)+';--catalog-bg:'+esc(theme.background)+';--catalog-text:'+esc(theme.text)+';--catalog-accent:'+esc(theme.accent)+'"><header class="catalog-public-hero" style="background-image:linear-gradient(90deg,#080a0fe8 0%,#080a0f9c 48%,#080a0f20 100%),url(&quot;'+esc(cover)+'&quot;)"><div class="catalog-public-brand">'+(profile.logo?'<img src="'+esc(profile.logo)+'" alt="Logotipo de '+esc(profile.clientName)+'">':'')+'<span>'+esc(profile.clientName||"LAV DIGITAL")+'</span></div><div class="catalog-public-intro"><span class="catalog-eyebrow">INVENTARIO EXCLUSIVO</span><h1>'+esc(title)+'</h1><p>'+esc(subtitle)+'</p><span class="catalog-public-count">'+esc(count)+'</span></div></header><section class="catalog-public-content"><div class="catalog-public-heading"><div><span class="catalog-eyebrow">DISPONIBILIDAD</span><h2>Explora el catálogo</h2></div><span>'+esc(count)+'</span></div><div class="catalog-listing-grid">'+(cardsHtml||'<p class="catalog-empty">Este catálogo todavía no tiene anuncios publicados.</p>')+'</div><section class="catalog-contact"><div><span class="catalog-eyebrow">ATENCIÓN PERSONALIZADA</span><h2>¿Te interesa alguna opción?</h2><p>Comunícate directamente con '+esc(profile.clientName||"nuestro equipo")+'.</p></div>'+contact(profile,true,false)+'</section><footer class="catalog-public-footer">DISEÑADO PARA DESTACAR · LAV DIGITAL</footer></section></main>';
+  }
   async function publicPage(id) {
-    show("public");$(".topbar").classList.add("hidden");$("#publicMount").innerHTML='<div class="public-shell" style="color:white;padding:50px;text-align:center">Cargando tarjeta…</div>';let c;try {
-      let r=await get( {
-        id
-      });c=r.card||r.data
-    }
-    catch(e) {
-      try {
-        c=JSON.parse(localStorage.getItem(KEY)||"[]").find(x=>String(x.id)===String(id))
+    show("public");$(".topbar").classList.add("hidden");$("#publicMount").innerHTML='<div class="public-shell" style="color:white;padding:50px;text-align:center">Cargando publicación…</div>';
+    let c;
+    try{const r=await get({id});c=r.card||r.data;}
+    catch(e){try{c=JSON.parse(localStorage.getItem(KEY)||"[]").find(x=>String(x.id)===String(id));}catch{}if(!c)return noPublic("No se pudo recuperar el anuncio desde el servidor.");}
+    if(c.status!=="published")return noPublic("El anuncio no está publicado o ya no está disponible.");
+    const params=new URLSearchParams(location.search),itemParam=params.get("item"),catalogMode=params.get("catalog")==="1";
+    let all=[];
+    try{all=(await get({action:"list"})).cards||[];}
+    catch{try{all=JSON.parse(localStorage.getItem(KEY)||"[]");}catch{}}
+    cards=all;
+    if(catalogMode){
+      if(c.kind!=="profile")return noPublic("El catálogo solicitado no corresponde a un perfil comercial.");
+      let items=[];
+      if(Array.isArray(c.catalogItems)&&c.catalogItems.length){
+        items=c.catalogItems.map((item,index)=>({...c,...item,id:c.id,kind:item.kind||"property",clientName:c.clientName,contactName:c.contactName,phone:c.phone,whatsapp:c.whatsapp,email:c.email,facebook:c.facebook,instagram:c.instagram,marketplace:c.marketplace,mercadolibre:c.mercadolibre,mapsUrl:item.mapsUrl||c.mapsUrl,logo:item.logo||c.logo,templateId:item.templateId||c.templateId,theme:{...(c.theme||{}),...(item.theme||{})},catalogItemIndex:index}));
+      }else{
+        items=all.filter(x=>String(x.clientName||"").trim().toLocaleLowerCase("es-MX")===String(c.clientName||"").trim().toLocaleLowerCase("es-MX")&&x.status==="published"&&x.kind!=="profile").map(x=>({...x,templateId:x.templateId||c.templateId,theme:{...(c.theme||{}),...(x.theme||{})}}));
       }
-      catch {
-      }
-      if(!c)return noPublic("No se pudo recuperar el anuncio desde el servidor.")
+      setPublicCardManifest(c,true);document.body.classList.add("public-card-mode","catalog-page-mode");renderCatalogPage(c,items);
+      document.title=(c.publicName||c.clientName||"Catálogo")+" | Catálogo LAV Digital";
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content",c.theme?.background||"#101116");return;
     }
-    if(c.status!=="published")return noPublic("El anuncio no está publicado o ya no está disponible.");const params=new URLSearchParams(location.search),itemParam=params.get("item");if(itemParam!==null){const itemIndex=Number(itemParam),item=Array.isArray(c.catalogItems)?c.catalogItems[itemIndex]:null;if(!Number.isInteger(itemIndex)||itemIndex<0||!item)return noPublic("Esta propiedad o vehículo no está disponible.");c={...c,...item,id:c.id,clientName:c.clientName,contactName:c.contactName,phone:c.phone,whatsapp:c.whatsapp,email:c.email,facebook:c.facebook,instagram:c.instagram,marketplace:c.marketplace,mercadolibre:c.mercadolibre,mapsUrl:item.mapsUrl||c.mapsUrl,logo:c.logo,catalogItems:[],catalogItemIndex:itemIndex};}setPublicCardManifest(c);document.body.classList.add("public-card-mode");let all=[];try {
-      all=(await get( {
-        action:"list"
-      })).cards||[]
+    if(itemParam!==null){
+      const itemIndex=Number(itemParam),item=Array.isArray(c.catalogItems)?c.catalogItems[itemIndex]:null;
+      if(!Number.isInteger(itemIndex)||itemIndex<0||!item)return noPublic("Esta propiedad o vehículo no está disponible.");
+      const profile=c;
+      c={...profile,...item,id:profile.id,clientName:profile.clientName,contactName:profile.contactName,phone:profile.phone,whatsapp:profile.whatsapp,email:profile.email,facebook:profile.facebook,instagram:profile.instagram,marketplace:profile.marketplace,mercadolibre:profile.mercadolibre,mapsUrl:item.mapsUrl||profile.mapsUrl,logo:item.logo||profile.logo,templateId:item.templateId||profile.templateId,theme:{...(profile.theme||{}),...(item.theme||{})},catalogItems:[],catalogItemIndex:itemIndex};
     }
-    catch {
-      try {
-        all=JSON.parse(localStorage.getItem(KEY)||"[]")
-      }
-      catch {
-      }
-    }
-    cards=all;let catalog=c.kind==="profile"?all.filter(x=>String(x.clientName||"").trim().toLocaleLowerCase("es-MX")===String(c.clientName||"").trim().toLocaleLowerCase("es-MX")&&x.status==="published"&&x.kind!=="profile"):[];$("#publicMount").innerHTML='<div class="public-shell">'+card(c, {
-      publicMode:true,catalog
-    })+'</div>';document.title=(c.publicName||c.title||c.clientName)+" | Tarjeta digital";document.querySelector('meta[name="theme-color"]')?.setAttribute("content",c.theme?.background||"#101116")
+    setPublicCardManifest(c);document.body.classList.add("public-card-mode");
+    const catalog=c.kind==="profile"?all.filter(x=>String(x.clientName||"").trim().toLocaleLowerCase("es-MX")===String(c.clientName||"").trim().toLocaleLowerCase("es-MX")&&x.status==="published"&&x.kind!=="profile"):[];
+    $("#publicMount").innerHTML='<div class="public-shell">'+card(c,{publicMode:true,catalog})+'</div>';
+    document.title=(c.publicName||c.title||c.clientName)+" | Tarjeta digital";
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content",c.theme?.background||"#101116");
   }
   function noPublic(m) {
     $("#publicMount").innerHTML='<div class="public-shell" style="min-height:100vh;padding:15vh 24px;color:white;text-align:center"><h1>Esta tarjeta no está disponible</h1><p style="color:#b4b6c3;line-height:1.7">'+esc(m)+'</p><a href="'+esc(location.pathname)+'" class="button button-primary">Ir a LAV Digital</a></div>'
@@ -520,7 +546,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     })
   }
   async function boot() {
-    init();const params=new URLSearchParams(location.search);let id=(location.pathname.endsWith("/card.php")||location.pathname==="card.php")?params.get("id"):params.get("card");if(id) {
+    init();const params=new URLSearchParams(location.search);let id=(location.pathname.endsWith("/card.php")||location.pathname==="card.php"||location.pathname.endsWith("/catalog.php")||location.pathname==="catalog.php")?params.get("id"):params.get("card");if(id) {
       show("public");$(".topbar").classList.add("hidden");await publicPage(id);return
     }
     try {
