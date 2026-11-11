@@ -6,7 +6,8 @@ Aplicación web independiente para crear tarjetas digitales móviles de propieda
 - Editor para tarjetas de bienes raíces y automotores.
 - Campos opcionales para precio, ubicación, descripción y especificaciones.
 - Fotos cargadas desde el dispositivo, portada y galería horizontal deslizable.
-- Cuatro estilos visuales y 100 variaciones numeradas de plantilla.
+- 10 plantillas premium LAV destacadas y 1,400 combinaciones visuales originales; se conservan todas las opciones anteriores.
+- Fotografías originales almacenadas en el servidor sin reducción automática de resolución ni calidad y sin límite fijo de cantidad en las galerías. El tamaño máximo individual y el almacenamiento total dependen de la configuración PHP y del espacio contratado en Hostinger.
 - Contacto con teléfono, WhatsApp, correo, Facebook, Instagram, TikTok, Facebook Marketplace, Mercado Libre y Google Maps.
 - Guardado local de borradores en el navegador.
 - Publicación de tarjetas en Hostinger con enlaces cortos y datos guardados en el servidor.
