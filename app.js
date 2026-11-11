@@ -302,6 +302,29 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       let d=document.createElement("div");d.className="lightbox";d.innerHTML='<div style="background:white;color:#222;padding:24px;border-radius:14px;max-width:90vw;overflow-wrap:anywhere"><h3>Enlace de la tarjeta</h3><p>'+esc(u)+'</p><button class="button button-primary" data-close>Copiar enlace</button></div>';document.body.append(d);d.querySelector("button").onclick=async()=>{try{await navigator.clipboard.writeText(u);d.remove();toast("Enlace copiado.");}catch{}} 
     }
   }
+  async function copyCardLink(c) {
+    if(!c?.id)return toast("Guarda la tarjeta primero.","error");
+    const u=cardUrl(c);
+    try {
+      if(navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(u);
+        return toast("Enlace copiado. Ya puedes pegarlo donde quieras compartirlo.");
+      }
+    } catch {}
+    const field=document.createElement("textarea");
+    field.value=u;field.setAttribute("readonly","");field.style.cssText="position:fixed;left:-9999px;top:0;opacity:0";
+    document.body.append(field);field.focus();field.select();field.setSelectionRange(0,field.value.length);
+    let copied=false;
+    try { copied=document.execCommand("copy"); } catch {}
+    field.remove();
+    if(copied)return toast("Enlace copiado. Ya puedes pegarlo donde quieras compartirlo.");
+    const d=document.createElement("div");d.className="lightbox";
+    d.innerHTML='<div style="background:white;color:#222;padding:24px;border-radius:14px;max-width:92vw;width:460px;overflow-wrap:anywhere"><h3>Enlace del anuncio</h3><p>El navegador no permitió copiarlo automáticamente. Selecciona el enlace y cópialo.</p><input aria-label="Enlace del anuncio" readonly style="width:100%;padding:12px;border:1px solid #bbb;border-radius:8px" value="'+esc(u)+'"><button class="button button-primary" type="button" style="margin-top:12px">Seleccionar enlace</button><button class="button button-ghost" type="button" style="margin-top:12px" data-close>Cerrar</button></div>';
+    document.body.append(d);const input=d.querySelector("input");const selectButton=d.querySelector(".button-primary");
+    selectButton.onclick=()=>{input.focus();input.select();input.setSelectionRange(0,input.value.length)};
+    d.querySelector("[data-close]").onclick=()=>d.remove();input.focus();input.select();
+    toast("Selecciona el enlace para copiarlo.","error");
+  }
   function ask(title,msg) {
     return new Promise(resolve=> {
       let d=$("#confirmDialog");$("#confirmTitle").textContent=title;$("#confirmMessage").textContent=msg;d.addEventListener("close",()=>resolve(d.returnValue==="confirm"), {
@@ -319,7 +342,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
   }
   async function action(a,id) {
     let c=cards.find(x=>String(x.id)===String(id));if(!c)return;if(a==="edit")return edit(id);if(a==="more")return $("#more-"+CSS.escape(id)).classList.toggle("hidden");if(a==="link") {
-      if(c.status!=="published")return toast("Publica el anuncio antes de compartirlo.","error");return share(c)
+      if(c.status!=="published")return toast("Publica el anuncio antes de copiar su enlace.","error");return copyCardLink(c)
     }
     if(a==="duplicate") {
       cur= {
