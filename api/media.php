@@ -7,13 +7,13 @@ function media_reply(array $data, int $status=200) { http_response_code($status)
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') media_reply(['success'=>false,'message'=>'Método no permitido.'],405);
 if (!isset($_FILES['image']) || !is_array($_FILES['image'])) media_reply(['success'=>false,'message'=>'No se recibió la imagen. Si el archivo es grande, revisa los límites de carga configurados por Hostinger (upload_max_filesize y post_max_size).'],400);
 $file=$_FILES['image'];
-if (($file['error'] ?? UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_OK) { $code=(int)($file['error'] ?? UPLOAD_ERR_NO_FILE); $message=match($code){UPLOAD_ERR_INI_SIZE,UPLOAD_ERR_FORM_SIZE=>'El servidor rechazó el archivo por su límite de carga configurado en PHP/Hostinger.',UPLOAD_ERR_PARTIAL=>'La imagen llegó incompleta. Intenta nuevamente.',UPLOAD_ERR_NO_TMP_DIR=>'El servidor no tiene carpeta temporal disponible.',UPLOAD_ERR_CANT_WRITE=>'El servidor no pudo escribir el archivo.',UPLOAD_ERR_EXTENSION=>'Una extensión de PHP detuvo la carga.',default=>'No se pudo recibir la imagen.'}; media_reply(['success'=>false,'message'=>$message],413); }
+if (($file['error'] ?? UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_OK) { $code=(int)($file['error'] ?? UPLOAD_ERR_NO_FILE); switch ($code) { case UPLOAD_ERR_INI_SIZE: case UPLOAD_ERR_FORM_SIZE: $message='El servidor rechazó el archivo por su límite de carga configurado en PHP/Hostinger.'; break; case UPLOAD_ERR_PARTIAL: $message='La imagen llegó incompleta. Intenta nuevamente.'; break; case UPLOAD_ERR_NO_TMP_DIR: $message='El servidor no tiene carpeta temporal disponible.'; break; case UPLOAD_ERR_CANT_WRITE: $message='El servidor no pudo escribir el archivo.'; break; case UPLOAD_ERR_EXTENSION: $message='Una extensión de PHP detuvo la carga.'; break; default: $message='No se pudo recibir la imagen.'; } media_reply(['success'=>false,'message'=>$message],413); }
 
 $tmp=(string)($file['tmp_name'] ?? '');
 if (!is_uploaded_file($tmp)) media_reply(['success'=>false,'message'=>'El archivo recibido no es válido.'],400);
 $finfo=new finfo(FILEINFO_MIME_TYPE);
 $mime=$finfo->file($tmp);
-$extensions=['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp','image/gif'=>'gif'];
+$extensions=['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp','image/gif'=>'gif','image/avif'=>'avif','image/bmp'=>'bmp'];
 if (!isset($extensions[$mime])) media_reply(['success'=>false,'message'=>'Formato no permitido. Usa JPG, PNG o WEBP.'],415);
 $dir=__DIR__.'/../data/media/';
 if (!is_dir($dir) && !mkdir($dir,0755,true) && !is_dir($dir)) media_reply(['success'=>false,'message'=>'No se pudo crear la carpeta de imágenes.'],500);
