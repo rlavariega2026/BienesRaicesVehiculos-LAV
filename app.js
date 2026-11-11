@@ -404,13 +404,13 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     const mixed=items.some(x=>x.kind==="vehicle")&&items.some(x=>x.kind!=="vehicle"),count=items.length+" "+(mixed?"anuncios":items.every(x=>x.kind==="vehicle")?"vehículos":"propiedades");
     $("#publicMount").innerHTML='<main class="catalog-public-shell" style="--catalog-primary:'+esc(theme.primary)+';--catalog-bg:'+esc(theme.background)+';--catalog-text:'+esc(theme.text)+';--catalog-accent:'+esc(theme.accent)+'"><header class="catalog-public-hero" style="background-image:linear-gradient(90deg,#080a0fe8 0%,#080a0f9c 48%,#080a0f20 100%),url(&quot;'+esc(cover)+'&quot;)"><div class="catalog-public-brand">'+(profile.logo?'<img src="'+esc(profile.logo)+'" alt="Logotipo de '+esc(profile.clientName)+'">':'')+'<span>'+esc(profile.clientName||"LAV DIGITAL")+'</span></div><div class="catalog-public-intro"><span class="catalog-eyebrow">INVENTARIO EXCLUSIVO</span><h1>'+esc(title)+'</h1><p>'+esc(subtitle)+'</p><span class="catalog-public-count">'+esc(count)+'</span></div></header><section class="catalog-public-content"><div class="catalog-public-heading"><div><span class="catalog-eyebrow">DISPONIBILIDAD</span><h2>Explora el catálogo</h2></div><span>'+esc(count)+'</span></div><div class="catalog-listing-grid">'+(cardsHtml||'<p class="catalog-empty">Este catálogo todavía no tiene anuncios publicados.</p>')+'</div><section class="catalog-contact"><div><span class="catalog-eyebrow">ATENCIÓN PERSONALIZADA</span><h2>¿Te interesa alguna opción?</h2><p>Comunícate directamente con '+esc(profile.clientName||"nuestro equipo")+'.</p></div>'+contact(profile,true,false)+'</section><footer class="catalog-public-footer">DISEÑADO PARA DESTACAR · LAV DIGITAL</footer></section></main>';
   }
-  async function publicPage(id) {
+  async function publicPage(id,catalogRoute=false) {
     show("public");$(".topbar").classList.add("hidden");$("#publicMount").innerHTML='<div class="public-shell" style="color:white;padding:50px;text-align:center">Cargando publicación…</div>';
     let c;
     try{const r=await get({id});c=r.card||r.data;}
     catch(e){try{c=JSON.parse(localStorage.getItem(KEY)||"[]").find(x=>String(x.id)===String(id));}catch{}if(!c)return noPublic("No se pudo recuperar el anuncio desde el servidor.");}
     if(c.status!=="published")return noPublic("El anuncio no está publicado o ya no está disponible.");
-    const params=new URLSearchParams(location.search),itemParam=params.get("item"),catalogMode=params.get("catalog")==="1";
+    const params=new URLSearchParams(location.search),itemParam=params.get("item"),catalogMode=catalogRoute||params.get("catalog")==="1";
     let all=[];
     try{all=(await get({action:"list"})).cards||[];}
     catch{try{all=JSON.parse(localStorage.getItem(KEY)||"[]");}catch{}}
@@ -547,7 +547,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
   }
   async function boot() {
     init();const params=new URLSearchParams(location.search);let id=(location.pathname.endsWith("/card.php")||location.pathname==="card.php"||location.pathname.endsWith("/catalog.php")||location.pathname==="catalog.php")?params.get("id"):params.get("card");if(id) {
-      show("public");$(".topbar").classList.add("hidden");await publicPage(id);return
+      show("public");$(".topbar").classList.add("hidden");await publicPage(id,location.pathname.endsWith("/catalog.php")||location.pathname==="catalog.php");return
     }
     try {
       let d=await get( {
