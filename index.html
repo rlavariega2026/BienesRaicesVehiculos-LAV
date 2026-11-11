@@ -15,7 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Abril+Fatface&family=Anton&family=Barlow+Condensed:wght@400;500;600;700&family=Bebas+Neue&family=Cinzel:wght@400;500;600;700&family=Figtree:wght@400;500;600;700;800&family=Josefin+Sans:wght@400;500;600;700&family=Merriweather:wght@400;700;900&family=Nunito+Sans:wght@400;500;600;700;800;900&family=Rubik:wght@400;500;600;700;800&family=Urbanist:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&family=Montserrat:wght@400;500;600;700;800&family=Lato:wght@400;700;900&family=Poppins:wght@400;500;600;700;800&family=Raleway:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,500;6..96,600;6..96,700&family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&family=DM+Serif+Display&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="styles.css?v=20261111-1">
-<link rel="stylesheet" href="premium-refresh.css?v=20261111-1">
+<link rel="stylesheet" href="premium-refresh.css?v=20261111-2">
 <link rel="stylesheet" href="public-card-mobile-fix.css?v=20261026-3">
 <meta name="apple-mobile-web-app-title" content="LAV Tarjetas">
 </head>
@@ -62,6 +62,10 @@
         </section>
         <section class="editor-step" id="step-design">
           <div class="panel-intro"><span class="eyebrow">BIBLIOTECA DE DISEÑO</span><h2>Encuentra tu estilo</h2><p>10 plantillas premium LAV seleccionadas + la biblioteca original de 1,400 combinaciones visuales. Conservamos todos los diseños existentes.</p></div>
+          <section class="featured-templates-panel" aria-labelledby="featuredTemplatesTitle">
+            <div class="featured-templates-heading"><div><span class="eyebrow">SELECCIÓN EXCLUSIVA LAV</span><h3 id="featuredTemplatesTitle">10 plantillas premium</h3><p>Diseños nuevos, listos para propiedades, vehículos y catálogos. Elige uno para aplicarlo a tu publicación.</p></div><span class="featured-templates-count">10 DISEÑOS</span></div>
+            <div id="featuredTemplateGrid" class="featured-template-grid"></div>
+          </section>
           <div class="template-tools"><input id="templateSearch" type="search" placeholder="Buscar diseño…"><select id="templateCategory"><option value="all">Todas las categorías</option><option value="property">Inmobiliario</option><option value="vehicle">Automotriz</option><option value="universal">Universal</option></select><select id="templateSkin"><option value="all">Todas las colecciones</option><option value="signature">Signature</option><option value="editorial">Editorial</option><option value="colorpop">Color Pop</option><option value="neon">Neon Studio</option><option value="luxury">Luxury</option></select></div>
           <div class="template-summary"><strong id="templateResults">10 plantillas premium + 1,400 combinaciones</strong><span>Selecciona una miniatura para actualizar la vista previa.</span></div><div id="templateGrid" class="template-grid"></div><button class="button button-outline hidden" id="loadMoreTemplates" type="button">Ver más diseños</button>
         </section>
@@ -82,7 +86,7 @@
 <dialog id="publishNameDialog" class="publish-name-dialog"><form method="dialog"><span class="eyebrow">PUBLICACIÓN LAV</span><h3>Nombre de tu publicación</h3><p>Este nombre aparecerá en el enlace que compartirás.</p><label for="publicNameInput">Nombre público</label><input id="publicNameInput" name="publicName" type="text" maxlength="70" placeholder="Ej. residencia-jardines-del-valle" required><small>El enlace conservará un identificador único para evitar conflictos.</small><div class="dialog-actions"><button class="button button-outline" value="cancel">Cancelar</button><button class="button button-primary" value="publish">Publicar tarjeta</button></div></form></dialog>
     <dialog id="confirmDialog" class="confirm-dialog"><form method="dialog"><h3 id="confirmTitle">Confirmar acción</h3><p id="confirmMessage">¿Deseas continuar?</p><div class="dialog-actions"><button class="button button-outline" value="cancel">Cancelar</button><button class="button button-danger" id="confirmAccept" value="confirm">Confirmar</button></div></form></dialog>
 </div>
-<script src="app.js?v=20261111-1" defer></script>
+<script src="app.js?v=20261111-2" defer></script>
 <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}));}</script>
 </body>
 </html>
