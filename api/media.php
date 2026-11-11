@@ -5,10 +5,10 @@ header('Cache-Control: no-store, max-age=0');
 header('X-Content-Type-Options: nosniff');
 function media_reply(array $data, int $status=200) { http_response_code($status); echo json_encode($data, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES); exit; }
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') media_reply(['success'=>false,'message'=>'Método no permitido.'],405);
-if (!isset($_FILES['image']) || !is_array($_FILES['image'])) media_reply(['success'=>false,'message'=>'No se recibió ninguna imagen.'],400);
+if (!isset($_FILES['image']) || !is_array($_FILES['image'])) media_reply(['success'=>false,'message'=>'No se recibió la imagen. Si el archivo es grande, revisa los límites de carga configurados por Hostinger (upload_max_filesize y post_max_size).'],400);
 $file=$_FILES['image'];
-if (($file['error'] ?? UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_OK) media_reply(['success'=>false,'message'=>'La carga falló. Elige una imagen más pequeña.'],400);
-if (($file['size'] ?? 0)>8*1024*1024) media_reply(['success'=>false,'message'=>'La imagen supera el límite de 8 MB.'],413);
+if (($file['error'] ?? UPLOAD_ERR_NO_FILE)!==UPLOAD_ERR_OK) { $code=(int)($file['error'] ?? UPLOAD_ERR_NO_FILE); $message=match($code){UPLOAD_ERR_INI_SIZE,UPLOAD_ERR_FORM_SIZE=>'El servidor rechazó el archivo por su límite de carga configurado en PHP/Hostinger.',UPLOAD_ERR_PARTIAL=>'La imagen llegó incompleta. Intenta nuevamente.',UPLOAD_ERR_NO_TMP_DIR=>'El servidor no tiene carpeta temporal disponible.',UPLOAD_ERR_CANT_WRITE=>'El servidor no pudo escribir el archivo.',UPLOAD_ERR_EXTENSION=>'Una extensión de PHP detuvo la carga.',default=>'No se pudo recibir la imagen.'}; media_reply(['success'=>false,'message'=>$message],413); }
+
 $tmp=(string)($file['tmp_name'] ?? '');
 if (!is_uploaded_file($tmp)) media_reply(['success'=>false,'message'=>'El archivo recibido no es válido.'],400);
 $finfo=new finfo(FILEINFO_MIME_TYPE);
