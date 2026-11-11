@@ -23,14 +23,17 @@ $basePath = rtrim(dirname(dirname((string)($_SERVER['SCRIPT_NAME'] ?? '/api/mani
 $basePath = ($basePath === '' ? '' : $basePath) . '/';
 $host = (string)($_SERVER['HTTP_HOST'] ?? '');
 $baseUrl = 'https://' . $host . $basePath;
+$view = (string)($_GET['view'] ?? 'card');
+$isCatalog = $view === 'catalog' && ($card['kind'] ?? '') === 'profile';
 $name = trim((string)($card['publicName'] ?? $card['title'] ?? $card['clientName'] ?? 'Tarjeta digital'));
 $theme = is_array($card['theme'] ?? null) ? $card['theme'] : [];
+$startUrl = $baseUrl . ($isCatalog ? 'catalog.php?id=' : 'card.php?id=') . rawurlencode($id);
 $manifest = [
-    'id' => $baseUrl . 'card.php?id=' . rawurlencode($id),
-    'name' => $name . ' | LAV Digital',
+    'id' => $startUrl,
+    'name' => ($isCatalog ? 'Catálogo de ' : '') . $name . ' | LAV Digital',
     'short_name' => function_exists('mb_substr') ? mb_substr($name !== '' ? $name : 'LAV Tarjeta', 0, 24, 'UTF-8') : substr($name !== '' ? $name : 'LAV Tarjeta', 0, 24),
-    'description' => 'Tarjeta digital de ' . (string)($card['clientName'] ?? 'LAV Digital'),
-    'start_url' => $baseUrl . 'card.php?id=' . rawurlencode($id),
+    'description' => ($isCatalog ? 'Catálogo comercial de ' : 'Tarjeta digital de ') . (string)($card['clientName'] ?? 'LAV Digital'),
+    'start_url' => $startUrl,
     'scope' => $baseUrl,
     'display' => 'standalone',
     'orientation' => 'portrait',
