@@ -127,3 +127,32 @@ body:has(#publicView:not(.hidden)) #publicMount .install-card-button {
   border-color:color-mix(in srgb,var(--card-primary) 65%,#ffffff25);
   background:color-mix(in srgb,var(--card-primary) 16%,var(--card-bg));
 }
+
+
+/* En móvil: fotografía limpia arriba y ficha tipográfica debajo, sin texto encima de la imagen. */
+@media(max-width:699px){
+ body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-cover{
+  display:flex!important;flex-direction:column!important;justify-content:flex-end!important;flex:0 0 auto!important;
+  height:auto!important;min-height:0!important;max-height:none!important;padding:36dvh 0 0!important;
+  background-position:top center!important;background-size:100% 36dvh!important;background-repeat:no-repeat!important;
+  background-color:var(--card-bg)!important;overflow:visible!important
+ }
+ body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-cover .dc-brand{
+  position:absolute!important;top:14px!important;left:14px!important;right:auto!important;z-index:4!important;max-width:calc(100% - 120px)!important
+ }
+ body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-cover .dc-kind{
+  position:absolute!important;top:18px!important;right:14px!important;z-index:4!important;max-width:42%!important;text-align:right!important
+ }
+ body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-cover .dc-cover-copy{
+  position:relative!important;inset:auto!important;left:auto!important;right:auto!important;bottom:auto!important;z-index:2!important;
+  width:100%!important;margin:0!important;padding:21px 18px 24px!important;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--card-bg) 98%,#000),color-mix(in srgb,var(--card-bg) 88%,var(--card-primary)))!important;
+  border:0!important;border-top:3px solid var(--card-primary)!important;border-radius:0!important;
+  box-shadow:0 -10px 28px #0002!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important
+ }
+ body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-cover .dc-kicker{margin-bottom:8px!important;line-height:1.4!important;overflow-wrap:anywhere!important}
+ body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-cover .dc-title{font-size:clamp(1.55rem,7vw,2.25rem)!important;line-height:1.08!important;margin:0 0 10px!important;overflow-wrap:anywhere!important;text-shadow:none!important}
+ body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-cover .dc-price{display:inline-flex!important;max-width:100%!important;flex-wrap:wrap!important;margin:0 0 8px!important;font-size:clamp(1.05rem,4.8vw,1.45rem)!important}
+ body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-cover .dc-location{line-height:1.45!important;overflow-wrap:anywhere!important}
+ body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-cover .dc-cover-open{height:36dvh!important;bottom:auto!important;z-index:1!important}
+}
