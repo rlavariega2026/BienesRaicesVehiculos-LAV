@@ -50,7 +50,7 @@ if ($method === 'GET') {
 }
 if ($method !== 'POST') respond(['success'=>false,'message'=>'Método no permitido.'], 405);
 $raw = file_get_contents('php://input');
-if ($raw === false || strlen($raw) > 12000000) respond(['success'=>false,'message'=>'La solicitud está vacía o supera el límite de 12 MB. Reduce el tamaño o la cantidad de fotografías.'], 413);
+if ($raw === false || $raw === '') respond(['success'=>false,'message'=>'La solicitud está vacía.'], 400);
 $input = json_decode($raw, true);
 if (!is_array($input)) respond(['success'=>false,'message'=>'El JSON recibido no es válido.'], 400);
 $action = (string)($input['action'] ?? 'save');
@@ -83,7 +83,7 @@ if ($card['clientName'] === '') respond(['success'=>false,'message'=>'El nombre 
 if (!in_array(($card['kind'] ?? 'property'), ['property','vehicle','profile'], true)) $card['kind'] = 'property';
 $encoded = json_encode($card, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 if ($encoded === false) respond(['success'=>false,'message'=>'No se pudieron procesar los datos recibidos.'], 422);
-if (strlen($encoded) > 11500000) respond(['success'=>false,'message'=>'La tarjeta es demasiado pesada. Reduce las fotografías y vuelve a guardar.'], 413);
+
 $path = card_path($storageDir, $id);
 if (file_put_contents($path, $encoded, LOCK_EX) === false) respond(['success'=>false,'message'=>'No se pudo guardar en el servidor. Revisa los permisos de la carpeta data/cards.'], 500);
 $publicUrl = 'https://lavdigitalmkt.com/bienes-raices-vehiculos/card.php?id=' . rawurlencode($id);
