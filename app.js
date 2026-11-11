@@ -141,8 +141,16 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       galleryIndex:gidx
     }):'<div class="preview-placeholder"><i class="fa-regular fa-images"></i><h3>Tu diseño aparecerá aquí</h3><p>Completa los datos y carga una fotografía para comenzar.</p></div>';$("#previewCard").style.cssText=(c.title||c.cover||c.clientName)?css(c):"";$("#previewDesignName").textContent=t.name+" · "+t.skinName;$("#editorModeLabel").textContent=c.title||"Nuevo proyecto"
   }
+  function renderFeaturedTemplates() {
+    const grid=$("#featuredTemplateGrid");
+    if(!cur||!grid)return;
+    grid.innerHTML=FEATURED.map(t=>{
+      const sample={...cur,theme:{...cur.theme,...t.colors},templateId:t.id,cover:"",gallery:[],title:t.name,clientName:"LAV DIGITAL",price:t.category==="vehicle"?"$485,000":"$4,850,000",location:t.category==="vehicle"?"Inventario automotriz":"Cuernavaca, Morelos",description:"",phone:"",whatsapp:"",email:"",facebook:"",instagram:"",mapsUrl:"",logo:""};
+      return '<button type="button" class="featured-template-card '+(cur.templateId===t.id?"selected":"")+'" data-featured-template="'+t.id+'" aria-pressed="'+(cur.templateId===t.id?'true':'false')+'"><span class="featured-template-preview">'+card(sample,{thumb:true})+'</span><span class="featured-template-copy"><strong>'+String(t.number).padStart(2,"0")+'. '+esc(t.name)+'</strong><small>'+esc(t.category==="property"?"INMOBILIARIO":t.category==="vehicle"?"AUTOMOTRIZ":"CATÁLOGOS")+' · '+esc(t.paletteName)+'</small><span class="featured-template-choose">'+(cur.templateId===t.id?"Diseño seleccionado":"Elegir diseño")+'</span></span></button>';
+    }).join("");
+  }
   function renderTemplates() {
-    if(!cur)return;let q=$("#templateSearch").value.toLowerCase(),cat=$("#templateCategory").value,sk=$("#templateSkin").value,list=T.filter(t=>(!q||(t.name+" "+t.skinName+" "+t.desc+" "+t.paletteName).toLowerCase().includes(q))&&(cat==="all"||t.category===cat)&&(sk==="all"||t.skin===sk)),limit=Math.min(list.length,templatePage*60);$("#templateResults").textContent=list.length.toLocaleString("es-MX")+" diseños disponibles · mostrando "+limit;$("#templateGrid").innerHTML=list.slice(0,limit).map(t=> {
+    if(!cur)return;renderFeaturedTemplates();let q=$("#templateSearch").value.toLowerCase(),cat=$("#templateCategory").value,sk=$("#templateSkin").value,list=T.filter(t=>(!q||(t.name+" "+t.skinName+" "+t.desc+" "+t.paletteName).toLowerCase().includes(q))&&(cat==="all"||t.category===cat)&&(sk==="all"||t.skin===sk)),limit=Math.min(list.length,templatePage*60);$("#templateResults").textContent=list.length.toLocaleString("es-MX")+" diseños disponibles · mostrando "+limit;$("#templateGrid").innerHTML=list.slice(0,limit).map(t=> {
       let c= {
         ...cur,theme: {
           ...cur.theme,...t.colors
@@ -424,6 +432,8 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       templatePage=1;renderTemplates()
     };$("#loadMoreTemplates").onclick=()=> {
       templatePage++;renderTemplates()
+    };$("#featuredTemplateGrid").onclick=e=>{
+      let b=e.target.closest("[data-featured-template]");if(!b)return;read();let id=b.dataset.featuredTemplate,selected=FEATURED.find(x=>x.id===id);if(!selected)return;cur.templateId=id;cur.theme={...cur.theme,...selected.colors};fill(cur);renderTemplates();preview();stat("Plantilla premium aplicada; guarda para conservarla")
     };$("#templateGrid").onclick=e=> {
       let b=e.target.closest("[data-template]");if(!b)return;read();let selected=T.find(x=>x.id===b.dataset.template);cur.templateId=b.dataset.template;if(selected)cur.theme= {
         ...cur.theme,...selected.colors
