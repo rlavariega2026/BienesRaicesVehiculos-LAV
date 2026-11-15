@@ -38,10 +38,37 @@
     <p id="adminAuthMessage" role="alert" aria-live="polite"></p>
   </section>
 </main>
+<main id="teamInviteView" class="lav-auth-screen hidden">
+  <section class="lav-auth-card">
+    <img class="lav-auth-logo" src="./assets/lav-demo-logo-library.svg" alt="LAV Digital">
+    <span class="lav-auth-eyebrow">INVITACIÓN A LAV DIGITAL</span>
+    <h1>Activa tu acceso</h1>
+    <p id="teamInviteMessage">Configura tu contraseña para acceder al editor.</p>
+    <form id="teamInviteForm">
+      <label for="teamInviteUsername">Usuario</label>
+      <input id="teamInviteUsername" type="text" readonly autocomplete="username">
+      <label for="teamInvitePassword">Crea tu contraseña (mínimo 12 caracteres)</label>
+      <input id="teamInvitePassword" type="password" minlength="12" required autocomplete="new-password">
+      <button type="submit" class="button button-primary" id="teamInviteAccept">Activar cuenta</button>
+    </form>
+    <p id="teamInviteError" role="alert"></p>
+  </section>
+</main>
+<dialog id="teamManagerDialog" class="lav-team-dialog">
+  <div class="lav-team-head"><h2>Usuarios e invitaciones</h2><button type="button" class="button button-outline" id="closeTeamManager">Cerrar</button></div>
+  <p>Como administrador puedes invitar colaboradores para crear y editar tarjetas. Cada persona tendrá su propia contraseña. Comparte el enlace de invitación por WhatsApp o por el medio que prefieras.</p>
+  <form id="teamCreateInviteForm">
+    <label for="teamInviteName">Nombre del colaborador</label><input id="teamInviteName" required maxlength="80" placeholder="Nombre completo">
+    <label for="teamNewUsername">Usuario de acceso</label><input id="teamNewUsername" required minlength="3" maxlength="40" pattern="[a-z0-9_-]{3,40}" placeholder="ejemplo_usuario">
+    <button type="submit" class="button button-primary" id="teamInviteCreate">Crear invitación</button>
+  </form>
+  <section id="teamInviteResult" class="hidden"><label for="teamInviteLink">Enlace privado (válido 7 días)</label><input readonly id="teamInviteLink"><button type="button" class="button button-outline" id="copyTeamInviteLink">Copiar enlace</button></section>
+  <h3>Usuarios</h3><div id="teamUsersList"></div><p id="teamManagerMessage" role="status"></p>
+</dialog>
 <div id="appShell" class="hidden">
   <header class="topbar">
     <a class="brand" href="./" aria-label="LAV Digital inicio"><span class="brand-mark">L</span><span><b>LAV DIGITAL</b><small>PROPERTY & AUTO STUDIO</small></span></a>
-    <div class="topbar-actions"><span id="saveStatus" class="save-status"><i class="fa-solid fa-cloud"></i> Listo</span><span class="lav-admin-session"><i class="fa-solid fa-user-shield"></i> <span id="adminSessionLabel">lavariega</span></span><button class="button button-ghost" id="logoutBtn" type="button"><i class="fa-solid fa-arrow-right-from-bracket"></i> Salir</button><button class="button button-primary" id="newListingTop"><i class="fa-solid fa-plus"></i> Nuevo anuncio</button></div>
+    <div class="topbar-actions"><span id="saveStatus" class="save-status"><i class="fa-solid fa-cloud"></i> Listo</span><button class="button button-outline hidden" id="manageTeamBtn" type="button"><i class="fa-solid fa-user-group"></i> Usuarios / Invitar</button><span class="lav-admin-session"><i class="fa-solid fa-user-shield"></i> <span id="adminSessionLabel">lavariega</span></span><button class="button button-ghost" id="logoutBtn" type="button"><i class="fa-solid fa-arrow-right-from-bracket"></i> Salir</button><button class="button button-primary" id="newListingTop"><i class="fa-solid fa-plus"></i> Nuevo anuncio</button></div>
   </header>
 
   <main id="dashboardView" class="view">
@@ -104,7 +131,7 @@
 <dialog id="publishNameDialog" class="publish-name-dialog"><form method="dialog"><span class="eyebrow">PUBLICACIÓN LAV</span><h3>Nombre de tu publicación</h3><p>Este nombre aparecerá en el enlace que compartirás.</p><label for="publicNameInput">Nombre público</label><input id="publicNameInput" name="publicName" type="text" maxlength="70" placeholder="Ej. residencia-jardines-del-valle" required><small>El enlace conservará un identificador único para evitar conflictos.</small><div class="dialog-actions"><button class="button button-outline" value="cancel">Cancelar</button><button class="button button-primary" value="publish">Publicar tarjeta</button></div></form></dialog>
     <dialog id="confirmDialog" class="confirm-dialog"><form method="dialog"><h3 id="confirmTitle">Confirmar acción</h3><p id="confirmMessage">¿Deseas continuar?</p><div class="dialog-actions"><button class="button button-outline" value="cancel">Cancelar</button><button class="button button-danger" id="confirmAccept" value="confirm">Confirmar</button></div></form></dialog>
 </div>
-<script src="app.js?v=20261115-a611eae" defer></script>
+<script src="app.js?v=20261115-teamfix1" defer></script>
 <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=20261115-1",{scope:"./",updateViaCache:"none"}).catch(()=>{}));}</script>
 </body>
 </html>
