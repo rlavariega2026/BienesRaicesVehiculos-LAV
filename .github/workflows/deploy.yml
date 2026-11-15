@@ -30,7 +30,7 @@ jobs:
         run: |
           set -euo pipefail
           TOKEN="lav-probe-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          FILE=".lav-deploy-probe-${GITHUB_RUN_ID}.txt"
+          FILE="lav-deploy-probe-${GITHUB_RUN_ID}.txt"
           printf '%s' "$TOKEN" >/tmp/lav-probe.txt
           MATCH=""
           for dir in "/public_html/bienes-raices-vehiculos/" "/bienes-raices-vehiculos/"; do
@@ -42,7 +42,7 @@ jobs:
             fi
             HTTP_URL="https://lavdigitalmkt.com/bienes-raices-vehiculos/${FILE}?run=${GITHUB_RUN_ID}"
             HTTP_BODY=$(curl --fail --silent --show-error --max-time 25 -H 'Cache-Control: no-store' "$HTTP_URL" || true)
-            curl --silent --show-error --max-time 20 --user "$FTP_USER:$FTP_PASS" -Q "DELE ${dir}${FILE}" "ftp://31.170.161.28:21/" -o /dev/null || true
+            curl --silent --show-error --max-time 20 --user "$FTP_USER:$FTP_PASS" -Q "-DELE ${FILE}" "ftp://31.170.161.28:21${dir}" -o /dev/null || true
             if [ "$HTTP_BODY" = "$TOKEN" ]; then
               MATCH="$dir"
               echo "CONFIRMED LIVE WEB ROOT: $dir"
