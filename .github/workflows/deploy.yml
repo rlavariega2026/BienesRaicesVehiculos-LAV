@@ -21,25 +21,22 @@ jobs:
       - name: Validate PHP API syntax
         run: php -l card.php && php -l catalog.php && php -l api/manifest.php && php -l api/save-card.php && php -l api/media.php && php -l api/contact.php
 
-      - name: Deploy to verified domain directory
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: 31.170.161.28
-          username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
-          password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
-          protocol: ftp
-          port: 21
-          local-dir: ./
-          server-dir: /domains/lavdigitalmkt.com/public_html/bienes-raices-vehiculos/
-          exclude: |
-            .git/**
-            .git
-            **/.git/**
-            **/.git
-            **/.github/**
-            **/README.md
-            **/.ftp-deploy-sync-state.json
-            data/**
-            uploads/**
-            storage/**
-            publications/**
+      - name: Diagnose FTP root and available target directories
+        shell: bash
+        env:
+          FTP_USER: ${{ secrets.HOSTINGER_FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for dir in "/" "/domains/" "/domains/lavdigitalmkt.com/" "/domains/lavdigitalmkt.com/public_html/" "/domains/lavdigitalmkt.com/public_html/bienes-raices-vehiculos/" "/public_html/" "/public_html/bienes-raices-vehiculos/" "/bienes-raices-vehiculos/"; do
+            echo "::group::FTP directory probe: $dir"
+            if curl --silent --show-error --max-time 20 --connect-timeout 10 --disable-epsv --user "$FTP_USER:$FTP_PASS" --list-only "ftp://31.170.161.28:21$dir" >/tmp/ftp-listing 2>/tmp/ftp-error; then
+              echo "ACCESSIBLE: $dir"
+              sed -n '1,25p' /tmp/ftp-listing
+            else
+              echo "NOT ACCESSIBLE: $dir"
+              sed -n '1,3p' /tmp/ftp-error
+            fi
+            echo "::endgroup::"
+          done
+          echo "Diagnosis only: no files uploaded or deleted."
