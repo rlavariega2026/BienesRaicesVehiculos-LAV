@@ -23,7 +23,17 @@ function lav_auth_config(): ?array {
     $path=lav_auth_path();
     if (!is_file($path)) return null;
     $v=json_decode((string)file_get_contents($path),true);
-    return is_array($v)?$v:[];
+    if (!is_array($v)) return [];
+    // Update the previous default administrator name without changing its password.
+    if (($v['username'] ?? '') === 'administrador' && !empty($v['password_hash'])) {
+        $v['username']='lavariega';
+        $encoded=json_encode($v,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+        if ($encoded!==false) @file_put_contents($path,$encoded,LOCK_EX);
+        if (isset($_SESSION['lav_admin']) && $_SESSION['lav_admin']==='administrador') {
+            $_SESSION['lav_admin']='lavariega';
+        }
+    }
+    return $v;
 }
 function lav_auth_ok(): bool {
     lav_auth_start();
@@ -72,8 +82,8 @@ if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
     $password=(string)($data['password'] ?? '');
     if ($action === 'setup') {
         if ($config !== null) lav_auth_respond(['success'=>false,'message'=>'El administrador ya está configurado.'],409);
-        if (!preg_match('/^[a-zA-Z0-9_-]{3,40}$/',$username))
-            lav_auth_respond(['success'=>false,'message'=>'El usuario debe tener entre 3 y 40 caracteres.'],422);
+        if ($username !== 'lavariega')
+            lav_auth_respond(['success'=>false,'message'=>'El usuario administrador debe ser lavariega.'],422);
         if (strlen($password)<12 || strlen($password)>200)
             lav_auth_respond(['success'=>false,'message'=>'Elige una contraseña de al menos 12 caracteres.'],422);
         $dir=dirname(lav_auth_path());
