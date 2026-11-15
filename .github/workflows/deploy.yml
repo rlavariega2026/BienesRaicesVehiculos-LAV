@@ -19,7 +19,35 @@ jobs:
         run: node --check app.js
 
       - name: Validate PHP API syntax
-        run: php -l card.php && php -l catalog.php && php -l api/manifest.php && php -l api/save-card.php && php -l api/media.php && php -l api/contact.php && php -l api/upload-chunk.php
+        run: php -l card.php && php -l catalog.php && php -l api/manifest.php && php -l api/save-card.php && php -l api/media.php && php -l api/contact.php && php -l api/upload-chunk.php && php -l api/auth.php
+
+      - name: Verify administrator setup, login, logout and private inventory protection
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -S 127.0.0.1:18765 -t . >/tmp/lav-auth-php.log 2>&1 &
+          PHP_PID=$!
+          trap 'kill "$PHP_PID" 2>/dev/null || true' EXIT
+          for i in {1..20}; do
+            if curl -fsS "http://127.0.0.1:18765/api/auth.php" >/tmp/lav-auth-status.json; then break; fi
+            sleep 0.2
+          done
+          php -r '$j=json_decode(file_get_contents("/tmp/lav-auth-status.json"),true); if(!$j || $j["configured"] || $j["authenticated"]) exit(1);'
+          PASS="LAV-test-$RANDOM-$RANDOM-very-strong"
+          PAYLOAD=$(printf '{"action":"setup","username":"administrador","password":"%s"}' "$PASS")
+          curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie -H 'Content-Type: application/json' -d "$PAYLOAD" "http://127.0.0.1:18765/api/auth.php" >/tmp/lav-auth-setup.json
+          php -r '$j=json_decode(file_get_contents("/tmp/lav-auth-setup.json"),true); if(!$j || !$j["authenticated"] || $j["username"]!=="administrador") exit(1);'
+          curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie -H 'Content-Type: application/json' -d '{"action":"logout"}' "http://127.0.0.1:18765/api/auth.php" >/dev/null
+          HTTP=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:18765/api/save-card.php?action=list")
+          test "$HTTP" = "401"
+          HTTP=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:18765/api/save-card.php?action=public_list")
+          test "$HTTP" = "200"
+          PAYLOAD=$(printf '{"action":"login","username":"administrador","password":"%s"}' "$PASS")
+          curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie -H 'Content-Type: application/json' -d "$PAYLOAD" "http://127.0.0.1:18765/api/auth.php" >/tmp/lav-auth-login.json
+          php -r '$j=json_decode(file_get_contents("/tmp/lav-auth-login.json"),true); if(!$j || !$j["authenticated"]) exit(1);'
+          curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie "http://127.0.0.1:18765/api/save-card.php?action=list" >/tmp/lav-auth-list.json
+          php -r '$j=json_decode(file_get_contents("/tmp/lav-auth-list.json"),true); if(!$j || !$j["success"] || !isset($j["cards"])) exit(1);'
+          echo "Admin session flow and private inventory guard passed."
 
       - name: Deploy to matched FTP-root directory
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -48,7 +76,7 @@ jobs:
         run: |
           set -euo pipefail
           BASE="https://lavdigitalmkt.com/bienes-raices-vehiculos"
-          for name in index.html app.js public-card-mobile-fix.css sw.js; do
+          for name in index.html app.js public-card-mobile-fix.css demo-publishing.css api/auth.php sw.js; do
             curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "$BASE/$name?verify=${GITHUB_RUN_ID}" -o "/tmp/live-${name}"
             cmp "$name" "/tmp/live-${name}" || { echo "::error::Live $name differs from GitHub checkout"; exit 1; }
             echo "Verified live $name matches repository"
