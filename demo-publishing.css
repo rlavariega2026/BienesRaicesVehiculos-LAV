@@ -29,3 +29,26 @@
 #publicMount .public-shell:fullscreen .lav-demo-watermark,
 #publicMount .catalog-public-shell:fullscreen .lav-demo-watermark{pointer-events:none}
 @media (max-width:680px){#publicMount .lav-demo-lettering{font-size:25vw}}
+
+/* Visible, original LAV logo in all public DEMO views */
+#publicMount .lav-demo-watermark{z-index:2147483000!important}
+#publicMount .lav-demo-logo{display:block!important;visibility:visible!important;opacity:.65!important;width:clamp(170px,34vw,360px)!important;max-width:78vw!important;max-height:27vh!important;object-fit:contain!important;filter:drop-shadow(0 4px 20px rgba(0,0,0,.5))!important}
+#publicMount .lav-demo-lettering{opacity:.34!important}
+#publicMount .lav-demo-credit{z-index:2!important;opacity:1!important}
+body:has(#adminAuthView:not(.hidden)){background:#0c1018!important}
+.lav-auth-screen{min-height:100dvh;display:grid;place-items:center;padding:25px 16px;background:radial-gradient(ellipse at 15% 12%,#233350 0%,transparent 52%),linear-gradient(140deg,#0b1019,#151622 70%,#19142a)}
+.lav-auth-screen.hidden{display:none!important}
+.lav-auth-card{width:min(100%,440px);padding:clamp(26px,6vw,42px);border-radius:24px;border:1px solid #ffffff25;background:linear-gradient(155deg,#212838,#151923);box-shadow:0 25px 75px #0008;color:#f3f5fa;font-family:var(--card-font,"DM Sans",Arial,sans-serif)}
+.lav-auth-logo{display:block;max-width:205px;max-height:90px;object-fit:contain;margin:0 auto 28px}
+.lav-auth-eyebrow{display:block;margin-bottom:12px;color:#d3b77d;font-size:11px;font-weight:800;letter-spacing:.14em}
+.lav-auth-card h1{font-size:clamp(23px,5vw,30px);line-height:1.2;margin:0 0 12px;color:#fff}
+.lav-auth-card p{font-size:14px;line-height:1.6;color:#bfc9d8;margin:0 0 23px}
+.lav-auth-card form{display:grid;gap:10px}
+.lav-auth-card label{font-size:13px;color:#ebeff6;font-weight:700;margin-top:6px}
+.lav-auth-card input{width:100%;height:49px;border-radius:11px;padding:0 14px;background:#0c111b;color:#fff;border:1px solid #626a7d;font-size:16px}
+.lav-auth-card input:focus{outline:2px solid #ba9be2;outline-offset:2px}
+.lav-auth-card input:read-only{color:#aeb9d3;background:#161c27}
+.lav-auth-card .button{margin-top:12px;min-height:48px;justify-content:center}
+.lav-auth-card #adminAuthMessage{color:#ffb9a4;margin-top:14px;margin-bottom:0;min-height:21px}
+.lav-admin-session{display:inline-flex;gap:7px;align-items:center;padding:6px 10px;color:#404c65;font-size:12px;font-weight:700}
+@media(max-width:600px){.lav-admin-session{font-size:11px;padding:4px}}
