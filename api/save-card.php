@@ -72,6 +72,7 @@ if ($method === 'GET') {
 }
 if ($method !== 'POST') respond(['success'=>false,'message'=>'Método no permitido.'], 405);
 lav_auth_required();
+lav_auth_check_csrf();
 $raw = file_get_contents('php://input');
 if ($raw === false || $raw === '') respond(['success'=>false,'message'=>'La solicitud está vacía.'], 400);
 $input = json_decode($raw, true);
