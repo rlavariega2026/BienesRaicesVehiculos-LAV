@@ -195,3 +195,36 @@ body.catalog-page-mode #publicMount{display:block!important}
 @media(min-width:700px) and (max-width:1023px){body:has(#publicView:not(.hidden)) #publicMount{padding:22px!important;background:#0d1018!important}body:has(#publicView:not(.hidden)) #publicMount>.public-shell,body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card{width:min(100%,760px)!important;max-width:760px!important;margin:0 auto!important;border-radius:22px!important;overflow:hidden!important}body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-cover{height:42vh!important;min-height:300px!important;max-height:480px!important;flex-basis:42vh!important}body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-content{padding:clamp(24px,4vw,38px)!important}}
 @media(min-width:1024px){body:has(#publicView:not(.hidden)) #publicMount{display:flex!important;justify-content:center!important;align-items:flex-start!important;padding:34px!important;background:#0b0e15!important}body:has(#publicView:not(.hidden)) #publicMount>.public-shell,body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card{width:min(100%,920px)!important;max-width:920px!important;margin:0 auto!important;border-radius:24px!important;overflow:hidden!important;box-shadow:0 28px 90px #0006!important}body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-cover{height:460px!important;min-height:380px!important;max-height:560px!important;flex-basis:460px!important}body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-content{padding:36px 42px 42px!important}body:has(#publicView:not(.hidden)) #publicMount .dc-gallery-item img{height:190px!important}}
 @media(max-width:430px){.catalog-public-hero{min-height:420px;padding:16px;background-position:55% center}.catalog-public-brand img{width:44px;height:44px}.catalog-public-content{padding:22px 13px calc(28px + env(safe-area-inset-bottom))}.catalog-listing-grid{gap:13px}.catalog-listing-photo{min-height:210px}.catalog-listing-copy{padding:15px}.catalog-public-heading{align-items:start;flex-direction:column;gap:6px}.catalog-contact{padding:18px 14px}}
+
+
+/* LAV 2026-11-15: mobile public cards keep photo and copy in separate flow areas. */
+@media(max-width:699px){
+  body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card{
+    display:flex!important;flex-direction:column!important;width:100%!important;
+    max-width:100%!important;min-width:0!important;overflow:hidden!important;
+    border-radius:18px!important;
+  }
+  body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-cover{
+    position:relative!important;inset:auto!important;display:block!important;
+    width:100%!important;height:auto!important;min-height:0!important;
+    max-height:none!important;flex:none!important;aspect-ratio:4/3!important;
+    overflow:hidden!important;
+  }
+  body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-content{
+    position:relative!important;inset:auto!important;transform:none!important;
+    width:100%!important;min-width:0!important;max-width:100%!important;
+    flex:none!important;margin:0!important;padding:22px 18px 28px!important;
+    overflow-wrap:anywhere!important;
+  }
+  body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-content h1,
+  body:has(#publicView:not(.hidden)) #publicMount .digital-card.public-card>.dc-content h2{
+    max-width:100%!important;overflow-wrap:anywhere!important;
+    font-size:clamp(1.45rem,6vw,2.35rem)!important;line-height:1.12!important;
+  }
+  body:has(#publicView:not(.hidden)) #publicMount .dc-contact{
+    display:flex!important;flex-wrap:wrap!important;gap:10px!important;
+  }
+  body:has(#publicView:not(.hidden)) #publicMount .dc-contact>*{
+    min-width:0!important;max-width:100%!important;
+  }
+}
