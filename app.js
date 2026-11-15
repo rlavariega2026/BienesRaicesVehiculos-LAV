@@ -45,7 +45,7 @@
       primary:"#c9a96e",background:"#10131c",text:"#f8f7f4",accent:"#e4c58a",gradient:"none",font:"sans",radius:18,imageHeight:340,overlay:42,descriptionAlign:"left",textStyles:{brand:"#ffffff",kind:"#ffffff",kicker:"#e4c58a",title:"#ffffff",price:"#ffffff",location:"#ffffff",description:"#f8f7f4",specs:"#f8f7f4",amenities:"#f8f7f4",section:"#c9a96e",contact:"#f8f7f4"},textSizes:{"brand":14,"kind":13,"kicker":13,"title":36,"price":24,"location":14,"description":15,"specs":13,"amenities":14,"section":12,"contact":13}
     },createdAt:null,updatedAt:null
   };
-  let cards=[],cur=null,gidx=0,templatePage=1,deferredInstallPrompt=null;
+  let cards=[],cur=null,gidx=0,templatePage=1,deferredInstallPrompt=null,customTemplates=[];
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;});
   const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),copy=o=>JSON.parse(JSON.stringify(o)),img=c=>c.cover||(Array.isArray(c.gallery)&&c.gallery.find(photo=>typeof photo==="string"&&photo.trim()))||(c.kind==="vehicle"?CAR:HOME);
 function safe(v){if(!v)return"";try{let u=new URL(v,location.href);return ["http:","https:"].includes(u.protocol)?u.href:""}catch{return""}}
@@ -140,6 +140,41 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     if(!cur)return;let c=read(),t=T.find(x=>x.id===c.templateId)||T[0];$("#previewCard").className="digital-card preview-card layout-"+t.layout+" skin-"+t.skin;$("#previewCard").innerHTML=(c.title||c.cover||c.clientName)?card(c, {
       galleryIndex:gidx
     }):'<div class="preview-placeholder"><i class="fa-regular fa-images"></i><h3>Tu diseño aparecerá aquí</h3><p>Completa los datos y carga una fotografía para comenzar.</p></div>';$("#previewCard").style.cssText=(c.title||c.cover||c.clientName)?css(c):"";$("#previewDesignName").textContent=t.name+" · "+t.skinName;$("#editorModeLabel").textContent=c.title||"Nuevo proyecto"
+  }
+  async function loadCustomTemplates(){
+    try {
+      const result=await get({action:"templates"});
+      customTemplates=Array.isArray(result.templates)?result.templates:[];
+    } catch {customTemplates=[];}
+    renderCustomTemplates();
+  }
+  function renderCustomTemplates(){
+    const list=$("#customTemplatesList");
+    if(!list)return;
+    if(!customTemplates.length){list.innerHTML='<p class="saved-template-empty">Todavía no tienes plantillas guardadas.</p>';return;}
+    list.innerHTML=customTemplates.map(t=>'<button type="button" class="button button-outline custom-template-choice" data-custom-template="'+esc(t.id)+'">'+esc(t.name)+'</button>').join("");
+  }
+  async function saveCustomTemplate(){
+    if(!cur)return;
+    read();
+    const name=window.prompt("Nombre de la plantilla personalizada:",(cur.title||"Mi plantilla")+" · diseño");
+    if(name===null)return;
+    if(!name.trim())return toast("Escribe el nombre de la plantilla.","error");
+    try{
+      const response=await post({action:"save_template",template:{name:name.trim(),baseTemplateId:cur.templateId,theme:copy(cur.theme),galleryStyle:cur.galleryStyle}});
+      customTemplates.unshift(response.template);
+      renderCustomTemplates();
+      toast("Plantilla guardada en el servidor.");
+    }catch(err){toast("No se pudo guardar la plantilla: "+err.message,"error");}
+  }
+  function applyCustomTemplate(id){
+    const template=customTemplates.find(t=>t.id===id);
+    if(!template||!cur)return;
+    read();
+    cur.templateId=template.baseTemplateId||cur.templateId;
+    cur.theme={...cur.theme,...copy(template.theme||{})};
+    cur.galleryStyle=template.galleryStyle||cur.galleryStyle;
+    fill(cur);renderTemplates();preview();stat("Plantilla personalizada aplicada; guarda el proyecto para conservarla.");
   }
   function renderFeaturedTemplates() {
     const grid=$("#featuredTemplateGrid");
@@ -516,6 +551,8 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
   function init() {
     ["newListingTop","newListingHero","newListingEmpty"].forEach(id=>$("#"+id).onclick=newCard);
     $("#saveAsNewBtn")?.addEventListener("click",saveAsNewProject);
+    $("#saveCustomTemplateBtn")?.addEventListener("click",saveCustomTemplate);
+    $("#customTemplatesList")?.addEventListener("click",e=>{const button=e.target.closest("[data-custom-template]");if(button)applyCustomTemplate(button.dataset.customTemplate);});
     $("#saveAsNewBottom")?.addEventListener("click",saveAsNewProject);
     $("#publicMount").addEventListener("click",activatePublicFullscreen);$("#scrollInventory").onclick=()=>$("#inventorySection").scrollIntoView( {
       behavior:"smooth"
@@ -616,6 +653,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     catch(e) {
       cards=[];stat("No se pudo conectar al servidor",true)
     }
+    await loadCustomTemplates();
     dashboard();show("dash")
   }
   boot();;
