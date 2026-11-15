@@ -467,7 +467,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       client.id="lav-client-demo";
       client.className="lav-demo-fixed";
       client.setAttribute("aria-label","Versión de demostración LAV Digital");
-      client.innerHTML='<div class="lav-demo-fixed-brand"><img src="./assets/LOGO%20LAV%20DIGITAL.jpg" alt="LAV DIGITAL — logotipo original"></div><div class="lav-demo-fixed-word">DEMO</div><div class="lav-demo-fixed-footer">Versión de demostración · LAV Digital MKT</div>';
+      client.innerHTML='<div class="lav-demo-fixed-brand"><img src="./assets/lav-digital-demo-logo.jpg" alt="LAV DIGITAL — logotipo original"></div><div class="lav-demo-fixed-word">DEMO</div><div class="lav-demo-fixed-footer">Versión de demostración · LAV Digital MKT</div>';
     }
     const mark=server||client;
     const positionDemo=()=>{
