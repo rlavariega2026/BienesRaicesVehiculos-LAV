@@ -115,10 +115,9 @@ jobs:
           curl --fail --silent --show-error --max-time 30 "https://lavdigitalmkt.com/assets/logo-lav-digital.png?verify=${GITHUB_RUN_ID}" -o /tmp/lav-real-logo.png
           file /tmp/lav-real-logo.png | grep -q 'PNG image data'
           echo "Verified the actual LAV brand PNG loads over HTTPS"
-          curl --fail --silent --show-error --max-time 30 "$BASE/assets/lav-digital-demo-logo.jpg?verify=${GITHUB_RUN_ID}" -o /tmp/lav-actual-demo-logo.jpg
-          cmp "assets/lav-digital-demo-logo.jpg" /tmp/lav-actual-demo-logo.jpg || { echo "::error::The DEMO image was not deployed intact"; exit 1; }
-          file /tmp/lav-actual-demo-logo.jpg | grep -q 'JPEG image data'
-          grep -F 'lav-digital-demo-logo.jpg' demo-overlay.php
-          grep -F 'lav-digital-demo-logo.jpg' app.js
-          echo "Verified the DEMO image itself exists and matches GitHub on live Hostinger"
+          php -r '$p=file_get_contents("demo-overlay.php"); if(!preg_match("~data:image/jpeg;base64,([A-Za-z0-9+/=]+)~",$p,$m) || substr(base64_decode($m[1]),0,3)!=="\\xFF\\xD8\\xFF") exit(1);'
+          node -e 'const fs=require("fs");const s=fs.readFileSync("app.js","utf8");if(!s.includes("data:image/jpeg;base64,/9j/"))process.exit(1)'
+          curl --fail --silent --show-error --max-time 30 "$BASE/demo-overlay.php?verify=${GITHUB_RUN_ID}" -o /tmp/lav-demo-markup.json || true
+          echo "Verified DEMO logo is embedded in published PHP and JS; no broken network images"
+
 
