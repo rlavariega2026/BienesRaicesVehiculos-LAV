@@ -48,6 +48,7 @@ jobs:
           curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie "http://127.0.0.1:18765/api/save-card.php?action=list" >/tmp/lav-auth-list.json
           php -r '$j=json_decode(file_get_contents("/tmp/lav-auth-list.json"),true); if(!$j || !$j["success"] || !isset($j["cards"])) exit(1);'
           echo "Admin session flow and private inventory guard passed."
+          rm -f data/cards/admin-auth.json
 
       - name: Deploy to matched FTP-root directory
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -84,6 +85,7 @@ jobs:
           curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "$BASE/api/auth.php?verify=${GITHUB_RUN_ID}" -o /tmp/lav-live-auth.json
           php -r '$j=json_decode(file_get_contents("/tmp/lav-live-auth.json"),true); if(!$j || empty($j["success"]) || !array_key_exists("configured",$j) || !array_key_exists("authenticated",$j)) exit(1);'
           echo "Verified live administrator authentication endpoint"
+          php -r '$j=json_decode(file_get_contents("/tmp/lav-live-auth.json"),true); echo "Live admin configured: ".(!empty($j["configured"])?"yes":"no")."\\n";'
           curl --fail --silent --show-error --max-time 30 "https://lavdigitalmkt.com/assets/logo-lav-digital.png?verify=${GITHUB_RUN_ID}" -o /tmp/lav-real-logo.png
           file /tmp/lav-real-logo.png | grep -q 'PNG image data'
           echo "Verified the actual LAV brand PNG loads over HTTPS"
