@@ -48,7 +48,7 @@ jobs:
         run: |
           set -euo pipefail
           BASE="https://lavdigitalmkt.com/bienes-raices-vehiculos"
-          for name in index.html public-card-mobile-fix.css sw.js; do
+          for name in index.html app.js public-card-mobile-fix.css sw.js; do
             curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "$BASE/$name?verify=${GITHUB_RUN_ID}" -o "/tmp/live-${name}"
             cmp "$name" "/tmp/live-${name}" || { echo "::error::Live $name differs from GitHub checkout"; exit 1; }
             echo "Verified live $name matches repository"
