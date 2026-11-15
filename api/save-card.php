@@ -32,6 +32,16 @@ function load_card(string $path): ?array {
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 if ($method === 'GET') {
     $action = (string)($_GET['action'] ?? '');
+    if ($action === 'templates') {
+        $directory = __DIR__ . '/../data/templates/';
+        $templates = [];
+        foreach (glob($directory . '*.json') ?: [] as $file) {
+            $template = json_decode((string)file_get_contents($file), true);
+            if (is_array($template)) $templates[] = $template;
+        }
+        usort($templates, static fn($a,$b) => strcmp((string)($b['updatedAt'] ?? ''), (string)($a['updatedAt'] ?? '')));
+        respond(['success'=>true,'templates'=>$templates]);
+    }
     if ($action === 'list') {
         $items = [];
         foreach (glob($storageDir . '*.json') ?: [] as $path) {
@@ -54,6 +64,28 @@ if ($raw === false || $raw === '') respond(['success'=>false,'message'=>'La soli
 $input = json_decode($raw, true);
 if (!is_array($input)) respond(['success'=>false,'message'=>'El JSON recibido no es válido.'], 400);
 $action = (string)($input['action'] ?? 'save');
+if ($action === 'save_template') {
+    $template = $input['template'] ?? null;
+    if (!is_array($template)) respond(['success'=>false,'message'=>'Faltan los datos de la plantilla.'], 422);
+    $name = trim((string)($template['name'] ?? ''));
+    if ($name === '' || mb_strlen($name) > 100) respond(['success'=>false,'message'=>'Elige un nombre de hasta 100 caracteres.'], 422);
+    $directory = __DIR__ . '/../data/templates/';
+    if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) respond(['success'=>false,'message'=>'No se pudo crear el directorio de plantillas.'], 500);
+    if (!is_file($directory . '.htaccess')) @file_put_contents($directory . '.htaccess', "Options -Indexes\nRequire all denied\n");
+    $id = clean_id((string)($template['id'] ?? ''));
+    if ($id === '' || !is_file($directory . $id . '.json')) $id = 'tpl_' . bin2hex(random_bytes(8));
+    $record = [
+        'id'=>$id,
+        'name'=>$name,
+        'baseTemplateId'=>substr((string)($template['baseTemplateId'] ?? ''), 0, 120),
+        'theme'=>is_array($template['theme'] ?? null) ? $template['theme'] : [],
+        'galleryStyle'=>substr((string)($template['galleryStyle'] ?? 'slide'),0,40),
+        'updatedAt'=>date('c')
+    ];
+    $serialized=json_encode($record, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+    if ($serialized===false || file_put_contents($directory . $id . '.json',$serialized,LOCK_EX)===false) respond(['success'=>false,'message'=>'No se pudo guardar la plantilla.'],500);
+    respond(['success'=>true,'template'=>$record]);
+}
 if ($action === 'delete') {
     $id = clean_id((string)($input['id'] ?? ''));
     if ($id === '') respond(['success'=>false,'message'=>'Falta el identificador del proyecto.'], 400);
