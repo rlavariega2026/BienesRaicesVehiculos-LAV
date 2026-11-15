@@ -344,6 +344,38 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       });d.showModal()
     })
   }
+  async function saveAsNewProject() {
+    if(!cur)return;
+    const name=window.prompt("Nombre de la nueva copia del proyecto:",cur.title||cur.publicName||"Nuevo proyecto");
+    if(name===null)return;
+    if(!name.trim())return toast("Escribe un nombre para la copia.","error");
+    const original=read();
+    const duplicate=copy(original);
+    duplicate.id=null;
+    duplicate.title=name.trim();
+    duplicate.publicName="";
+    duplicate.status="draft";
+    duplicate.createdAt=null;
+    duplicate.updatedAt=null;
+    cur=duplicate;
+    fill(cur);
+    if(await save("draft"))toast("Copia independiente guardada en el servidor.");
+    else {cur=original;fill(cur);}
+  }
+  function activatePublicFullscreen(event) {
+    if(!document.body.classList.contains("public-card-mode"))return;
+    if(event.target.closest('button,a,input,select,textarea,form,label,video,audio,summary,dialog,[contenteditable],[role="button"],[data-lightbox-index],[data-gallery-index],[data-gallery-go],.dc-gallery-viewer,.dc-gallery-controls,.dc-catalog-grid,.catalog-listing-grid,.catalog-contact'))return;
+    const mount=document.querySelector("#publicMount");
+    if(!mount||!mount.contains(event.target)||document.fullscreenElement)return;
+    const surface=mount.querySelector(".public-shell,.catalog-public-shell")||mount;
+    if(document.fullscreenEnabled&&typeof surface.requestFullscreen==="function"){
+      try { const result=surface.requestFullscreen();if(result?.catch)result.catch(()=>{}); }
+      catch {}
+    }else if(/iPhone|iPad|iPod/i.test(navigator.userAgent)&&!sessionStorage.getItem("lavFullscreenNotice")){
+      sessionStorage.setItem("lavFullscreenNotice","1");
+      toast("En este navegador, usa Compartir > Añadir a pantalla de inicio para ver la publicación como app.");
+    }
+  }
   function askPublicName(c) {
     return new Promise(resolve=>{
       const d=$("#publishNameDialog"),input=$("#publicNameInput");
@@ -458,7 +490,10 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     }
   }
   function init() {
-    ["newListingTop","newListingHero","newListingEmpty"].forEach(id=>$("#"+id).onclick=newCard);$("#scrollInventory").onclick=()=>$("#inventorySection").scrollIntoView( {
+    ["newListingTop","newListingHero","newListingEmpty"].forEach(id=>$("#"+id).onclick=newCard);
+    $("#saveAsNewBtn")?.addEventListener("click",saveAsNewProject);
+    $("#saveAsNewBottom")?.addEventListener("click",saveAsNewProject);
+    $("#publicMount").addEventListener("click",activatePublicFullscreen);$("#scrollInventory").onclick=()=>$("#inventorySection").scrollIntoView( {
       behavior:"smooth"
     });$("#backToInventory").onclick=()=> {
       show("dash");dashboard()
