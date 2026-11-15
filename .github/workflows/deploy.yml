@@ -115,8 +115,10 @@ jobs:
           curl --fail --silent --show-error --max-time 30 "https://lavdigitalmkt.com/assets/logo-lav-digital.png?verify=${GITHUB_RUN_ID}" -o /tmp/lav-real-logo.png
           file /tmp/lav-real-logo.png | grep -q 'PNG image data'
           echo "Verified the actual LAV brand PNG loads over HTTPS"
-          grep -Fq 'data:image/jpeg;base64,/9j/' demo-overlay.php
-          node -e 'const fs=require("fs");const s=fs.readFileSync("app.js","utf8");if(!s.includes("data:image/jpeg;base64,/9j/"))process.exit(1)'
-          echo "Verified DEMO logo is embedded in published PHP and JS; no broken network images"
-
-
+          # Logo is uploaded manually by owner into the real application assets folder.
+          curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "https://lavdigitalmkt.com/bienes-raices-vehiculos/assets/LOGO%20LAV%20DIGITAL.png?verify=${GITHUB_RUN_ID}" -o /tmp/lav-uploaded-logo.png
+          file /tmp/lav-uploaded-logo.png | grep -q 'PNG image data'
+          test "$(wc -c </tmp/lav-uploaded-logo.png)" -gt 1000
+          grep -Fq '/bienes-raices-vehiculos/assets/LOGO%20LAV%20DIGITAL.png' demo-overlay.php
+          grep -Fq '/bienes-raices-vehiculos/assets/LOGO%20LAV%20DIGITAL.png' app.js
+          echo "Verified real uploaded LAV logo exists in the exact app assets directory and is referenced in both DEMO renderers"
