@@ -34,20 +34,27 @@ jobs:
           done
           php -r '$j=json_decode(file_get_contents("/tmp/lav-auth-status.json"),true); if(!$j || $j["configured"] || $j["authenticated"]) exit(1);'
           PASS="LAV-test-$RANDOM-$RANDOM-very-strong"
-          PAYLOAD=$(printf '{"action":"setup","username":"administrador","password":"%s"}' "$PASS")
+          PAYLOAD=$(printf '{"action":"setup","username":"lavariega","password":"%s"}' "$PASS")
           curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie -H 'Content-Type: application/json' -d "$PAYLOAD" "http://127.0.0.1:18765/api/auth.php" >/tmp/lav-auth-setup.json
-          php -r '$j=json_decode(file_get_contents("/tmp/lav-auth-setup.json"),true); if(!$j || !$j["authenticated"] || $j["username"]!=="administrador") exit(1);'
+          php -r '$j=json_decode(file_get_contents("/tmp/lav-auth-setup.json"),true); if(!$j || !$j["authenticated"] || $j["username"]!=="lavariega") exit(1);'
           curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie -H 'Content-Type: application/json' -d '{"action":"logout"}' "http://127.0.0.1:18765/api/auth.php" >/dev/null
           HTTP=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:18765/api/save-card.php?action=list")
           test "$HTTP" = "401"
           HTTP=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:18765/api/save-card.php?action=public_list")
           test "$HTTP" = "200"
-          PAYLOAD=$(printf '{"action":"login","username":"administrador","password":"%s"}' "$PASS")
+          PAYLOAD=$(printf '{"action":"login","username":"lavariega","password":"%s"}' "$PASS")
           curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie -H 'Content-Type: application/json' -d "$PAYLOAD" "http://127.0.0.1:18765/api/auth.php" >/tmp/lav-auth-login.json
           php -r '$j=json_decode(file_get_contents("/tmp/lav-auth-login.json"),true); if(!$j || !$j["authenticated"]) exit(1);'
           curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie "http://127.0.0.1:18765/api/save-card.php?action=list" >/tmp/lav-auth-list.json
           php -r '$j=json_decode(file_get_contents("/tmp/lav-auth-list.json"),true); if(!$j || !$j["success"] || !isset($j["cards"])) exit(1);'
-          echo "Admin session flow and private inventory guard passed."
+          # Existing admin records must become lavariega without changing passwords.
+          php -r '$p="data/cards/admin-auth.json"; $j=json_decode(file_get_contents($p),true); $j["username"]="administrador"; file_put_contents($p,json_encode($j));'
+          PAYLOAD=$(printf '{"action":"login","username":"lavariega","password":"%s"}' "$PASS")
+          curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie -H 'Content-Type: application/json' -d '{"action":"logout"}' "http://127.0.0.1:18765/api/auth.php" >/dev/null
+          curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie -H 'Content-Type: application/json' -d "$PAYLOAD" "http://127.0.0.1:18765/api/auth.php" >/tmp/lav-auth-migrated.json
+          php -r '$j=json_decode(file_get_contents("/tmp/lav-auth-migrated.json"),true); if(!$j || !$j["authenticated"] || $j["username"]!=="lavariega") exit(1);'
+          php -r '$j=json_decode(file_get_contents("data/cards/admin-auth.json"),true); if(!$j || $j["username"]!=="lavariega") exit(1);'
+          echo "Lavariega login, legacy username migration and protected inventory passed."
           rm -f data/cards/admin-auth.json
 
       - name: Deploy to matched FTP-root directory
