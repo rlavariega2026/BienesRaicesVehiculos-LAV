@@ -456,7 +456,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     const mark=document.createElement("div");
     mark.className="lav-demo-watermark";
     mark.setAttribute("aria-hidden","true");
-    mark.innerHTML='<div class="lav-demo-lettering">DEMO</div><div class="lav-demo-credit">Versión de demostración · LAV Digital MKT</div>';
+    mark.innerHTML='<img class="lav-demo-logo" src="/assets/logo-lav-digital.png" alt=""><div class="lav-demo-lettering">DEMO</div><div class="lav-demo-credit">Versión de demostración · LAV Digital MKT</div>';
     (document.querySelector("#publicMount .public-shell,#publicMount .catalog-public-shell")||document.querySelector("#publicMount")).append(mark);
   }
   function activatePublicFullscreen(event) {
