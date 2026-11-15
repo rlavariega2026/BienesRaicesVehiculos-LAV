@@ -362,6 +362,30 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     if(await save("draft"))toast("Copia independiente guardada en el servidor.");
     else {cur=original;fill(cur);}
   }
+  async function publishListing(demo=false) {
+    if(!cur)return;
+    const name=await askPublicName(cur);
+    if(name===null)return;
+    if(!name){toast("Escribe un nombre para publicar.","error");return;}
+    if(demo&&cur.status==="published"&&!cur.demo){
+      if(!await ask("Reemplazar versión definitiva","La DEMO sustituirá la versión definitiva en el mismo enlace. ¿Continuar?"))return;
+    }
+    cur.publicName=name;cur.demo=!!demo;
+    if(await save("published")){
+      dashboard();
+      copyCardLink(cur);
+      toast(demo?"Publicación DEMO guardada.":"Publicación definitiva guardada.");
+    }
+  }
+  function renderDemoWatermark(c){
+    document.querySelector("#publicMount .lav-demo-watermark")?.remove();
+    if(!c.demo)return;
+    const mark=document.createElement("div");
+    mark.className="lav-demo-watermark";
+    mark.setAttribute("aria-hidden","true");
+    mark.innerHTML='<div class="lav-demo-lettering">DEMO</div><div class="lav-demo-credit">Versión de demostración · LAV Digital MKT</div>';
+    document.querySelector("#publicMount").append(mark);
+  }
   function activatePublicFullscreen(event) {
     if(!document.body.classList.contains("public-card-mode"))return;
     if(event.target.closest('button,a,input,select,textarea,form,label,video,audio,summary,dialog,[contenteditable],[role="button"],[data-lightbox-index],[data-gallery-index],[data-gallery-go],.dc-gallery-viewer,.dc-gallery-controls,.dc-catalog-grid,.catalog-listing-grid,.catalog-contact'))return;
@@ -455,7 +479,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       }else{
         items=all.filter(x=>String(x.clientName||"").trim().toLocaleLowerCase("es-MX")===String(c.clientName||"").trim().toLocaleLowerCase("es-MX")&&x.status==="published"&&x.kind!=="profile").map(x=>({...x,templateId:x.templateId||c.templateId,theme:{...(c.theme||{}),...(x.theme||{})}}));
       }
-      setPublicCardManifest(c,true);document.body.classList.add("public-card-mode","catalog-page-mode");renderCatalogPage(c,items);
+      setPublicCardManifest(c,true);document.body.classList.add("public-card-mode","catalog-page-mode");renderCatalogPage(c,items);renderDemoWatermark(c);
       document.title=(c.publicName||c.clientName||"Catálogo")+" | Catálogo LAV Digital";
       document.querySelector('meta[name="theme-color"]')?.setAttribute("content",c.theme?.background||"#101116");return;
     }
@@ -467,7 +491,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     }
     setPublicCardManifest(c);document.body.classList.add("public-card-mode");
     const catalog=c.kind==="profile"?all.filter(x=>String(x.clientName||"").trim().toLocaleLowerCase("es-MX")===String(c.clientName||"").trim().toLocaleLowerCase("es-MX")&&x.status==="published"&&x.kind!=="profile"):[];
-    $("#publicMount").innerHTML='<div class="public-shell">'+card(c,{publicMode:true,catalog})+'</div>';
+    $("#publicMount").innerHTML='<div class="public-shell">'+card(c,{publicMode:true,catalog})+'</div>';renderDemoWatermark(c);
     document.title=(c.publicName||c.title||c.clientName)+" | Tarjeta digital";
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content",c.theme?.background||"#101116");
   }
@@ -497,14 +521,9 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       behavior:"smooth"
     });$("#backToInventory").onclick=()=> {
       show("dash");dashboard()
-    };["saveDraftBtn","saveDraftBottom"].forEach(id=>$("#"+id).onclick=()=>save("draft"));["publishBtn","publishBottom"].forEach(id=>$("#"+id).onclick=async()=> {
-      if(!cur)return;let n=await askPublicName(cur);if(n===null)return;if(!n) {
-        toast("Escribe un nombre para la tarjeta antes de publicar.","error");return
-      }
-      cur.publicName=n;if(await save("published")) {
-        dashboard();share(cur)
-      }
-    });$$(".step-tab").forEach(b=>b.onclick=()=> {
+    };["saveDraftBtn","saveDraftBottom"].forEach(id=>$("#"+id).onclick=()=>save("draft"));["publishBtn","publishBottom"].forEach(id=>$("#"+id).onclick=()=>publishListing(false));
+    ["publishDemoBtn","publishDemoBottom"].forEach(id=>$("#"+id).onclick=()=>publishListing(true));
+    $$(".step-tab").forEach(b=>b.onclick=()=> {
       read();step(b.dataset.step);preview()
     });$("#listingType").onchange=()=> {
       let k=$("#listingType").value;$("#propertyFields").classList.toggle("hidden",k!=="property");$("#vehicleFields").classList.toggle("hidden",k!=="vehicle");$("#operationField").classList.toggle("hidden",k!=="property");if(cur)cur.kind=k;renderMultiItems(cur);preview()
