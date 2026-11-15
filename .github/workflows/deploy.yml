@@ -76,8 +76,11 @@ jobs:
         run: |
           set -euo pipefail
           BASE="https://lavdigitalmkt.com/bienes-raices-vehiculos"
-          for name in index.html app.js public-card-mobile-fix.css demo-publishing.css api/auth.php sw.js; do
+          for name in index.html app.js public-card-mobile-fix.css demo-publishing.css sw.js; do
             curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "$BASE/$name?verify=${GITHUB_RUN_ID}" -o "/tmp/live-${name}"
             cmp "$name" "/tmp/live-${name}" || { echo "::error::Live $name differs from GitHub checkout"; exit 1; }
             echo "Verified live $name matches repository"
           done
+          curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "$BASE/api/auth.php?verify=${GITHUB_RUN_ID}" -o /tmp/lav-live-auth.json
+          php -r '$j=json_decode(file_get_contents("/tmp/lav-live-auth.json"),true); if(!$j || empty($j["success"]) || !array_key_exists("configured",$j) || !array_key_exists("authenticated",$j)) exit(1);'
+          echo "Verified live administrator authentication endpoint"
