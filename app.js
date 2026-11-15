@@ -145,7 +145,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     const grid=$("#featuredTemplateGrid");
     if(!cur||!grid)return;
     grid.innerHTML=FEATURED.map(t=>{
-      const sample={...cur,theme:{...cur.theme,...t.colors},templateId:t.id,cover:"",gallery:[],title:t.name,clientName:"LAV DIGITAL",price:t.category==="vehicle"?"$485,000":"$4,850,000",location:t.category==="vehicle"?"Inventario automotriz":"Cuernavaca, Morelos",description:"",phone:"",whatsapp:"",email:"",facebook:"",instagram:"",mapsUrl:"",logo:""};
+      const sample={...cur,theme:{...cur.theme,...t.colors},templateId:t.id,cover:img(cur),title:cur.title||t.name,clientName:cur.clientName||"LAV DIGITAL",price:cur.price||"4850000",location:cur.location||(t.category==="vehicle"?"Inventario automotriz":"Cuernavaca, Morelos")};
       return '<button type="button" class="featured-template-card '+(cur.templateId===t.id?"selected":"")+'" data-featured-template="'+t.id+'" aria-pressed="'+(cur.templateId===t.id?'true':'false')+'"><span class="featured-template-preview">'+card(sample,{thumb:true})+'</span><span class="featured-template-copy"><strong>'+String(t.number).padStart(2,"0")+'. '+esc(t.name)+'</strong><small>'+esc(t.category==="property"?"INMOBILIARIO":t.category==="vehicle"?"AUTOMOTRIZ":"CATÁLOGOS")+' · '+esc(t.paletteName)+'</small><span class="featured-template-choose">'+(cur.templateId===t.id?"Diseño seleccionado":"Elegir diseño")+'</span></span></button>';
     }).join("");
   }
@@ -154,7 +154,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       let c= {
         ...cur,theme: {
           ...cur.theme,...t.colors
-        },templateId:t.id,cover:"",gallery:[],title:"Residencia contemporánea",clientName:"LAV DIGITAL",price:"4850000",location:"Cuernavaca, Morelos",description:"",phone:"",whatsapp:"",email:"",facebook:"",instagram:"",mapsUrl:"",logo:""
+        },templateId:t.id,cover:img(cur),title:cur.title||"Vista previa del anuncio",clientName:cur.clientName||"LAV DIGITAL",price:cur.price||"4850000",location:cur.location||"Cuernavaca, Morelos"
       };return'<button class="template-item '+(cur.templateId===t.id?"selected":"")+'" data-template="'+t.id+'"><div class="template-thumb">'+card(c, {
         thumb:true
       })+'</div><div class="template-meta"><strong><span class="template-number">'+String(t.number).padStart(4,"0")+'</span>'+esc(t.name)+'</strong><small>'+esc(t.skinName)+' · '+esc(t.paletteName)+'</small></div></button>'
