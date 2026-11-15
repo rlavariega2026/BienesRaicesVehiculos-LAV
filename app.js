@@ -204,7 +204,45 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     if(!f||!f.type||!f.type.startsWith("image/"))throw Error("Elige un archivo de imagen válido.");
     return f;
   }
+  async function uploadLargeImage(blob,name){
+    if(!crypto?.subtle||!crypto?.getRandomValues)throw Error("Este navegador no admite carga segura por bloques.");
+    const bytes=crypto.getRandomValues(new Uint8Array(16));
+    const uploadId=Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");
+    const blockSize=1024*1024;
+    const total=Math.ceil(blob.size/blockSize);
+    const endpoint=new URL("api/upload-chunk.php",location.href.split("?")[0]).href;
+    for(let index=0;index<total;index++){
+      const part=blob.slice(index*blockSize,Math.min(blob.size,(index+1)*blockSize));
+      const hash=Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",await part.arrayBuffer())),b=>b.toString(16).padStart(2,"0")).join("");
+      const form=new FormData();
+      form.append("upload_id",uploadId);
+      form.append("index",String(index));
+      form.append("total",String(total));
+      form.append("sha256",hash);
+      form.append("chunk",part,"fragment");
+      let result=null,lastError=null;
+      for(let attempt=0;attempt<3;attempt++){
+        try{
+          const response=await fetch(endpoint,{method:"POST",body:form});
+          const json=await response.json();
+          if(!response.ok||json.success===false)throw Error(json.message||"No se pudo transferir un bloque.");
+          result=json;break;
+        }catch(error){
+          lastError=error;
+          if(attempt<2)await new Promise(resolve=>setTimeout(resolve,400*(attempt+1)));
+        }
+      }
+      if(!result)throw Error("Falló la carga en el bloque "+(index+1)+"/"+total+": "+(lastError?.message||"Error"));
+      if(index===total-1){
+        if(!result.complete||!result.url||Number(result.size)!==blob.size)throw Error("El servidor no confirmó la integridad de la imagen.");
+        return result.url;
+      }
+      stat("Subiendo imagen original: "+Math.round((index+1)/total*100)+" %");
+    }
+    throw Error("La carga terminó sin una confirmación válida.");
+  }
   async function uploadImage(data,name) {
+    if(data instanceof Blob&&data.size>2*1024*1024)return uploadLargeImage(data,name);
     const form=new FormData();
     if(data instanceof Blob) {
       form.append("image",data,name||data.name||"photo");
