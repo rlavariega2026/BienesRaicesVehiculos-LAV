@@ -19,7 +19,7 @@ jobs:
         run: node --check app.js
 
       - name: Validate PHP API syntax
-        run: php -l card.php && php -l catalog.php && php -l api/manifest.php && php -l api/save-card.php && php -l api/media.php && php -l api/contact.php && php -l api/upload-chunk.php && php -l api/auth.php
+        run: php -l card.php && php -l catalog.php && php -l api/manifest.php && php -l api/save-card.php && php -l api/media.php && php -l api/contact.php && php -l api/upload-chunk.php && php -l api/auth.php && php -l api/team.php
 
       - name: Verify administrator setup, login, logout and private inventory protection
         shell: bash
