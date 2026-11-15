@@ -6,6 +6,7 @@ header('X-Content-Type-Options: nosniff');
 function media_reply(array $data, int $status=200) { http_response_code($status); echo json_encode($data, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES); exit; }
 require_once __DIR__ . '/auth.php';
 lav_auth_required();
+lav_auth_check_csrf();
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') media_reply(['success'=>false,'message'=>'Método no permitido.'],405);
 if (!isset($_FILES['image']) || !is_array($_FILES['image'])) media_reply(['success'=>false,'message'=>'No se recibió la imagen. Si el archivo es grande, revisa los límites de carga configurados por Hostinger (upload_max_filesize y post_max_size).'],400);
 $file=$_FILES['image'];
