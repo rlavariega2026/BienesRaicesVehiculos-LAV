@@ -115,10 +115,10 @@ jobs:
           curl --fail --silent --show-error --max-time 30 "https://lavdigitalmkt.com/assets/logo-lav-digital.png?verify=${GITHUB_RUN_ID}" -o /tmp/lav-real-logo.png
           file /tmp/lav-real-logo.png | grep -q 'PNG image data'
           echo "Verified the actual LAV brand PNG loads over HTTPS"
-          curl --fail --silent --show-error --max-time 30 "$BASE/assets/LOGO%20LAV%20DIGITAL.jpg?verify=${GITHUB_RUN_ID}" -o /tmp/lav-actual-demo-logo.jpg
-          cmp "assets/LOGO LAV DIGITAL.jpg" /tmp/lav-actual-demo-logo.jpg || { echo "::error::The DEMO image was not deployed intact"; exit 1; }
+          curl --fail --silent --show-error --max-time 30 "$BASE/assets/lav-digital-demo-logo.jpg?verify=${GITHUB_RUN_ID}" -o /tmp/lav-actual-demo-logo.jpg
+          cmp "assets/lav-digital-demo-logo.jpg" /tmp/lav-actual-demo-logo.jpg || { echo "::error::The DEMO image was not deployed intact"; exit 1; }
           file /tmp/lav-actual-demo-logo.jpg | grep -q 'JPEG image data'
-          grep -F 'LOGO%20LAV%20DIGITAL.jpg' demo-overlay.php
-          grep -F 'LOGO%20LAV%20DIGITAL.jpg' app.js
+          grep -F 'lav-digital-demo-logo.jpg' demo-overlay.php
+          grep -F 'lav-digital-demo-logo.jpg' app.js
           echo "Verified the DEMO image itself exists and matches GitHub on live Hostinger"
 
