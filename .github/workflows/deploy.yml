@@ -21,22 +21,78 @@ jobs:
       - name: Validate PHP API syntax
         run: php -l card.php && php -l catalog.php && php -l api/manifest.php && php -l api/save-card.php && php -l api/media.php && php -l api/contact.php
 
-      - name: Diagnose FTP root and available target directories
+      - name: Match live website to its FTP directory
+        id: target
         shell: bash
         env:
           FTP_USER: ${{ secrets.HOSTINGER_FTP_USERNAME }}
           FTP_PASS: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
         run: |
           set -euo pipefail
-          for dir in "/" "/domains/" "/domains/lavdigitalmkt.com/" "/domains/lavdigitalmkt.com/public_html/" "/domains/lavdigitalmkt.com/public_html/bienes-raices-vehiculos/" "/public_html/" "/public_html/bienes-raices-vehiculos/" "/bienes-raices-vehiculos/"; do
-            echo "::group::FTP directory probe: $dir"
-            if curl --silent --show-error --max-time 20 --connect-timeout 10 --disable-epsv --user "$FTP_USER:$FTP_PASS" --list-only "ftp://31.170.161.28:21$dir" >/tmp/ftp-listing 2>/tmp/ftp-error; then
-              echo "ACCESSIBLE: $dir"
-              sed -n '1,25p' /tmp/ftp-listing
-            else
-              echo "NOT ACCESSIBLE: $dir"
-              sed -n '1,3p' /tmp/ftp-error
+          curl --fail --silent --show-error --max-time 25 -H 'Cache-Control: no-cache' 'https://lavdigitalmkt.com/bienes-raices-vehiculos/app.js?ftp-diagnosis=20261115' -o /tmp/live-app.js
+          LIVE_HASH=$(sha256sum /tmp/live-app.js | cut -d' ' -f1)
+          echo "Live app.js SHA256: $LIVE_HASH"
+          MATCH=""
+          for dir in "/public_html/bienes-raices-vehiculos/" "/bienes-raices-vehiculos/"; do
+            if curl --fail --silent --show-error --max-time 25 --user "$FTP_USER:$FTP_PASS" "ftp://31.170.161.28:21${dir}app.js" -o /tmp/ftp-app.js; then
+              HASH=$(sha256sum /tmp/ftp-app.js | cut -d' ' -f1)
+              echo "FTP $dir app.js SHA256: $HASH"
+              if [ "$HASH" = "$LIVE_HASH" ]; then MATCH="$dir"; fi
             fi
-            echo "::endgroup::"
           done
-          echo "Diagnosis only: no files uploaded or deleted."
+          if [ -z "$MATCH" ]; then
+            echo "::error::Neither FTP path matches the live website. Deployment stopped to prevent another wrong-directory publish."
+            exit 1
+          fi
+          echo "Live site matched FTP path: $MATCH"
+          if [ "$MATCH" = "/public_html/bienes-raices-vehiculos/" ]; then
+            echo "target=public_html" >> "$GITHUB_OUTPUT"
+          else
+            echo "target=ftp_root" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy to matched public_html directory
+        if: steps.target.outputs.target == 'public_html'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 31.170.161.28
+          username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
+          password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./
+          server-dir: public_html/bienes-raices-vehiculos/
+          exclude: |
+            .git/**
+            .git
+            **/.git/**
+            **/.git
+            **/.github/**
+            **/README.md
+            data/**
+            uploads/**
+            storage/**
+            publications/**
+
+      - name: Deploy to matched FTP-root directory
+        if: steps.target.outputs.target == 'ftp_root'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 31.170.161.28
+          username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
+          password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./
+          server-dir: bienes-raices-vehiculos/
+          exclude: |
+            .git/**
+            .git
+            **/.git/**
+            **/.git
+            **/.github/**
+            **/README.md
+            data/**
+            uploads/**
+            storage/**
+            publications/**
