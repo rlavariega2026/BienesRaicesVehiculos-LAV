@@ -30,9 +30,20 @@ function load_card(string $path): ?array {
     return is_array($data) ? $data : null;
 }
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+require_once __DIR__ . '/auth.php';
 if ($method === 'GET') {
     $action = (string)($_GET['action'] ?? '');
+    if ($action === 'public_list') {
+        $items=[];
+        foreach (glob($storageDir . '*.json') ?: [] as $path) {
+            if (basename($path)==='admin-auth.json') continue;
+            $item=load_card($path);
+            if (is_array($item) && ($item['status']??'')==='published') $items[]=$item;
+        }
+        respond(['success'=>true,'cards'=>$items]);
+    }
     if ($action === 'templates') {
+        lav_auth_required();
         $directory = __DIR__ . '/../data/templates/';
         $templates = [];
         foreach (glob($directory . '*.json') ?: [] as $file) {
@@ -43,6 +54,7 @@ if ($method === 'GET') {
         respond(['success'=>true,'templates'=>$templates]);
     }
     if ($action === 'list') {
+        lav_auth_required();
         $items = [];
         foreach (glob($storageDir . '*.json') ?: [] as $path) {
             if (basename($path) === 'admin-auth.json') continue;
@@ -59,6 +71,7 @@ if ($method === 'GET') {
     respond(['success'=>true,'card'=>$card,'data'=>$card]);
 }
 if ($method !== 'POST') respond(['success'=>false,'message'=>'Método no permitido.'], 405);
+lav_auth_required();
 $raw = file_get_contents('php://input');
 if ($raw === false || $raw === '') respond(['success'=>false,'message'=>'La solicitud está vacía.'], 400);
 $input = json_decode($raw, true);
