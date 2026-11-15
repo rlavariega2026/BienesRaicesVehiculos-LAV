@@ -26,6 +26,7 @@ if ($origin!=='') {
   $host=(string)($_SERVER['HTTP_HOST']??'');
   if (strtolower((string)(parse_url($origin,PHP_URL_HOST)??'')) !== strtolower(preg_replace('/:\\d+$/','',$host))) lav_auth_respond(['success'=>false,'message'=>'Origen no autorizado.'],403);
 }
+lav_auth_check_csrf();
 $data=json_decode((string)file_get_contents('php://input'),true);
 if (!is_array($data)) lav_auth_respond(['success'=>false,'message'=>'Solicitud inválida.'],400);
 $action=(string)($data['action']??'');
@@ -34,7 +35,7 @@ if ($action==='invite') {
   $name=trim((string)($data['name']??''));
   if (!preg_match('/^[a-z0-9_-]{3,40}$/',$username) || $username==='lavariega') lav_auth_respond(['success'=>false,'message'=>'Usuario inválido. Usa entre 3 y 40 letras, números o guiones.'],422);
   if ($name==='') $name=$username;
-  if (mb_strlen($name)>80) lav_auth_respond(['success'=>false,'message'=>'Nombre demasiado largo.'],422);
+  if (strlen($name)>80) lav_auth_respond(['success'=>false,'message'=>'Nombre demasiado largo.'],422);
   if (is_file(lav_team_user_file($username))) lav_auth_respond(['success'=>false,'message'=>'Ese usuario ya existe.'],409);
   foreach (glob($dir.'invite-*.json')?:[] as $path) {
     $v=json_decode((string)file_get_contents($path),true);
@@ -63,6 +64,50 @@ if ($action==='revoke') {
     $v=json_decode((string)file_get_contents($invPath),true);
     if (is_array($v)&&($v['username']??'')===$username) @unlink($invPath);
   }
+  lav_auth_respond(['success'=>true,'username'=>$username]);
+}
+if (in_array($action,['activate','suspend','delete','reset'],true)) {
+  $username=strtolower(trim((string)($data['username']??'')));
+  if ($username==='lavariega' || !preg_match('/^[a-z0-9_-]{3,40}$/',$username))
+    lav_auth_respond(['success'=>false,'message'=>'No se puede administrar esa cuenta.'],422);
+  $file=lav_team_user_file($username);
+  if (!is_file($file)) lav_auth_respond(['success'=>false,'message'=>'Usuario no encontrado.'],404);
+  $account=lav_team_get_user($username);
+  if (!is_array($account)) lav_auth_respond(['success'=>false,'message'=>'Cuenta inválida.'],500);
+  if ($action==='delete') {
+    if (!@unlink($file)) lav_auth_respond(['success'=>false,'message'=>'No se pudo eliminar el usuario.'],500);
+    foreach (glob($dir.'invite-*.json')?:[] as $invitePath) {
+      $invite=json_decode((string)file_get_contents($invitePath),true);
+      if (is_array($invite)&&($invite['username']??'')===$username) @unlink($invitePath);
+    }
+    lav_auth_respond(['success'=>true,'username'=>$username]);
+  }
+  if ($action==='reset') {
+    $token=bin2hex(random_bytes(32));
+    $inv=['username'=>$username,'name'=>$account['name']??$username,'purpose'=>'reset','expires'=>time()+86400,'created'=>date('c')];
+    $hashed=hash('sha256',$token);
+    if (file_put_contents($dir.'invite-'.$hashed.'.json',json_encode($inv,JSON_UNESCAPED_UNICODE),LOCK_EX)===false)
+      lav_auth_respond(['success'=>false,'message'=>'No se pudo generar el restablecimiento.'],500);
+    $appPath=rtrim(dirname(dirname((string)($_SERVER['SCRIPT_NAME']??'/api/team.php'))),'/');
+    $url='https://'.($_SERVER['HTTP_HOST']??'lavdigitalmkt.com').$appPath.'/?invite='.$token;
+    lav_auth_respond(['success'=>true,'url'=>$url,'username'=>$username]);
+  }
+  $account['active']=$action==='activate';
+  $account['session_version']=bin2hex(random_bytes(12));
+  if (file_put_contents($file,json_encode($account,JSON_UNESCAPED_UNICODE),LOCK_EX)===false)
+    lav_auth_respond(['success'=>false,'message'=>'No se pudo actualizar la cuenta.'],500);
+  lav_auth_respond(['success'=>true,'username'=>$username,'active'=>$account['active']]);
+}
+if ($action==='rename') {
+  $username=strtolower(trim((string)($data['username']??'')));
+  $name=trim((string)($data['name']??''));
+  if ($username==='lavariega' || !preg_match('/^[a-z0-9_-]{3,40}$/',$username) || $name==='' || strlen($name)>80)
+    lav_auth_respond(['success'=>false,'message'=>'Datos inválidos.'],422);
+  $account=lav_team_get_user($username);
+  if (!$account) lav_auth_respond(['success'=>false,'message'=>'Usuario no encontrado.'],404);
+  $account['name']=$name;
+  if (file_put_contents(lav_team_user_file($username),json_encode($account,JSON_UNESCAPED_UNICODE),LOCK_EX)===false)
+    lav_auth_respond(['success'=>false,'message'=>'No se pudo editar el usuario.'],500);
   lav_auth_respond(['success'=>true,'username'=>$username]);
 }
 lav_auth_respond(['success'=>false,'message'=>'Acción no reconocida.'],400);
