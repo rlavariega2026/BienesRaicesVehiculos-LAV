@@ -30,6 +30,11 @@ $html = str_replace(
     '<link rel="manifest" href="' . htmlspecialchars($manifestUrl, ENT_QUOTES, 'UTF-8') . '">',
     $html
 );
+// Keep the DEMO watermark server-rendered, even before JavaScript loads.
+require_once __DIR__ . '/demo-overlay.php';
+if (!empty($card['demo']) || (string)($_GET['demo'] ?? '') === '1') {
+    $html = str_replace('</body>', lav_demo_markup() . '\n</body>', $html);
+}
 header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: no-store, max-age=0');
 header('X-Content-Type-Options: nosniff');
