@@ -35,12 +35,38 @@ function lav_auth_config(): ?array {
     }
     return $v;
 }
+function lav_team_dir(): string {
+    return __DIR__ . '/../data/private/';
+}
+function lav_team_prepare(): string {
+    $d=lav_team_dir();
+    if (!is_dir($d) && !mkdir($d,0755,true) && !is_dir($d)) throw new RuntimeException('No se pudo crear el directorio privado.');
+    if (!is_file($d.'.htaccess')) @file_put_contents($d.'.htaccess',"Options -Indexes\nRequire all denied\n");
+    return $d;
+}
+function lav_team_user_file(string $name): string {
+    return lav_team_dir().'user-'.strtolower($name).'.json';
+}
+function lav_team_get_user(string $name): ?array {
+    if (!preg_match('/^[a-z0-9_-]{3,40}$/',$name)) return null;
+    $path=lav_team_user_file($name);
+    if (!is_file($path)) return null;
+    $v=json_decode((string)file_get_contents($path),true);
+    return is_array($v) ? $v : null;
+}
+function lav_auth_role(): ?string {
+    lav_auth_start();
+    $username=(string)($_SESSION['lav_admin'] ?? '');
+    if ($username==='') return null;
+    $cfg=lav_auth_config();
+    if ($cfg!==null && !empty($cfg['password_hash']) && hash_equals((string)($cfg['username']??''),$username)) return 'admin';
+    $user=lav_team_get_user($username);
+    return $user !== null && !empty($user['active']) && !empty($user['password_hash']) ? 'editor' : null;
+}
 function lav_auth_ok(): bool {
     lav_auth_start();
     $config=lav_auth_config();
-    return $config !== null && !empty($config['password_hash']) &&
-      !empty($_SESSION['lav_admin']) && is_string($_SESSION['lav_admin']) &&
-      hash_equals((string)($config['username'] ?? ''), $_SESSION['lav_admin']);
+    return lav_auth_role() !== null;
 }
 function lav_auth_respond(array $payload,int $status=200): never {
     http_response_code($status);
@@ -61,7 +87,8 @@ if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
     if ($method === 'GET') {
         lav_auth_respond(['success'=>true,'configured'=>$config !== null,
           'authenticated'=>lav_auth_ok(),
-          'username'=>lav_auth_ok()?(string)($_SESSION['lav_admin'] ?? ''):null]);
+          'username'=>lav_auth_ok()?(string)($_SESSION['lav_admin'] ?? ''):null,
+          'role'=>lav_auth_role()]);
     }
     if ($method !== 'POST') lav_auth_respond(['success'=>false,'message'=>'Método no permitido.'],405);
     $origin=(string)($_SERVER['HTTP_ORIGIN'] ?? '');
@@ -100,15 +127,45 @@ if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
         }
         fclose($file);@chmod(lav_auth_path(),0600);
         session_regenerate_id(true);$_SESSION['lav_admin']=$username;
-        lav_auth_respond(['success'=>true,'configured'=>true,'authenticated'=>true,'username'=>$username]);
+        lav_auth_respond(['success'=>true,'configured'=>true,'authenticated'=>true,'username'=>$username,'role'=>$adminValid?'admin':'editor']);
+    }
+    if ($action === 'invite_check') {
+        $token=strtolower((string)($data['token']??''));
+        if (!preg_match('/^[a-f0-9]{64}$/',$token)) lav_auth_respond(['success'=>false,'message'=>'La invitación no es válida.'],400);
+        $path=lav_team_dir().'invite-'.hash('sha256',$token).'.json';
+        $inv=is_file($path)?json_decode((string)file_get_contents($path),true):null;
+        if (!is_array($inv) || ($inv['expires']??0)<time()) lav_auth_respond(['success'=>false,'message'=>'La invitación venció o ya fue utilizada.'],404);
+        lav_auth_respond(['success'=>true,'username'=>$inv['username'],'name'=>$inv['name']??'']);
+    }
+    if ($action === 'invite_accept') {
+        $token=strtolower((string)($data['token']??''));
+        if (!preg_match('/^[a-f0-9]{64}$/',$token)) lav_auth_respond(['success'=>false,'message'=>'Invitación inválida.'],400);
+        $path=lav_team_dir().'invite-'.hash('sha256',$token).'.json';
+        $invite=is_file($path)?json_decode((string)file_get_contents($path),true):null;
+        if (!is_array($invite) || ($invite['expires']??0)<time()) lav_auth_respond(['success'=>false,'message'=>'La invitación venció o ya fue utilizada.'],404);
+        $invited=(string)$invite['username'];
+        if (strlen($password)<12 || strlen($password)>200) lav_auth_respond(['success'=>false,'message'=>'La contraseña requiere al menos 12 caracteres.'],422);
+        if (is_file(lav_team_user_file($invited))) lav_auth_respond(['success'=>false,'message'=>'Ese usuario ya tiene una cuenta.'],409);
+        $record=['username'=>$invited,'name'=>(string)($invite['name']??$invited),'password_hash'=>password_hash($password,PASSWORD_DEFAULT),'active'=>true,'created_at'=>date('c')];
+        $handle=@fopen(lav_team_user_file($invited),'x');
+        if (!$handle) lav_auth_respond(['success'=>false,'message'=>'No se pudo activar la cuenta.'],409);
+        fwrite($handle,json_encode($record,JSON_UNESCAPED_UNICODE));fclose($handle);
+        @unlink($path);
+        session_regenerate_id(true);$_SESSION['lav_admin']=$invited;
+        lav_auth_respond(['success'=>true,'authenticated'=>true,'username'=>$invited,'role'=>'editor']);
     }
     if ($action === 'login') {
         if ($config === null) lav_auth_respond(['success'=>false,'message'=>'Primero configura al administrador.'],409);
         $attempts=(int)($_SESSION['lav_login_attempts'] ?? 0);
         if ($attempts >= 12) lav_auth_respond(['success'=>false,'message'=>'Demasiados intentos. Cierra el navegador e inténtalo más tarde.'],429);
-        if (empty($config['password_hash']) ||
-            !hash_equals((string)($config['username'] ?? ''),$username) ||
-            !password_verify($password,(string)$config['password_hash'])) {
+        $registered=lav_team_get_user($username);
+        $adminValid=!empty($config['password_hash']) &&
+            hash_equals((string)($config['username'] ?? ''),$username) &&
+            password_verify($password,(string)$config['password_hash']);
+        $editorValid=$registered!==null && !empty($registered['active']) &&
+            !empty($registered['password_hash']) &&
+            password_verify($password,(string)$registered['password_hash']);
+        if (!$adminValid && !$editorValid) {
             $_SESSION['lav_login_attempts']=$attempts+1;
             lav_auth_respond(['success'=>false,'message'=>'Usuario o contraseña incorrectos.'],401);
         }
