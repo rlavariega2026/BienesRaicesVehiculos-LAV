@@ -222,3 +222,14 @@ body.catalog-page-mode #publicMount{display:block!important}
    width:100%!important;min-width:0!important;flex:none!important;
  }
 }
+
+/* Public listings use separate image and heading siblings, never overlay text on photos. */
+body.public-card-mode #publicMount .digital-card.public-card>.dc-cover{position:relative!important;overflow:hidden!important}
+body.public-card-mode #publicMount .digital-card.public-card>.dc-public-heading{display:block!important;position:relative!important;inset:auto!important;transform:none!important;z-index:1!important;background:var(--card-bg,#111821)!important;color:var(--card-text,#fff)!important;padding:0!important;min-width:0!important}
+body.public-card-mode #publicMount .digital-card.public-card>.dc-public-heading>.dc-cover-copy{position:relative!important;inset:auto!important;transform:none!important;width:100%!important;max-width:100%!important;margin:0!important;padding:24px clamp(18px,4vw,42px)!important;background:transparent!important;overflow-wrap:anywhere!important}
+body.public-card-mode #publicMount .digital-card.public-card>.dc-public-heading .dc-title{max-width:100%!important;overflow-wrap:anywhere!important;line-height:1.15!important}
+@media(max-width:699px){
+ body.public-card-mode #publicMount .digital-card.public-card>.dc-cover{display:block!important;aspect-ratio:4/3!important;height:auto!important;min-height:0!important;max-height:none!important;padding:0!important;background-size:cover!important;background-position:center!important}
+ body.public-card-mode #publicMount .digital-card.public-card>.dc-public-heading>.dc-cover-copy{padding:22px 18px 25px!important}
+ body.public-card-mode #publicMount .digital-card.public-card>.dc-public-heading .dc-title{font-size:clamp(1.55rem,6.2vw,2.4rem)!important}
+}
