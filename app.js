@@ -715,8 +715,95 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       finally{button.disabled=false;}
     };
   }
+  async function teamRequest(payload=null){
+    const url=new URL("api/team.php",location.href.split("?")[0]);
+    const opts={credentials:"same-origin",cache:"no-store"};
+    if(payload){opts.method="POST";opts.headers={"Content-Type":"application/json"};opts.body=JSON.stringify(payload);}
+    const response=await fetch(url.href,opts);
+    let result;
+    try{result=await response.json();}catch{throw Error("El servidor no pudo responder.");}
+    if(!response.ok||result.success===false)throw Error(result.message||"No se pudo completar la solicitud.");
+    return result;
+  }
+  async function openTeamManager(){
+    const dialog=$("#teamManagerDialog");
+    const status=$("#teamManagerMessage");
+    status.textContent="";
+    dialog.showModal();
+    $("#teamInviteResult").classList.add("hidden");
+    try{
+      const data=await teamRequest();
+      const users=data.users||[],invites=data.invites||[];
+      const items=[
+        '<div class="lav-team-user"><strong>lavariega</strong><span>Administrador principal · acceso permanente</span></div>',
+        ...users.map(u=>'<div class="lav-team-user"><div><strong>'+esc(u.name||u.username)+'</strong><span>'+esc(u.username)+' · '+(u.active?'Acceso activo':'Acceso revocado')+'</span></div>'+(u.active?'<button class="button button-outline" type="button" data-revoke-user="'+esc(u.username)+'">Revocar acceso</button>':'')+'</div>'),
+        ...invites.map(u=>'<div class="lav-team-user"><div><strong>'+esc(u.name||u.username)+'</strong><span>'+esc(u.username)+' · Invitación pendiente</span></div><button class="button button-outline" type="button" data-revoke-user="'+esc(u.username)+'">Cancelar invitación</button></div>')
+      ];
+      $("#teamUsersList").innerHTML=items.join("");
+    }catch(error){status.textContent=error.message;}
+  }
+  function setupTeamManager(){
+    $("#manageTeamBtn").onclick=()=>openTeamManager();
+    $("#closeTeamManager").onclick=()=>$("#teamManagerDialog").close();
+    $("#teamCreateInviteForm").onsubmit=async event=>{
+      event.preventDefault();
+      const button=$("#teamInviteCreate");
+      button.disabled=true;
+      $("#teamManagerMessage").textContent="";
+      try{
+        const result=await teamRequest({action:"invite",name:$("#teamInviteName").value.trim(),username:$("#teamNewUsername").value.trim().toLowerCase()});
+        $("#teamInviteLink").value=result.url;
+        $("#teamInviteResult").classList.remove("hidden");
+        await openTeamManagerRefresh();
+      }catch(error){$("#teamManagerMessage").textContent=error.message;}
+      finally{button.disabled=false;}
+    };
+    $("#copyTeamInviteLink").onclick=async()=>{
+      const input=$("#teamInviteLink");input.focus();input.select();
+      try{await navigator.clipboard.writeText(input.value);$("#teamManagerMessage").textContent="Enlace copiado."; }
+      catch{try{document.execCommand("copy");$("#teamManagerMessage").textContent="Enlace seleccionado; puedes copiarlo."; }
+      catch{ $("#teamManagerMessage").textContent="Selecciona el enlace para copiarlo."; }}
+    };
+    $("#teamUsersList").onclick=async event=>{
+      const target=event.target.closest("[data-revoke-user]");
+      if(!target)return;
+      if(!confirm("¿Revocar el acceso a "+target.dataset.revokeUser+"?"))return;
+      try{await teamRequest({action:"revoke",username:target.dataset.revokeUser});await openTeamManagerRefresh();}
+      catch(error){$("#teamManagerMessage").textContent=error.message;}
+    };
+  }
+  async function openTeamManagerRefresh(){
+    const data=await teamRequest();
+    const users=data.users||[],invites=data.invites||[];
+    $("#teamUsersList").innerHTML='<div class="lav-team-user"><strong>lavariega</strong><span>Administrador principal</span></div>'+
+      users.map(u=>'<div class="lav-team-user"><div><strong>'+esc(u.name||u.username)+'</strong><span>'+esc(u.username)+' · '+(u.active?'Activo':'Revocado')+'</span></div>'+(u.active?'<button type="button" class="button button-outline" data-revoke-user="'+esc(u.username)+'">Revocar acceso</button>':'')+'</div>').join("")+
+      invites.map(u=>'<div class="lav-team-user"><div><strong>'+esc(u.name||u.username)+'</strong><span>'+esc(u.username)+' · Invitación pendiente</span></div><button type="button" class="button button-outline" data-revoke-user="'+esc(u.username)+'">Cancelar</button></div>').join("");
+  }
+  async function openInvitation(token){
+    $("#appShell").classList.add("hidden");
+    const page=$("#teamInviteView");
+    page.classList.remove("hidden");
+    try{
+      const result=await adminAuthRequest({action:"invite_check",token});
+      $("#teamInviteUsername").value=result.username;
+      $("#teamInviteMessage").textContent=(result.name||result.username)+", crea tu contraseña para acceder al editor de LAV Digital.";
+      $("#teamInviteForm").onsubmit=async event=>{
+        event.preventDefault();
+        $("#teamInviteError").textContent="";
+        const button=$("#teamInviteAccept");button.disabled=true;
+        try{
+          await adminAuthRequest({action:"invite_accept",token,password:$("#teamInvitePassword").value});
+          location.replace(new URL("./",location.href).href);
+        }catch(error){$("#teamInviteError").textContent=error.message;}
+        finally{button.disabled=false;}
+      };
+    }catch(error){
+      $("#teamInviteError").textContent=error.message;
+      $("#teamInviteForm").classList.add("hidden");
+    }
+  }
   async function boot() {
-    init();const params=new URLSearchParams(location.search);let id=(location.pathname.endsWith("/card.php")||location.pathname==="card.php"||location.pathname.endsWith("/catalog.php")||location.pathname==="catalog.php")?params.get("id"):params.get("card");if(id) {
+    init();const params=new URLSearchParams(location.search);if(params.has("invite")){await openInvitation(params.get("invite"));return;}let id=(location.pathname.endsWith("/card.php")||location.pathname==="card.php"||location.pathname.endsWith("/catalog.php")||location.pathname==="catalog.php")?params.get("id"):params.get("card");if(id) {
       $("#appShell").classList.remove("hidden");show("public");$(".topbar").classList.add("hidden");await publicPage(id,location.pathname.endsWith("/catalog.php")||location.pathname==="catalog.php");return
     }
     let adminStatus;
@@ -724,6 +811,9 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     catch(error){showAdminAccess({configured:true},error.message);return;}
     if(!adminStatus.authenticated){showAdminAccess(adminStatus);return;}
     $("#appShell").classList.remove("hidden");
+    const canInvite=adminStatus.role==="admin";
+    $("#manageTeamBtn").classList.toggle("hidden",!canInvite);
+    if(canInvite)setupTeamManager();
     $("#adminSessionLabel").textContent=adminStatus.username||"lavariega";
     $("#logoutBtn").onclick=async()=>{try{await adminAuthRequest({action:"logout"});location.reload();}catch(error){toast(error.message,"error");}};
     try {
