@@ -689,10 +689,9 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     const root=$("#adminAuthView"),setup=!state.configured;
     root.classList.remove("hidden");
     $("#adminAuthTitle").textContent=setup?"Configurar usuario administrador":"Iniciar sesión como administrador";
-    $("#adminAuthIntro").textContent=setup?"Crea una contraseña privada para proteger tu inventario. Tu usuario será administrador.":"Introduce tus datos para acceder al editor y al inventario.";
+    $("#adminAuthIntro").textContent=setup?"Crea una contraseña privada para proteger tu inventario. Tu usuario será lavariega.":"Introduce tus datos para acceder al editor y al inventario.";
     const user=$("#adminUsername");
-    if(setup){user.value="administrador";user.readOnly=true;}
-    else{user.readOnly=false;if(!user.value)user.value="administrador";}
+    user.value="lavariega";user.readOnly=true;
     const password=$("#adminPassword");
     password.value="";password.setAttribute("autocomplete",setup?"new-password":"current-password");
     password.minLength=setup?12:1;
@@ -718,7 +717,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     catch(error){showAdminAccess({configured:true},error.message);return;}
     if(!adminStatus.authenticated){showAdminAccess(adminStatus);return;}
     $("#appShell").classList.remove("hidden");
-    $("#adminSessionLabel").textContent=adminStatus.username||"administrador";
+    $("#adminSessionLabel").textContent=adminStatus.username||"lavariega";
     $("#logoutBtn").onclick=async()=>{try{await adminAuthRequest({action:"logout"});location.reload();}catch(error){toast(error.message,"error");}};
     try {
       let d=await get( {
