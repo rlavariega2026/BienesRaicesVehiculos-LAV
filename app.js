@@ -308,6 +308,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
   function catalogUrl(c) {
     let u=new URL("catalog.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]);
     if(c.publicName)u.searchParams.set("nombre",slug(c.publicName));
+    if(c.demo===true)u.searchParams.set("demo","1");
     return u.href;
   }
   function cardUrl(c) {
@@ -315,6 +316,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     let u=new URL("card.php?id="+encodeURIComponent(c.id),location.href.split("?")[0]);
     if(c.publicName)u.searchParams.set("nombre",slug(c.publicName));
     if(Number.isInteger(c.catalogItemIndex))u.searchParams.set("item",String(c.catalogItemIndex));
+    if(c.demo===true)u.searchParams.set("demo","1");
     return u.href;
   }
   function setPublicCardManifest(c,catalogMode=false) {
@@ -451,13 +453,18 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     }
   }
   function renderDemoWatermark(c){
-    document.querySelector("#publicMount .lav-demo-watermark")?.remove();
-    if(!c.demo)return;
+    // Server-side DEMO is authoritative; add a fallback for client-only public URLs.
+    if(document.getElementById("lav-fixed-demo"))return;
+    document.getElementById("lav-client-demo")?.remove();
+    const params=new URLSearchParams(location.search);
+    const isDemo=c?.demo===true||c?.demo==="true"||params.get("demo")==="1";
+    if(!isDemo)return;
     const mark=document.createElement("div");
-    mark.className="lav-demo-watermark";
-    mark.setAttribute("aria-hidden","true");
-    mark.innerHTML='<img class="lav-demo-logo" src="https://lavdigitalmkt.com/assets/logo-lav-digital.png" alt="Logotipo LAV Digital MKT"><div class="lav-demo-lettering">DEMO</div><div class="lav-demo-credit">Versión de demostración · LAV Digital MKT</div>';const brandLogo=mark.querySelector(".lav-demo-logo");brandLogo.onerror=()=>{if(brandLogo.dataset.fallback)return;brandLogo.dataset.fallback="1";brandLogo.src="https://raw.githubusercontent.com/rlavariega2026/LAV-Digital-MKT-landingpage/main/assets/logo-lav-digital.png";};
-    (document.querySelector("#publicMount .public-shell,#publicMount .catalog-public-shell")||document.querySelector("#publicMount")).append(mark);
+    mark.id="lav-client-demo";
+    mark.className="lav-demo-fixed";
+    mark.setAttribute("aria-label","Versión de demostración LAV Digital");
+    mark.innerHTML='<div class="lav-demo-fixed-brand"><img src="assets/lav-demo-logo-library.svg" alt="Logotipo original LAV Digital"></div><div class="lav-demo-fixed-word">DEMO</div><div class="lav-demo-fixed-footer">Versión de demostración · LAV Digital</div>';
+    document.body.append(mark);
   }
   function activatePublicFullscreen(event) {
     if(!document.body.classList.contains("public-card-mode"))return;
