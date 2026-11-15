@@ -1,6 +1,7 @@
 (()=> {
   "use strict";
   const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],API=new URL("api/save-card.php",location.href.split("?")[0]).href,AUTH=new URL("api/auth.php",location.href.split("?")[0]).href,MEDIA=new URL("api/media.php",location.href.split("?")[0]).href,KEY="lavDigitalCards_v3";
+  let lavCsrfToken='';
   const HOME="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1100&q=80",CAR="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1100&q=80";
   const L=[["cinematic","Portada cinematográfica","universal","Foto inmersiva"],["split","Editorial dividido","property","Dos columnas"],["luxury","Lujo oscuro","universal","Detalles premium"],["minimal","Minimalista limpio","property","Espacio y claridad"],["panoramic","Panorámico","property","Foto amplia"],["editorial","Revista editorial","property","Composición de revista"],["mosaic","Mosaico fotográfico","universal","Galería protagonista"],["gallery","Galería protagonista","universal","Exploración visual"],["sidebar","Panel lateral","property","Ficha lateral"],["compact","Ficha para compartir","universal","Compacta"],["architecture","Arquitectónico","property","Líneas premium"],["geometric","Geométrico contemporáneo","universal","Composición asimétrica"],["warm","Hogar cálido","property","Estilo acogedor"],["investment","Inversión inmobiliaria","property","Precio y datos clave"],["impact","Alto impacto","universal","Titulares contundentes"],["auto-night","Automotriz nocturno","vehicle","Estética nocturna"],["auto-editorial","Automotriz editorial","vehicle","Ficha automotriz"],["sport","Deportivo dinámico","vehicle","Diseño deportivo"],["dealer","Concesionaria","vehicle","Ficha técnica"],["auto-premium","Automotriz premium","vehicle","Portada de lujo y ficha oscura"],["auto-racing","Performance studio","vehicle","Acentos deportivos y alto contraste"],["auto-studio","Showroom editorial","vehicle","Composición de catálogo premium"],["auto-gallery","Galería de colección","vehicle","Fotografía protagonista y galería"],["estate-magazine","Residencias de autor","property","Estética de revista de arquitectura"],["estate-penthouse","Penthouse signature","property","Portada inmersiva y detalles finos"],["estate-boutique","Inmobiliaria boutique","property","Acabados cálidos y editorial"],["estate-blueprint","Arquitectura blueprint","property","Líneas técnicas y estética arquitectónica"],["universal","Comercial universal","universal","Uso general"]];
   const S=[["signature","Signature"],["editorial","Editorial"],["colorpop","Color Pop"],["neon","Neon Studio"],["luxury","Luxury"]];
@@ -52,7 +53,7 @@ function safe(v){if(!v)return"";try{let u=new URL(v,location.href);return ["http
 function toast(m,t="success"){let e=document.createElement("div");e.className="toast "+t;e.textContent=m;$("#toastRegion").append(e);setTimeout(()=>e.remove(),4200)}
 function stat(m,err=false){$("#saveStatus").innerHTML=(err?'<i class="fa-solid fa-triangle-exclamation"></i> ':'<i class="fa-solid fa-cloud"></i> ')+esc(m)}
 async function get(p={}){let u=new URL(API);Object.entries(p).forEach(([k,v])=>u.searchParams.set(k,v));let r=await fetch(u,{cache:"no-store"});if(!r.ok)throw Error("Servidor "+r.status);let d=await r.json();if(d.success===false)throw Error(d.message);return d}
-async function post(p){let r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(p)});if(!r.ok)throw Error("Servidor "+r.status);let d=await r.json();if(d.success===false)throw Error(d.message);return d}
+async function post(p){let r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json","X-LAV-CSRF":lavCsrfToken},body:JSON.stringify(p)});if(!r.ok)throw Error("Servidor "+r.status);let d=await r.json();if(d.success===false)throw Error(d.message);return d}
 function money(c){let n=Number(String(c.price||"").replace(/[^\d.-]/g,""));if(!c.price||!Number.isFinite(n))return"";try{return new Intl.NumberFormat("es-MX",{style:"currency",currency:c.currency||"MXN",maximumFractionDigits:0}).format(n)}catch{return"$"+n.toLocaleString("es-MX")}}
 function grad(t){let b=t.background,p=t.primary;return({none:"linear-gradient(0deg,"+b+","+b+")",diagonal:"linear-gradient(135deg,"+b+","+p+" 180%)",radial:"radial-gradient(ellipse at 80% 0%,"+p+","+b+" 72%)",sunset:"linear-gradient(135deg,#24142e,#9d435b,#f1a86d)",ocean:"linear-gradient(135deg,#071c2c,#155b6d,#65c9b7)",aurora:"linear-gradient(135deg,#11152d,#3d326c,#176b72)",metallic:"linear-gradient(125deg,#151515 0%,#666 14%,#e8e8e8 24%,#5a5a5a 35%,#f8f8f8 47%,#858585 60%,#252525 75%,#bdbdbd 88%,#333 100%)",gold:"linear-gradient(125deg,#17130a 0%,#6d5120 16%,#f4df9a 28%,#8d6824 42%,#fff1b2 55%,#7b5a20 70%,#d9b75e 85%,#2c210c 100%)",silver:"linear-gradient(135deg,#202329,#aeb4bc 18%,#f7f9fb 32%,#717780 48%,#e8edf2 62%,#555b64 78%,#dce1e6)",bronze:"linear-gradient(135deg,#21140e,#74472d 18%,#e2b28a 33%,#875335 48%,#f0c7a0 61%,#4b2a1a 78%,#b9825b)"})[t.gradient]||"linear-gradient(0deg,"+b+","+b+")"}
 function css(c){let t={...B.theme,...c.theme},f={sans:'"DM Sans",sans-serif',serif:'"Playfair Display",serif',condensed:'"Arial Narrow",sans-serif',montserrat:'"Montserrat",sans-serif',lato:'"Lato",sans-serif',poppins:'"Poppins",sans-serif',raleway:'"Raleway",sans-serif',oswald:'"Oswald",sans-serif',bodoni:'"Bodoni Moda",serif',manrope:'"Manrope",sans-serif',inter:'"Inter",sans-serif',outfit:'"Outfit",sans-serif',sora:'"Sora",sans-serif',space:'"Space Grotesk",sans-serif',cormorant:'"Cormorant Garamond",serif',baskerville:'"Libre Baskerville",serif',dmserif:'"DM Serif Display",serif',archivo:'"Archivo",sans-serif',archivoBlack:'"Archivo Black",sans-serif',abril:'"Abril Fatface",serif',anton:'"Anton",sans-serif',barlow:'"Barlow Condensed",sans-serif',bebas:'"Bebas Neue",sans-serif',cinzel:'"Cinzel",serif',figtree:'"Figtree",sans-serif',josefin:'"Josefin Sans",sans-serif',merriweather:'"Merriweather",serif',nunito:'"Nunito Sans",sans-serif',rubik:'"Rubik",sans-serif',urbanist:'"Urbanist",sans-serif'}[t.font],z={...B.theme.textStyles,...(t.textStyles||{})};return '--card-bg:'+t.background+';--card-primary:'+t.primary+';--card-text:'+t.text+';--card-accent:'+t.accent+';--card-radius:'+t.radius+'px;--cover-height:'+t.imageHeight+'px;--shade:'+(Number(t.overlay||0)/100)+';--card-font:'+(f||'"DM Sans",sans-serif')+';--card-gradient:'+grad(t)+';--custom-bg-image:'+(c.backgroundImage?'url('+c.backgroundImage+')':grad(t))+';--text-brand:'+(z.brand||'#ffffff')+';--text-kind:'+(z.kind||'#ffffff')+';--text-kicker:'+(z.kicker||t.accent)+';--text-title:'+(z.title||'#ffffff')+';--text-price:'+(z.price||'#ffffff')+';--text-location:'+(z.location||'#ffffff')+';--text-description:'+(z.description||t.text)+';--text-specs:'+(z.specs||t.text)+';--text-amenities:'+(z.amenities||t.text)+';--text-section:'+(z.section||t.primary)+';--text-contact:'+(z.contact||t.text)+';--size-brand:'+((t.textSizes||{})['brand']||14)+'px'+';--size-kind:'+((t.textSizes||{})['kind']||13)+'px'+';--size-kicker:'+((t.textSizes||{})['kicker']||13)+'px'+';--size-title:'+((t.textSizes||{})['title']||36)+'px'+';--size-price:'+((t.textSizes||{})['price']||24)+'px'+';--size-location:'+((t.textSizes||{})['location']||14)+'px'+';--size-description:'+((t.textSizes||{})['description']||15)+'px'+';--size-specs:'+((t.textSizes||{})['specs']||13)+'px'+';--size-amenities:'+((t.textSizes||{})['amenities']||14)+'px'+';--size-section:'+((t.textSizes||{})['section']||12)+'px'+';--size-contact:'+((t.textSizes||{})['contact']||13)+'px'+';--description-align:'+(t.descriptionAlign||'left')}
@@ -223,7 +224,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       let result=null,lastError=null;
       for(let attempt=0;attempt<3;attempt++){
         try{
-          const response=await fetch(endpoint,{method:"POST",body:form});
+          const response=await fetch(endpoint,{method:"POST",headers:{"X-LAV-CSRF":lavCsrfToken},body:form});
           const json=await response.json();
           if(!response.ok||json.success===false)throw Error(json.message||"No se pudo transferir un bloque.");
           result=json;break;
@@ -251,7 +252,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
       form.append("image",new Blob([bytes],{type:mime}),name||"photo.jpg");
     }
-    const r=await fetch(MEDIA,{method:"POST",body:form});
+    const r=await fetch(MEDIA,{method:"POST",headers:{"X-LAV-CSRF":lavCsrfToken},body:form});
     const d=await r.json();
     if(!r.ok||d.success===false)throw Error(d.message||"No se pudo subir la imagen al servidor");
     return d.url;
@@ -686,7 +687,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
 
   async function adminAuthRequest(payload=null){
     const options={credentials:"same-origin",cache:"no-store"};
-    if(payload){options.method="POST";options.headers={"Content-Type":"application/json"};options.body=JSON.stringify(payload);}
+    if(payload){options.method="POST";options.headers={"Content-Type":"application/json","X-LAV-CSRF":lavCsrfToken};options.body=JSON.stringify(payload);}
     const response=await fetch(AUTH,options);
     let data;
     try{data=await response.json();}catch{throw Error("No se pudo conectar con el servicio de acceso del administrador.");}
@@ -720,7 +721,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
   async function teamRequest(payload=null){
     const url=new URL("api/team.php",location.href.split("?")[0]);
     const opts={credentials:"same-origin",cache:"no-store"};
-    if(payload){opts.method="POST";opts.headers={"Content-Type":"application/json"};opts.body=JSON.stringify(payload);}
+    if(payload){opts.method="POST";opts.headers={"Content-Type":"application/json","X-LAV-CSRF":lavCsrfToken};opts.body=JSON.stringify(payload);}
     const response=await fetch(url.href,opts);
     let result;
     try{result=await response.json();}catch{throw Error("El servidor no pudo responder.");}
@@ -812,6 +813,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     try{adminStatus=await adminAuthRequest();}
     catch(error){showAdminAccess({configured:true},error.message);return;}
     if(!adminStatus.authenticated){showAdminAccess(adminStatus);return;}
+    lavCsrfToken=adminStatus.csrf||"";
     $("#appShell").classList.remove("hidden");
     const canInvite=adminStatus.role==="admin";
     $("#manageTeamBtn").classList.toggle("hidden",!canInvite);
