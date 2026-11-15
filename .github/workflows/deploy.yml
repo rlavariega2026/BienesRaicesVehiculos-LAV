@@ -21,7 +21,7 @@ jobs:
       - name: Validate PHP API syntax
         run: php -l card.php && php -l catalog.php && php -l api/manifest.php && php -l api/save-card.php && php -l api/media.php && php -l api/contact.php
 
-      - name: Match live website to its FTP directory
+      - name: Identify actual web root with a unique HTTP-visible probe
         id: target
         shell: bash
         env:
@@ -29,22 +29,31 @@ jobs:
           FTP_PASS: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error --max-time 25 -H 'Cache-Control: no-cache' 'https://lavdigitalmkt.com/bienes-raices-vehiculos/app.js?ftp-diagnosis=20261115' -o /tmp/live-app.js
-          LIVE_HASH=$(sha256sum /tmp/live-app.js | cut -d' ' -f1)
-          echo "Live app.js SHA256: $LIVE_HASH"
+          TOKEN="lav-probe-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          FILE=".lav-deploy-probe-${GITHUB_RUN_ID}.txt"
+          printf '%s' "$TOKEN" >/tmp/lav-probe.txt
           MATCH=""
           for dir in "/public_html/bienes-raices-vehiculos/" "/bienes-raices-vehiculos/"; do
-            if curl --fail --silent --show-error --max-time 25 --user "$FTP_USER:$FTP_PASS" "ftp://31.170.161.28:21${dir}app.js" -o /tmp/ftp-app.js; then
-              HASH=$(sha256sum /tmp/ftp-app.js | cut -d' ' -f1)
-              echo "FTP $dir app.js SHA256: $HASH"
-              if [ "$HASH" = "$LIVE_HASH" ]; then MATCH="$dir"; fi
+            FTP_URL="ftp://31.170.161.28:21${dir}${FILE}"
+            echo "Testing FTP path: $dir"
+            if ! curl --fail --silent --show-error --max-time 30 --user "$FTP_USER:$FTP_PASS" --upload-file /tmp/lav-probe.txt "$FTP_URL"; then
+              echo "FTP upload unavailable: $dir"
+              continue
             fi
+            HTTP_URL="https://lavdigitalmkt.com/bienes-raices-vehiculos/${FILE}?run=${GITHUB_RUN_ID}"
+            HTTP_BODY=$(curl --fail --silent --show-error --max-time 25 -H 'Cache-Control: no-store' "$HTTP_URL" || true)
+            curl --silent --show-error --max-time 20 --user "$FTP_USER:$FTP_PASS" -Q "DELE ${dir}${FILE}" "ftp://31.170.161.28:21/" -o /dev/null || true
+            if [ "$HTTP_BODY" = "$TOKEN" ]; then
+              MATCH="$dir"
+              echo "CONFIRMED LIVE WEB ROOT: $dir"
+              break
+            fi
+            echo "This FTP path is NOT the public website: $dir"
           done
           if [ -z "$MATCH" ]; then
-            echo "::error::Neither FTP path matches the live website. Deployment stopped to prevent another wrong-directory publish."
+            echo "::error::No FTP path maps to the live URL. Refusing to publish in an unverified directory."
             exit 1
           fi
-          echo "Live site matched FTP path: $MATCH"
           if [ "$MATCH" = "/public_html/bienes-raices-vehiculos/" ]; then
             echo "target=public_html" >> "$GITHUB_OUTPUT"
           else
@@ -96,3 +105,14 @@ jobs:
             uploads/**
             storage/**
             publications/**
+
+      - name: Verify published assets over HTTPS
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://lavdigitalmkt.com/bienes-raices-vehiculos"
+          for name in index.html public-card-mobile-fix.css sw.js; do
+            curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "$BASE/$name?verify=${GITHUB_RUN_ID}" -o "/tmp/live-${name}"
+            cmp "$name" "/tmp/live-${name}" || { echo "::error::Live $name differs from GitHub checkout"; exit 1; }
+            echo "Verified live $name matches repository"
+          done
