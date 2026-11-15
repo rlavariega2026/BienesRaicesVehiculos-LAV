@@ -54,6 +54,25 @@ jobs:
           curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie -H 'Content-Type: application/json' -d "$PAYLOAD" "http://127.0.0.1:18765/api/auth.php" >/tmp/lav-auth-migrated.json
           php -r '$j=json_decode(file_get_contents("/tmp/lav-auth-migrated.json"),true); if(!$j || !$j["authenticated"] || $j["username"]!=="lavariega") exit(1);'
           php -r '$j=json_decode(file_get_contents("data/cards/admin-auth.json"),true); if(!$j || $j["username"]!=="lavariega") exit(1);'
+          # Verify secondary users cannot administer accounts, even with direct API requests.
+          curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie "http://127.0.0.1:18765/api/auth.php" >/tmp/lav-admin-status.json
+          CSRF=$(php -r '$j=json_decode(file_get_contents("/tmp/lav-admin-status.json"),true); echo $j["csrf"]??"";')
+          test -n "$CSRF"
+          curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie -H "X-LAV-CSRF: $CSRF" -H 'Content-Type: application/json' -d '{"action":"invite","username":"lavtesteditor","name":"Editor de prueba"}' "http://127.0.0.1:18765/api/team.php" >/tmp/lav-invite.json
+          TOKEN=$(php -r '$j=json_decode(file_get_contents("/tmp/lav-invite.json"),true);parse_str((string)parse_url($j["url"],PHP_URL_QUERY),$params);echo $params["invite"]??"";')
+          test -n "$TOKEN"
+          NEWPASS="LAV-secondary-$RANDOM-$RANDOM-strong"
+          DATA=$(printf '{"action":"invite_accept","token":"%s","password":"%s"}' "$TOKEN" "$NEWPASS")
+          curl -fsS -c /tmp/lav-editor-cookie -b /tmp/lav-editor-cookie -H 'Content-Type: application/json' -d "$DATA" "http://127.0.0.1:18765/api/auth.php" >/tmp/lav-editor-login.json
+          php -r '$j=json_decode(file_get_contents("/tmp/lav-editor-login.json"),true);if(!$j || ($j["role"]??"")!=="editor")exit(1);'
+          HTTP=$(curl -s -b /tmp/lav-editor-cookie -o /dev/null -w '%{http_code}' "http://127.0.0.1:18765/api/team.php")
+          test "$HTTP" = "403"
+          HTTP=$(curl -s -b /tmp/lav-editor-cookie -o /dev/null -w '%{http_code}' "http://127.0.0.1:18765/api/save-card.php?action=list")
+          test "$HTTP" = "200"
+          curl -fsS -c /tmp/lav-auth-cookie -b /tmp/lav-auth-cookie -H "X-LAV-CSRF: $CSRF" -H 'Content-Type: application/json' -d '{"action":"suspend","username":"lavtesteditor"}' "http://127.0.0.1:18765/api/team.php" >/tmp/lav-suspended.json
+          HTTP=$(curl -s -b /tmp/lav-editor-cookie -o /dev/null -w '%{http_code}' "http://127.0.0.1:18765/api/save-card.php?action=list")
+          test "$HTTP" = "401"
+          echo "Team invitations, editor permissions, administrator-only API, session revocation passed."
           echo "Lavariega login, legacy username migration and protected inventory passed."
           rm -f data/cards/admin-auth.json
 
