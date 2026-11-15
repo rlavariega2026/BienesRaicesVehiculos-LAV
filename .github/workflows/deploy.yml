@@ -115,9 +115,8 @@ jobs:
           curl --fail --silent --show-error --max-time 30 "https://lavdigitalmkt.com/assets/logo-lav-digital.png?verify=${GITHUB_RUN_ID}" -o /tmp/lav-real-logo.png
           file /tmp/lav-real-logo.png | grep -q 'PNG image data'
           echo "Verified the actual LAV brand PNG loads over HTTPS"
-          php -r '$p=file_get_contents("demo-overlay.php"); if(!preg_match("~data:image/jpeg;base64,([A-Za-z0-9+/=]+)~",$p,$m) || substr(base64_decode($m[1]),0,3)!=="\\xFF\\xD8\\xFF") exit(1);'
+          grep -Fq 'data:image/jpeg;base64,/9j/' demo-overlay.php
           node -e 'const fs=require("fs");const s=fs.readFileSync("app.js","utf8");if(!s.includes("data:image/jpeg;base64,/9j/"))process.exit(1)'
-          curl --fail --silent --show-error --max-time 30 "$BASE/demo-overlay.php?verify=${GITHUB_RUN_ID}" -o /tmp/lav-demo-markup.json || true
           echo "Verified DEMO logo is embedded in published PHP and JS; no broken network images"
 
 
