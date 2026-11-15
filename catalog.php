@@ -32,7 +32,7 @@ $html = str_replace(
 );
 // Keep the DEMO watermark server-rendered, even before JavaScript loads.
 require_once __DIR__ . '/demo-overlay.php';
-if (!empty($profile['demo']) || (string)($_GET['demo'] ?? '') === '1') {
+if (!empty($profile['demo'])) {
     $html = str_replace('</body>', lav_demo_markup() . '\n</body>', $html);
 }
 header('Content-Type: text/html; charset=utf-8');
