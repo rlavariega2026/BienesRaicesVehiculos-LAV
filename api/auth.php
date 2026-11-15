@@ -61,7 +61,9 @@ function lav_auth_role(): ?string {
     $cfg=lav_auth_config();
     if ($cfg!==null && !empty($cfg['password_hash']) && hash_equals((string)($cfg['username']??''),$username)) return 'admin';
     $user=lav_team_get_user($username);
-    return $user !== null && !empty($user['active']) && !empty($user['password_hash']) ? 'editor' : null;
+    if ($user===null || empty($user['active']) || empty($user['password_hash'])) return null;
+    if (!empty($user['session_version']) && !hash_equals((string)$user['session_version'],(string)($_SESSION['lav_user_version'] ?? ''))) return null;
+    return 'editor';
 }
 function lav_auth_ok(): bool {
     lav_auth_start();
@@ -83,6 +85,10 @@ if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
     lav_auth_start();
     header('Cache-Control: no-store, max-age=0');
     $config=lav_auth_config();
+    if (!empty($_SESSION['lav_admin']) && !empty($_SESSION['lav_last_activity']) && time()-(int)$_SESSION['lav_last_activity']>12*3600) {
+        $_SESSION=[];session_regenerate_id(true);
+    }
+    if (!empty($_SESSION['lav_admin'])) $_SESSION['lav_last_activity']=time();
     $method=$_SERVER['REQUEST_METHOD'] ?? 'GET';
     if ($method === 'GET') {
         lav_auth_respond(['success'=>true,'configured'=>$config !== null,
@@ -145,13 +151,24 @@ if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
         if (!is_array($invite) || ($invite['expires']??0)<time()) lav_auth_respond(['success'=>false,'message'=>'La invitación venció o ya fue utilizada.'],404);
         $invited=(string)$invite['username'];
         if (strlen($password)<12 || strlen($password)>200) lav_auth_respond(['success'=>false,'message'=>'La contraseña requiere al menos 12 caracteres.'],422);
-        if (is_file(lav_team_user_file($invited))) lav_auth_respond(['success'=>false,'message'=>'Ese usuario ya tiene una cuenta.'],409);
-        $record=['username'=>$invited,'name'=>(string)($invite['name']??$invited),'password_hash'=>password_hash($password,PASSWORD_DEFAULT),'active'=>true,'created_at'=>date('c')];
-        $handle=@fopen(lav_team_user_file($invited),'x');
+        $existing=lav_team_get_user($invited);
+        $isReset=($invite['purpose']??'')==='reset';
+        if ($isReset && $existing===null) lav_auth_respond(['success'=>false,'message'=>'El usuario ya no existe.'],404);
+        if (!$isReset && $existing!==null) lav_auth_respond(['success'=>false,'message'=>'Ese usuario ya tiene una cuenta.'],409);
+        $record=$isReset?$existing:[];
+        $record['username']=$invited;
+        $record['name']=(string)($invite['name']??$invited);
+        $record['password_hash']=password_hash($password,PASSWORD_DEFAULT);
+        $record['active']=$isReset?(!empty($existing['active'])):true;
+        $record['created_at']=$record['created_at']??date('c');
+        $record['session_version']=bin2hex(random_bytes(12));
+        $handle=@fopen(lav_team_user_file($invited),$isReset?'c+':'x');
         if (!$handle) lav_auth_respond(['success'=>false,'message'=>'No se pudo activar la cuenta.'],409);
-        fwrite($handle,json_encode($record,JSON_UNESCAPED_UNICODE));fclose($handle);
+        if (!flock($handle,LOCK_EX)) {fclose($handle);lav_auth_respond(['success'=>false,'message'=>'No se pudo proteger la cuenta.'],500);}
+        ftruncate($handle,0);rewind($handle);
+        fwrite($handle,json_encode($record,JSON_UNESCAPED_UNICODE));fflush($handle);flock($handle,LOCK_UN);fclose($handle);
         @unlink($path);
-        session_regenerate_id(true);$_SESSION['lav_admin']=$invited;
+        session_regenerate_id(true);$_SESSION['lav_admin']=$invited;$_SESSION['lav_user_version']=$record['session_version'];
         lav_auth_respond(['success'=>true,'authenticated'=>true,'username'=>$invited,'role'=>'editor']);
     }
     if ($action === 'login') {
@@ -169,7 +186,9 @@ if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
             $_SESSION['lav_login_attempts']=$attempts+1;
             lav_auth_respond(['success'=>false,'message'=>'Usuario o contraseña incorrectos.'],401);
         }
-        session_regenerate_id(true);$_SESSION['lav_admin']=$username;$_SESSION['lav_login_attempts']=0;
+        session_regenerate_id(true);$_SESSION['lav_admin']=$username;
+        $_SESSION['lav_user_version']=$adminValid?'':(string)($registered['session_version']??'');
+        $_SESSION['lav_login_attempts']=0;
         lav_auth_respond(['success'=>true,'configured'=>true,'authenticated'=>true,'username'=>$username]);
     }
     lav_auth_respond(['success'=>false,'message'=>'Acción desconocida.'],400);
