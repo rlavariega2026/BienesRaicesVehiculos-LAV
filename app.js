@@ -456,7 +456,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     const mark=document.createElement("div");
     mark.className="lav-demo-watermark";
     mark.setAttribute("aria-hidden","true");
-    mark.innerHTML='<img class="lav-demo-logo" src="/assets/logo-lav-digital.png" alt=""><div class="lav-demo-lettering">DEMO</div><div class="lav-demo-credit">Versión de demostración · LAV Digital MKT</div>';
+    mark.innerHTML='<img class="lav-demo-logo" src="https://lavdigitalmkt.com/assets/logo-lav-digital.png" alt="Logotipo LAV Digital MKT"><div class="lav-demo-lettering">DEMO</div><div class="lav-demo-credit">Versión de demostración · LAV Digital MKT</div>';const brandLogo=mark.querySelector(".lav-demo-logo");brandLogo.onerror=()=>{if(brandLogo.dataset.fallback)return;brandLogo.dataset.fallback="1";brandLogo.src="https://raw.githubusercontent.com/rlavariega2026/LAV-Digital-MKT-landingpage/main/assets/logo-lav-digital.png";};
     (document.querySelector("#publicMount .public-shell,#publicMount .catalog-public-shell")||document.querySelector("#publicMount")).append(mark);
   }
   function activatePublicFullscreen(event) {
@@ -541,7 +541,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     if(c.status!=="published")return noPublic("El anuncio no está publicado o ya no está disponible.");
     const params=new URLSearchParams(location.search),itemParam=params.get("item"),catalogMode=catalogRoute||params.get("catalog")==="1";
     let all=[];
-    try{all=(await get({action:"list"})).cards||[];}
+    try{all=(await get({action:"public_list"})).cards||[];}
     catch{try{all=JSON.parse(localStorage.getItem(KEY)||"[]");}catch{}}
     cards=all;
     if(catalogMode){
@@ -674,10 +674,52 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       if(e.target.closest("[data-show-qr]")&&c?.id)qr(c)
     })
   }
+
+  async function adminAuthRequest(payload=null){
+    const options={credentials:"same-origin",cache:"no-store"};
+    if(payload){options.method="POST";options.headers={"Content-Type":"application/json"};options.body=JSON.stringify(payload);}
+    const response=await fetch(AUTH,options);
+    let data;
+    try{data=await response.json();}catch{throw Error("No se pudo conectar con el servicio de acceso del administrador.");}
+    if(!response.ok||data.success===false)throw Error(data.message||"No se pudo validar el acceso.");
+    return data;
+  }
+  function showAdminAccess(state,message=""){
+    $("#appShell").classList.add("hidden");
+    const root=$("#adminAuthView"),setup=!state.configured;
+    root.classList.remove("hidden");
+    $("#adminAuthTitle").textContent=setup?"Configurar usuario administrador":"Iniciar sesión como administrador";
+    $("#adminAuthIntro").textContent=setup?"Crea una contraseña privada para proteger tu inventario. Tu usuario será administrador.":"Introduce tus datos para acceder al editor y al inventario.";
+    const user=$("#adminUsername");
+    if(setup){user.value="administrador";user.readOnly=true;}
+    else{user.readOnly=false;if(!user.value)user.value="administrador";}
+    const password=$("#adminPassword");
+    password.value="";password.setAttribute("autocomplete",setup?"new-password":"current-password");
+    password.minLength=setup?12:1;
+    $("#adminAuthSubmit").textContent=setup?"Crear acceso y entrar":"Entrar al administrador";
+    $("#adminAuthMessage").textContent=message;
+    $("#adminAuthForm").onsubmit=async event=>{
+      event.preventDefault();
+      const button=$("#adminAuthSubmit");button.disabled=true;
+      $("#adminAuthMessage").textContent="";
+      try{
+        await adminAuthRequest({action:setup?"setup":"login",username:user.value.trim(),password:password.value});
+        location.reload();
+      }catch(error){$("#adminAuthMessage").textContent=error.message;password.focus();}
+      finally{button.disabled=false;}
+    };
+  }
   async function boot() {
     init();const params=new URLSearchParams(location.search);let id=(location.pathname.endsWith("/card.php")||location.pathname==="card.php"||location.pathname.endsWith("/catalog.php")||location.pathname==="catalog.php")?params.get("id"):params.get("card");if(id) {
-      show("public");$(".topbar").classList.add("hidden");await publicPage(id,location.pathname.endsWith("/catalog.php")||location.pathname==="catalog.php");return
+      $("#appShell").classList.remove("hidden");show("public");$(".topbar").classList.add("hidden");await publicPage(id,location.pathname.endsWith("/catalog.php")||location.pathname==="catalog.php");return
     }
+    let adminStatus;
+    try{adminStatus=await adminAuthRequest();}
+    catch(error){showAdminAccess({configured:true},error.message);return;}
+    if(!adminStatus.authenticated){showAdminAccess(adminStatus);return;}
+    $("#appShell").classList.remove("hidden");
+    $("#adminSessionLabel").textContent=adminStatus.username||"administrador";
+    $("#logoutBtn").onclick=async()=>{try{await adminAuthRequest({action:"logout"});location.reload();}catch(error){toast(error.message,"error");}};
     try {
       let d=await get( {
         action:"list"
