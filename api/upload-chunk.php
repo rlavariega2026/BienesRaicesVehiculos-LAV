@@ -8,6 +8,8 @@ function fail_upload(string $message, int $status=400): never {
   echo json_encode(['success'=>false,'message'=>$message], JSON_UNESCAPED_UNICODE);
   exit;
 }
+require_once __DIR__ . '/auth.php';
+lav_auth_required();
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') fail_upload('Método no permitido.',405);
 $id=(string)($_POST['upload_id'] ?? '');
 if (!preg_match('/^[a-f0-9]{32}$/',$id)) fail_upload('Identificador de carga inválido.');
