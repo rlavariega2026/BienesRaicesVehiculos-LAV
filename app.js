@@ -452,22 +452,43 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     }
   }
   function renderDemoWatermark(c){
+    // Mount the mark at document level so it stays ABOVE the publication,
+    // not underneath the card or inside a clipped/styled card container.
     const shell=document.querySelector("#publicMount .public-shell,#publicMount .catalog-public-shell");
     let server=document.getElementById("lav-fixed-demo");
-    document.getElementById("lav-client-demo")?.remove();
-    if(!c?.demo || !shell) {
-      if(server)server.remove();
+    let client=document.getElementById("lav-client-demo");
+    if(!c?.demo || !shell){
+      server?.remove();client?.remove();
       return;
     }
-    // Move the server-rendered watermark inside the publication so that
-    // native browser fullscreen preserves the DEMO brand on every device.
-    if(server){if(!shell.contains(server))shell.append(server);return;}
-    const mark=document.createElement("div");
-    mark.id="lav-client-demo";
-    mark.className="lav-demo-fixed";
-    mark.setAttribute("aria-label","Versión de demostración LAV Digital");
-    mark.innerHTML='<div class="lav-demo-fixed-brand"><img src="./assets/lav-library-original.svg" alt="LAV DIGITAL — logotipo original"></div><div class="lav-demo-fixed-word">DEMO</div><div class="lav-demo-fixed-footer">Versión de demostración · LAV Digital MKT</div>';
-    shell.append(mark);
+    if(server && client){client.remove();client=null;}
+    if(!server && !client){
+      client=document.createElement("div");
+      client.id="lav-client-demo";
+      client.className="lav-demo-fixed";
+      client.setAttribute("aria-label","Versión de demostración LAV Digital");
+      client.innerHTML='<div class="lav-demo-fixed-brand"><img src="./assets/lav-library-original.svg" alt="LAV DIGITAL — logotipo original"></div><div class="lav-demo-fixed-word">DEMO</div><div class="lav-demo-fixed-footer">Versión de demostración · LAV Digital MKT</div>';
+    }
+    const mark=server||client;
+    const positionDemo=()=>{
+      // Fullscreen only paints descendants of the fullscreen element.
+      // Outside fullscreen, body is the topmost safe stacking context.
+      const fullscreen=document.fullscreenElement;
+      const target=fullscreen && fullscreen.contains(shell) ? fullscreen : document.body;
+      if(mark.parentElement!==target)target.appendChild(mark);
+    };
+    positionDemo();
+    if(!window.lavDemoFullscreenHandler){
+      window.lavDemoFullscreenHandler=()=> {
+        const current=document.getElementById("lav-fixed-demo")||document.getElementById("lav-client-demo");
+        if(!current)return;
+        const screen=document.fullscreenElement;
+        const publication=document.querySelector("#publicMount .public-shell,#publicMount .catalog-public-shell");
+        const target=screen&&publication&&screen.contains(publication)?screen:document.body;
+        if(current.parentElement!==target)target.appendChild(current);
+      };
+      document.addEventListener("fullscreenchange",window.lavDemoFullscreenHandler);
+    }
   }
   function activatePublicFullscreen(event) {
     if(!document.body.classList.contains("public-card-mode"))return;
