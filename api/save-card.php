@@ -68,7 +68,7 @@ if ($action === 'save_template') {
     $template = $input['template'] ?? null;
     if (!is_array($template)) respond(['success'=>false,'message'=>'Faltan los datos de la plantilla.'], 422);
     $name = trim((string)($template['name'] ?? ''));
-    if ($name === '' || mb_strlen($name) > 100) respond(['success'=>false,'message'=>'Elige un nombre de hasta 100 caracteres.'], 422);
+    if ($name === '' || strlen($name) > 100) respond(['success'=>false,'message'=>'Elige un nombre de hasta 100 caracteres.'], 422);
     $directory = __DIR__ . '/../data/templates/';
     if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) respond(['success'=>false,'message'=>'No se pudo crear el directorio de plantillas.'], 500);
     if (!is_file($directory . '.htaccess')) @file_put_contents($directory . '.htaccess', "Options -Indexes\nRequire all denied\n");
