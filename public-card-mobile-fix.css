@@ -233,3 +233,12 @@ body.public-card-mode #publicMount .digital-card.public-card>.dc-public-heading 
  body.public-card-mode #publicMount .digital-card.public-card>.dc-public-heading>.dc-cover-copy{padding:22px 18px 25px!important}
  body.public-card-mode #publicMount .digital-card.public-card>.dc-public-heading .dc-title{font-size:clamp(1.55rem,6.2vw,2.4rem)!important}
 }
+
+/* Required visual order: photo, title/price/location, then description and gallery. */
+body.public-card-mode #publicMount .digital-card.public-card>.dc-cover{order:1!important;align-self:stretch!important}
+body.public-card-mode #publicMount .digital-card.public-card>.dc-public-heading{order:2!important;align-self:stretch!important;flex:0 0 auto!important}
+body.public-card-mode #publicMount .digital-card.public-card>.dc-content{order:3!important;align-self:stretch!important}
+@media(max-width:699px){
+ body.public-card-mode #publicMount .digital-card.public-card>.dc-cover{flex:0 0 auto!important;width:100%!important;height:auto!important;aspect-ratio:4/3!important;min-height:0!important;max-height:none!important}
+ body.public-card-mode #publicMount .digital-card.public-card>.dc-cover .dc-cover-open{inset:0!important;top:0!important;bottom:0!important;left:0!important;right:0!important;width:100%!important;height:100%!important}
+}
