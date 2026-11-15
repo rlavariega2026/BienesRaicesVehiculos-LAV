@@ -54,10 +54,23 @@ function lav_team_get_user(string $name): ?array {
     $v=json_decode((string)file_get_contents($path),true);
     return is_array($v) ? $v : null;
 }
+function lav_auth_csrf(): string {
+    lav_auth_start();
+    if (empty($_SESSION['lav_csrf'])) $_SESSION['lav_csrf']=bin2hex(random_bytes(32));
+    return (string)$_SESSION['lav_csrf'];
+}
+function lav_auth_check_csrf(): void {
+    lav_auth_start();
+    $provided=(string)($_SERVER['HTTP_X_LAV_CSRF'] ?? '');
+    if ($provided==='' || !hash_equals(lav_auth_csrf(),$provided))
+        lav_auth_respond(['success'=>false,'message'=>'Sesión de seguridad vencida. Actualiza la página e inténtalo de nuevo.'],403);
+}
 function lav_auth_role(): ?string {
     lav_auth_start();
     $username=(string)($_SESSION['lav_admin'] ?? '');
     if ($username==='') return null;
+    if (!empty($_SESSION['lav_last_activity']) && time()-(int)$_SESSION['lav_last_activity']>12*3600) {$_SESSION=[];return null;}
+    $_SESSION['lav_last_activity']=time();
     $cfg=lav_auth_config();
     if ($cfg!==null && !empty($cfg['password_hash']) && hash_equals((string)($cfg['username']??''),$username)) return 'admin';
     $user=lav_team_get_user($username);
@@ -94,7 +107,7 @@ if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
         lav_auth_respond(['success'=>true,'configured'=>$config !== null,
           'authenticated'=>lav_auth_ok(),
           'username'=>lav_auth_ok()?(string)($_SESSION['lav_admin'] ?? ''):null,
-          'role'=>lav_auth_role()]);
+          'role'=>lav_auth_role(),'csrf'=>lav_auth_ok()?lav_auth_csrf():null]);
     }
     if ($method !== 'POST') lav_auth_respond(['success'=>false,'message'=>'Método no permitido.'],405);
     $origin=(string)($_SERVER['HTTP_ORIGIN'] ?? '');
@@ -132,9 +145,10 @@ if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
             lav_auth_respond(['success'=>false,'message'=>'No se pudo guardar el administrador.'],500);
         }
         fclose($file);@chmod(lav_auth_path(),0600);
-        session_regenerate_id(true);$_SESSION['lav_admin']=$username;
-        lav_auth_respond(['success'=>true,'configured'=>true,'authenticated'=>true,'username'=>$username,'role'=>$adminValid?'admin':'editor']);
+        session_regenerate_id(true);$_SESSION['lav_admin']=$username;$_SESSION['lav_csrf']=bin2hex(random_bytes(32));$_SESSION['lav_last_activity']=time();
+        lav_auth_respond(['success'=>true,'configured'=>true,'authenticated'=>true,'username'=>$username,'role'=>'admin']);
     }
+    if (!in_array($action,['setup','login','invite_check','invite_accept','logout'],true)) lav_auth_check_csrf();
     if ($action === 'invite_check') {
         $token=strtolower((string)($data['token']??''));
         if (!preg_match('/^[a-f0-9]{64}$/',$token)) lav_auth_respond(['success'=>false,'message'=>'La invitación no es válida.'],400);
@@ -186,10 +200,10 @@ if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
             $_SESSION['lav_login_attempts']=$attempts+1;
             lav_auth_respond(['success'=>false,'message'=>'Usuario o contraseña incorrectos.'],401);
         }
-        session_regenerate_id(true);$_SESSION['lav_admin']=$username;
+        session_regenerate_id(true);$_SESSION['lav_admin']=$username;$_SESSION['lav_csrf']=bin2hex(random_bytes(32));$_SESSION['lav_last_activity']=time();
         $_SESSION['lav_user_version']=$adminValid?'':(string)($registered['session_version']??'');
         $_SESSION['lav_login_attempts']=0;
-        lav_auth_respond(['success'=>true,'configured'=>true,'authenticated'=>true,'username'=>$username]);
+        lav_auth_respond(['success'=>true,'configured'=>true,'authenticated'=>true,'username'=>$username,'role'=>$adminValid?'admin':'editor']);
     }
     lav_auth_respond(['success'=>false,'message'=>'Acción desconocida.'],400);
 }
