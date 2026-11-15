@@ -384,7 +384,7 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     mark.className="lav-demo-watermark";
     mark.setAttribute("aria-hidden","true");
     mark.innerHTML='<div class="lav-demo-lettering">DEMO</div><div class="lav-demo-credit">Versión de demostración · LAV Digital MKT</div>';
-    document.querySelector("#publicMount").append(mark);
+    (document.querySelector("#publicMount .public-shell,#publicMount .catalog-public-shell")||document.querySelector("#publicMount")).append(mark);
   }
   function activatePublicFullscreen(event) {
     if(!document.body.classList.contains("public-card-mode"))return;
