@@ -698,14 +698,14 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
     $("#appShell").classList.add("hidden");
     const root=$("#adminAuthView"),setup=!state.configured;
     root.classList.remove("hidden");
-    $("#adminAuthTitle").textContent=setup?"Configurar usuario administrador":"Iniciar sesión como administrador";
+    $("#adminAuthTitle").textContent=setup?"Configurar superadministrador":"Iniciar sesión";
     $("#adminAuthIntro").textContent=setup?"Crea una contraseña privada para proteger tu inventario. Tu usuario será lavariega.":"Introduce tus datos para acceder al editor y al inventario.";
     const user=$("#adminUsername");
-    user.value="lavariega";user.readOnly=true;
+    user.value=setup?"lavariega":(user.value||"lavariega");user.readOnly=setup;
     const password=$("#adminPassword");
     password.value="";password.setAttribute("autocomplete",setup?"new-password":"current-password");
     password.minLength=setup?12:1;
-    $("#adminAuthSubmit").textContent=setup?"Crear acceso y entrar":"Entrar al administrador";
+    $("#adminAuthSubmit").textContent=setup?"Crear acceso y entrar":"Iniciar sesión";
     $("#adminAuthMessage").textContent=message;
     $("#adminAuthForm").onsubmit=async event=>{
       event.preventDefault();
@@ -730,20 +730,11 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
   }
   async function openTeamManager(){
     const dialog=$("#teamManagerDialog");
-    const status=$("#teamManagerMessage");
-    status.textContent="";
+    $("#teamManagerMessage").textContent="";
     dialog.showModal();
     $("#teamInviteResult").classList.add("hidden");
-    try{
-      const data=await teamRequest();
-      const users=data.users||[],invites=data.invites||[];
-      const items=[
-        '<div class="lav-team-user"><strong>lavariega</strong><span>Administrador principal · acceso permanente</span></div>',
-        ...users.map(u=>'<div class="lav-team-user"><div><strong>'+esc(u.name||u.username)+'</strong><span>'+esc(u.username)+' · '+(u.active?'Acceso activo':'Acceso revocado')+'</span></div>'+(u.active?'<button class="button button-outline" type="button" data-revoke-user="'+esc(u.username)+'">Revocar acceso</button>':'')+'</div>'),
-        ...invites.map(u=>'<div class="lav-team-user"><div><strong>'+esc(u.name||u.username)+'</strong><span>'+esc(u.username)+' · Invitación pendiente</span></div><button class="button button-outline" type="button" data-revoke-user="'+esc(u.username)+'">Cancelar invitación</button></div>')
-      ];
-      $("#teamUsersList").innerHTML=items.join("");
-    }catch(error){status.textContent=error.message;}
+    try{await openTeamManagerRefresh();}
+    catch(error){$("#teamManagerMessage").textContent=error.message;}
   }
   function setupTeamManager(){
     $("#manageTeamBtn").onclick=()=>openTeamManager();
@@ -768,19 +759,38 @@ function contact(c,publicMode=false,thumb=false){if(thumb)return "";let a=[],w=S
       catch{ $("#teamManagerMessage").textContent="Selecciona el enlace para copiarlo."; }}
     };
     $("#teamUsersList").onclick=async event=>{
-      const target=event.target.closest("[data-revoke-user]");
+      const target=event.target.closest("[data-team-action]");
       if(!target)return;
-      if(!confirm("¿Revocar el acceso a "+target.dataset.revokeUser+"?"))return;
-      try{await teamRequest({action:"revoke",username:target.dataset.revokeUser});await openTeamManagerRefresh();}
-      catch(error){$("#teamManagerMessage").textContent=error.message;}
+      const action=target.dataset.teamAction,username=target.dataset.username;
+      if(!username||!action)return;
+      let payload={action,username};
+      if(action==="rename"){
+        const name=prompt("Nombre visible del usuario:",target.dataset.name||username);
+        if(name===null)return;
+        payload.name=name.trim();if(!payload.name)return;
+      }else if(["delete","suspend","revoke"].includes(action)&&!confirm("¿Confirmas "+action+" para "+username+"?"))return;
+      try{
+        const result=await teamRequest(payload);
+        if(result.url){
+          $("#teamInviteLink").value=result.url;
+          $("#teamInviteResult").classList.remove("hidden");
+          $("#teamManagerMessage").textContent="Enlace de acceso generado; cópialo para enviarlo.";
+        }else $("#teamManagerMessage").textContent="Usuario actualizado.";
+        await openTeamManagerRefresh();
+      }catch(error){$("#teamManagerMessage").textContent=error.message;}
     };
   }
   async function openTeamManagerRefresh(){
     const data=await teamRequest();
     const users=data.users||[],invites=data.invites||[];
-    $("#teamUsersList").innerHTML='<div class="lav-team-user"><strong>lavariega</strong><span>Administrador principal</span></div>'+
-      users.map(u=>'<div class="lav-team-user"><div><strong>'+esc(u.name||u.username)+'</strong><span>'+esc(u.username)+' · '+(u.active?'Activo':'Revocado')+'</span></div>'+(u.active?'<button type="button" class="button button-outline" data-revoke-user="'+esc(u.username)+'">Revocar acceso</button>':'')+'</div>').join("")+
-      invites.map(u=>'<div class="lav-team-user"><div><strong>'+esc(u.name||u.username)+'</strong><span>'+esc(u.username)+' · Invitación pendiente</span></div><button type="button" class="button button-outline" data-revoke-user="'+esc(u.username)+'">Cancelar</button></div>').join("");
+    $("#teamUsersList").innerHTML='<div class="lav-team-user"><strong>lavariega</strong><span>Superadministrador · acceso protegido</span></div>'+
+    users.map(u=>{
+      const user=esc(u.username),name=esc(u.name||u.username);
+      const button=(action,label)=>'<button type="button" class="button button-outline" data-team-action="'+action+'" data-username="'+user+'" data-name="'+name+'">'+label+'</button>';
+      return '<div class="lav-team-user" style="display:flex;gap:8px;flex-wrap:wrap"><div style="flex:1 1 100%"><strong>'+name+'</strong><span>'+user+' · '+(u.active?'Activo':'Suspendido')+'</span></div>'+
+        button("rename","Editar")+button("reset","Restablecer contraseña")+button(u.active?"suspend":"activate",u.active?"Suspender":"Activar")+button("delete","Eliminar")+'</div>';
+    }).join("")+
+    invites.map(u=>'<div class="lav-team-user"><strong>'+esc(u.name||u.username)+'</strong><span>'+esc(u.username)+' · Invitación pendiente</span><button type="button" class="button button-outline" data-team-action="revoke" data-username="'+esc(u.username)+'">Cancelar invitación</button></div>').join("");
   }
   async function openInvitation(token){
     $("#appShell").classList.add("hidden");
