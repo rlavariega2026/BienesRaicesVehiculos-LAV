@@ -9,7 +9,7 @@ declare(strict_types=1);
 function lav_demo_markup(): string {
     return <<<'HTML'
 <div id="lav-fixed-demo" aria-label="Versión de demostración de LAV Digital">
-  <div class="lav-demo-brand"><img src="./assets/lav-library-original.svg" alt="LAV DIGITAL marketing y diseño digital"></div>
+  <div class="lav-demo-brand"><img src="./assets/LOGO%20LAV%20DIGITAL.jpg" alt="LAV DIGITAL marketing y diseño digital"></div>
   <strong class="lav-demo-word">DEMO</strong>
   <div class="lav-demo-bottom">Versión de demostración · LAV Digital MKT</div>
 </div>
