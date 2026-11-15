@@ -1,0 +1,27 @@
+/* DEMO badge on public real-estate and vehicle publications */
+#publicMount .lav-demo-watermark{
+ position:fixed;z-index:1000;inset:0;pointer-events:none;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:10px;overflow:hidden;
+}
+#publicMount .lav-demo-lettering{
+ color:#8062da;opacity:.23;font-family:Arial,Helvetica,sans-serif;
+ font-size:clamp(5rem,23vw,21rem);font-weight:950;letter-spacing:-.075em;
+ transform:rotate(-23deg);text-shadow:0 0 12px #4b42a6aa;
+ line-height:1;user-select:none;
+}
+#publicMount .lav-demo-credit{
+ position:fixed;bottom:calc(12px + env(safe-area-inset-bottom));
+ left:50%;transform:translateX(-50%);
+ padding:8px 18px;border-radius:100px;
+ color:#eee7ff;font:700 12px/1.4 Arial,Helvetica,sans-serif;text-align:center;
+ background:#26153ccc;border:1px solid #a584ff66;
+ max-width:calc(100vw - 24px);white-space:normal;
+}
+#publicMount .public-shell:fullscreen,#publicMount .catalog-public-shell:fullscreen{
+ overflow-y:auto;overflow-x:hidden;width:100%;height:100%;max-height:100%;
+ background:#101116;
+}
+#publicMount .public-shell:fullscreen .lav-demo-watermark,
+#publicMount .catalog-public-shell:fullscreen .lav-demo-watermark{pointer-events:none}
+@media (max-width:680px){#publicMount .lav-demo-lettering{font-size:25vw}}
